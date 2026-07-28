@@ -1,0 +1,110 @@
+[
+  {
+    "name": "1024x768",
+    "width": 1024,
+    "height": 768,
+    "motion": "normal",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "scrollY": 0,
+    "navBox": {
+      "left": 0,
+      "top": 0,
+      "right": 1024,
+      "bottom": 70.78125,
+      "width": 1024,
+      "height": 70.78125
+    },
+    "titleBox": {
+      "left": 271.453125,
+      "top": 208.71875,
+      "right": 752.515625,
+      "bottom": 421.09375,
+      "width": 481.0625,
+      "height": 212.375
+    },
+    "ctaBox": {
+      "left": 285.640625,
+      "top": 540.28125,
+      "right": 738.34375,
+      "bottom": 590.28125,
+      "width": 452.703125,
+      "height": 50
+    },
+    "horizontalOverflow": 0,
+    "cueVisible": true,
+    "cueOverlapsCtas": false,
+    "cueGap": 88.890625,
+    "ctaBottomSafe": true,
+    "titleClearsNav": true,
+    "touchCursorHidden": true,
+    "metadataVisible": false,
+    "metadataOverlapsStat": false,
+    "actionInsideCard": true,
+    "actionRoundedBothSides": true,
+    "desktopTwoColumns": true,
+    "consentInsideCard": true,
+    "consentTouchTarget": true,
+    "textClearsCardEdges": true,
+    "submitInsideCard": true,
+    "submitRoundedBothSides": true,
+    "modalClosedBeforeContact": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "1180x820",
+    "width": 1180,
+    "height": 820,
+    "motion": "normal",
+    "viewport": {
+      "width": 1180,
+      "height": 820
+    },
+    "scrollY": 0,
+    "navBox": {
+      "left": 0,
+      "top": 0,
+      "right": 1180,
+      "bottom": 70.78125,
+      "width": 1180,
+      "height": 70.78125
+    },
+    "titleBox": {
+      "left": 349.453125,
+      "top": 233.21875,
+      "right": 830.515625,
+      "bottom": 445.59375,
+      "width": 481.0625,
+      "height": 212.375
+    },
+    "ctaBox": {
+      "left": 363.640625,
+      "top": 564.78125,
+      "right": 816.34375,
+      "bottom": 614.78125,
+      "width": 452.703125,
+      "height": 50
+    },
+    "horizontalOverflow": 0,
+    "cueVisible": true,
+    "cueOverlapsCtas": false,
+    "cueGap": 114.828125,
+    "ctaBottomSafe": true,
+    "titleClearsNav": true,
+    "touchCursorHidden": true,
+    "metadataVisible": false,
+    "metadataOverlapsStat": false,
+    "actionInsideCard": true,
+    "actionRoundedBothSides": true,
+    "desktopTwoColumns": true,
+    "consentInsideCard": true,
+    "consentTouchTarget": true,
+    "textClearsCardEdges": true,
+    "submitInsideCard": true,
+    "submitRoundedBothSides": true,
+    "modalClosedBeforeContact": true,
+    "consoleErrors": []
+  }
+]

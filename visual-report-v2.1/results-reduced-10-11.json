@@ -1,0 +1,142 @@
+[
+  {
+    "name": "1366x768",
+    "width": 1366,
+    "height": 768,
+    "motion": "reduced",
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "scrollY": 0,
+    "navBox": {
+      "left": 0,
+      "top": 0,
+      "right": 1366,
+      "bottom": 70.78125,
+      "width": 1366,
+      "height": 70.78125
+    },
+    "titleBox": {
+      "left": 455.515625,
+      "top": 208.71875,
+      "right": 910.46875,
+      "bottom": 421.09375,
+      "width": 454.953125,
+      "height": 212.375
+    },
+    "ctaBox": {
+      "left": 466.296875,
+      "top": 540.28125,
+      "right": 899.6875,
+      "bottom": 590.28125,
+      "width": 433.390625,
+      "height": 50
+    },
+    "horizontalOverflow": 0,
+    "cueVisible": true,
+    "cueOverlapsCtas": false,
+    "cueGap": 88.890625,
+    "ctaBottomSafe": true,
+    "titleClearsNav": true,
+    "touchCursorHidden": true,
+    "metadataVisible": true,
+    "metadataBox": {
+      "left": 165,
+      "top": 714.234375,
+      "right": 288.96875,
+      "bottom": 754.734375,
+      "width": 123.96875,
+      "height": 40.5
+    },
+    "statBox": {
+      "left": 340.59375,
+      "top": 656.046875,
+      "right": 592.96875,
+      "bottom": 754.734375,
+      "width": 252.375,
+      "height": 98.6875
+    },
+    "metadataOverlapsStat": false,
+    "actionInsideCard": true,
+    "actionRoundedBothSides": true,
+    "desktopTwoColumns": true,
+    "consentInsideCard": true,
+    "consentTouchTarget": true,
+    "textClearsCardEdges": true,
+    "submitInsideCard": true,
+    "submitRoundedBothSides": true,
+    "modalClosedBeforeContact": true,
+    "consoleErrors": []
+  },
+  {
+    "name": "1440x900",
+    "width": 1440,
+    "height": 900,
+    "motion": "reduced",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "scrollY": 0,
+    "navBox": {
+      "left": 0,
+      "top": 0,
+      "right": 1440,
+      "bottom": 78.78125,
+      "width": 1440,
+      "height": 78.78125
+    },
+    "titleBox": {
+      "left": 492.515625,
+      "top": 265.46875,
+      "right": 947.46875,
+      "bottom": 477.84375,
+      "width": 454.953125,
+      "height": 212.375
+    },
+    "ctaBox": {
+      "left": 503.296875,
+      "top": 616.53125,
+      "right": 936.6875,
+      "bottom": 666.53125,
+      "width": 433.390625,
+      "height": 50
+    },
+    "horizontalOverflow": 0,
+    "cueVisible": true,
+    "cueOverlapsCtas": false,
+    "cueGap": 140.671875,
+    "ctaBottomSafe": true,
+    "titleClearsNav": true,
+    "touchCursorHidden": true,
+    "metadataVisible": true,
+    "metadataBox": {
+      "left": 72,
+      "top": 829.125,
+      "right": 317.359375,
+      "bottom": 856.125,
+      "width": 245.359375,
+      "height": 27
+    },
+    "statBox": {
+      "left": 364.171875,
+      "top": 744.625,
+      "right": 621.359375,
+      "bottom": 856.125,
+      "width": 257.1875,
+      "height": 111.5
+    },
+    "metadataOverlapsStat": false,
+    "actionInsideCard": true,
+    "actionRoundedBothSides": true,
+    "desktopTwoColumns": true,
+    "consentInsideCard": true,
+    "consentTouchTarget": true,
+    "textClearsCardEdges": true,
+    "submitInsideCard": true,
+    "submitRoundedBothSides": true,
+    "modalClosedBeforeContact": true,
+    "consoleErrors": []
+  }
+]

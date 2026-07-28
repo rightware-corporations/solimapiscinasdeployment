@@ -1,0 +1,46 @@
+
+:root {
+  --ink:           #020617;
+  --ink-soft:      #0a1428;
+  --ink-elev:      #0f1c36;
+  --line:          rgba(255,255,255,0.08);
+  --line-hi:       rgba(125,211,252,0.3);
+  --white:         #ffffff;
+  --paper:         #f4f7fb;
+  --mute:          rgba(255,255,255,0.55);
+  --mute-soft:     rgba(255,255,255,0.4);
+
+  --aqua:          #7dd3fc;
+  --aqua-hi:       #38bdf8;
+  --aqua-deep:     #0284c7;
+  --cyan:          #22d3ee;
+  --teal:          #5eead4;
+  --twilight:      #fb923c;
+  --violet:        #a855f7;
+  --font-serif:    'Fraunces', 'Times New Roman', serif;
+  --font-sans:     'Inter', system-ui, -apple-system, sans-serif;
+  --fs-mega:       clamp(3.5rem, 12vw, 11rem);
+  --fs-display:    clamp(2.5rem, 8vw, 7rem);
+  --fs-h1:         clamp(2.2rem, 6vw, 5rem);
+  --fs-h2:         clamp(1.8rem, 4.5vw, 3.5rem);
+  --fs-h3:         clamp(1.4rem, 3vw, 2.2rem);
+  --fs-body:       clamp(0.95rem, 1.1vw, 1.0625rem);
+  --fs-small:      0.75rem;
+  --fs-tiny:       0.625rem;
+  --gutter:        clamp(1.25rem, 4vw, 3rem);
+  --ease:          cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out:      cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-in-out:   cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast:      0.4s;
+  --dur:           0.7s;
+  --dur-slow:      1.2s;
+  --dur-cinema:    1.8s;
+  --nav-h: 88px;
+  --content-max: 1320px;
+  --content-readable: 60ch;
+  --section-y: clamp(5rem, 9vw, 9rem);
+  --card-pad: clamp(1.25rem, 2.8vw, 2.5rem);
+  --z-nav: 80;
+  --z-overlay: 70;
+  --z-cue: 20;
+}

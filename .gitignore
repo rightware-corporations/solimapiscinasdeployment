@@ -1,0 +1,8 @@
+node_modules/
+.env
+prisma/*.db*
+storage/uploads/*
+storage/thumbs/*
+storage/test/
+!storage/uploads/.gitkeep
+!storage/thumbs/.gitkeep

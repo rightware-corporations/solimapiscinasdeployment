@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#020617" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23020617'/%3E%3Cpath d='M12 18h10v10H12zm15 0h10v10H27zm15 0h10v10H42zM20 33h10v10H20zm15 0h10v10H35zM27 48h10v10H27z' fill='%2322d3ee'/%3E%3C/svg%3E" />
+<title>SOLIMA — Construção & Manutenção de Piscinas Premium em Moçambique</title>
+<meta name="description" content="Há mais de 19 anos a transformar espaços em experiências. Construção, modernização e manutenção de piscinas premium em Moçambique." />
+<meta property="og:title" content="SOLIMA — Piscinas Premium" />
+<meta property="og:description" content="Transformamos espaços em experiências. 19+ anos de excelência aquática em Moçambique." />
+<meta property="og:type" content="website" />
+
+<!-- Fonts: Fraunces (serif editorial) + Inter (sans body) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+<!-- Runtime libraries: Lenis + Lucide -->
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+<link rel="stylesheet" href="/css/tokens.css">
+<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/css/responsive.css">
+</head>
+
+<body>
+
+<!-- ═══════════ CUSTOM CURSOR ═══════════ -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- ═══════════ SCROLL PROGRESS RAIL ═══════════ -->
+<div class="scroll-rail">
+  <div class="scroll-rail-fill" id="scrollRail"></div>
+</div>
+
+<!-- ═══════════ LOADER ═══════════ -->
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="loader-bg"></div>
+  <div class="loader-mark">
+    <div class="loader-logo no-select">
+      <svg viewBox="0 0 40 40" aria-hidden="true">
+        <!-- Pixel-mosaic logo inspired by SOLIMA brand -->
+        <rect x="0"  y="0"  width="5" height="5"/>
+        <rect x="7"  y="0"  width="5" height="5"/>
+        <rect x="0"  y="7"  width="5" height="5"/>
+        <rect x="14" y="7"  width="5" height="5"/>
+        <rect x="7"  y="14" width="5" height="5"/>
+        <rect x="14" y="14" width="5" height="5"/>
+        <rect x="21" y="14" width="5" height="5"/>
+        <rect x="28" y="14" width="5" height="5"/>
+        <rect x="35" y="14" width="5" height="5"/>
+        <rect x="0"  y="21" width="5" height="5"/>
+        <rect x="14" y="21" width="5" height="5"/>
+        <rect x="35" y="21" width="5" height="5"/>
+        <rect x="7"  y="28" width="5" height="5"/>
+        <rect x="21" y="28" width="5" height="5"/>
+        <rect x="28" y="28" width="5" height="5"/>
+        <rect x="0"  y="35" width="5" height="5"/>
+        <rect x="14" y="35" width="5" height="5"/>
+      </svg>
+    </div>
+    <div class="loader-brand">
+      <span>SOLIMA</span>
+      <span class="italic">piscinas</span>
+      <div class="loader-tagline">Há mais de 19 anos</div>
+    </div>
+    <div class="loader-progress"></div>
+  </div>
+</div>
+
+<!-- ═══════════ NAV ═══════════ -->
+<nav class="nav" id="nav">
+  <a href="#top" class="nav-brand no-select" data-cursor="hover">
+    <div class="nav-brand-mark">
+      <svg viewBox="0 0 40 40" aria-hidden="true">
+        <rect x="0"  y="0"  width="5" height="5" fill="#7dd3fc"/>
+        <rect x="7"  y="0"  width="5" height="5" fill="#22d3ee"/>
+        <rect x="0"  y="7"  width="5" height="5" fill="#0284c7"/>
+        <rect x="14" y="7"  width="5" height="5" fill="#7dd3fc"/>
+        <rect x="7"  y="14" width="5" height="5" fill="#22d3ee"/>
+        <rect x="14" y="14" width="5" height="5" fill="#7dd3fc"/>
+        <rect x="21" y="14" width="5" height="5" fill="#0284c7"/>
+        <rect x="28" y="14" width="5" height="5" fill="#22d3ee"/>
+        <rect x="35" y="14" width="5" height="5" fill="#7dd3fc"/>
+        <rect x="0"  y="21" width="5" height="5" fill="#22d3ee"/>
+        <rect x="14" y="21" width="5" height="5" fill="#0284c7"/>
+        <rect x="35" y="21" width="5" height="5" fill="#22d3ee"/>
+        <rect x="7"  y="28" width="5" height="5" fill="#7dd3fc"/>
+        <rect x="21" y="28" width="5" height="5" fill="#22d3ee"/>
+        <rect x="28" y="28" width="5" height="5" fill="#0284c7"/>
+        <rect x="0"  y="35" width="5" height="5" fill="#7dd3fc"/>
+        <rect x="14" y="35" width="5" height="5" fill="#22d3ee"/>
+      </svg>
+    </div>
+    <div class="nav-brand-text">
+      <div>SOLIMA</div>
+      <div>PISCINAS · 19 ANOS</div>
+    </div>
+  </a>
+
+  <div class="nav-links">
+    <a class="nav-link" href="#sobre" data-cursor="hover">Sobre</a>
+    <a class="nav-link" href="#servicos" data-cursor="hover">Serviços</a>
+    <a class="nav-link" href="#projetos" data-cursor="hover">Projetos</a>
+    <a class="nav-link" href="#visao" data-cursor="hover">Visão</a>
+    <a class="nav-link" href="#orcamento" data-cursor="hover">Orçamento</a>
+  </div>
+
+  <div class="nav-menu-toggle">
+    <a class="nav-cta" href="#orcamento" data-cursor="hover">
+      <span class="nav-cta-fill"></span>
+      <span>Orçamento</span>
+    </a>
+    <button class="nav-burger" id="navBurger" aria-label="Menu" data-cursor="hover">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <a class="nav-cta" id="navCta" href="#orcamento" data-cursor="hover">
+    <span class="nav-cta-fill"></span>
+    <span>Orçamento</span>
+  </a>
+</nav>
+
+<!-- Desktop nav-cta visible on wide screens -->
+<!-- Mobile overlay menu -->
+<div class="nav-overlay" id="navOverlay">
+  <div class="nav-overlay-links">
+    <a class="nav-overlay-link" href="#sobre" data-menu-close>Sobre</a>
+    <a class="nav-overlay-link" href="#servicos" data-menu-close>Serviços</a>
+    <a class="nav-overlay-link" href="#projetos" data-menu-close>Projetos</a>
+    <a class="nav-overlay-link" href="#visao" data-menu-close>Visão</a>
+    <a class="nav-overlay-link" href="#orcamento" data-menu-close>Orçamento</a>
+    <a class="nav-overlay-link" href="#contacto" data-menu-close>Contacto</a>
+  </div>
+  <div class="nav-overlay-meta">
+    <div>SOLIMA · Boane, Maputo</div>
+    <div><a href="tel:+258824407120">+258 82 440 7120</a></div>
+    <div><a href="https://wa.me/258824407120">WhatsApp</a></div>
+  </div>
+</div>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero" id="top">
+  <div class="hero-pin">
+    <!-- Scene 1: DAY -->
+    <div class="hero-video-layer is-active" data-scene="day">
+      <video
+        muted loop playsinline autoplay preload="auto"
+        poster="https://images.pexels.com/videos/5163181/pexels-photo-5163181.jpeg?auto=compress&cs=tinysrgb&h=627&w=1200"
+        src="https://videos.pexels.com/video-files/5163181/5163181-hd_1920_1080_25fps.mp4">
+      </video>
+      <div class="hero-video-tint"></div>
+    </div>
+
+    <!-- Scene 2: TWILIGHT -->
+    <div class="hero-video-layer" data-scene="twilight">
+      <video
+        muted loop playsinline preload="metadata"
+        poster="https://images.pexels.com/videos/855623/free-video-855623.jpg?auto=compress&cs=tinysrgb&h=627&w=1200"
+        src="https://videos.pexels.com/video-files/855623/855623-hd_1620_1080_24fps.mp4">
+      </video>
+      <div class="hero-video-tint"></div>
+    </div>
+
+    <!-- Scene 3: DETAIL -->
+    <div class="hero-video-layer" data-scene="detail">
+      <video
+        muted loop playsinline preload="metadata"
+        poster="https://images.pexels.com/videos/856589/free-video-856589.jpg?auto=compress&cs=tinysrgb&h=627&w=1200"
+        src="https://videos.pexels.com/video-files/856589/856589-uhd_2560_1440_30fps.mp4">
+      </video>
+      <div class="hero-video-tint"></div>
+    </div>
+
+    <div class="hero-vignette"></div>
+    <div class="hero-grain"></div>
+    <div class="hero-letterbox top"></div>
+    <div class="hero-letterbox bottom"></div>
+
+    <!-- Scene indicator -->
+    <div class="hero-scene-indicator">
+      <div class="hero-scene-label">Cena</div>
+      <div class="hero-scene-list">
+        <div class="hero-scene-row is-active" data-scene="day">
+          <span class="hero-scene-name">Dia</span>
+          <span class="hero-scene-bar"></span>
+        </div>
+        <div class="hero-scene-row" data-scene="twilight">
+          <span class="hero-scene-name">Crepúsculo</span>
+          <span class="hero-scene-bar"></span>
+        </div>
+        <div class="hero-scene-row" data-scene="detail">
+          <span class="hero-scene-name">Detalhe</span>
+          <span class="hero-scene-bar"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero content -->
+    <div class="hero-content" id="heroContent">
+      <div class="eyebrow">Moçambique · Desde 2006</div>
+
+      <h1 class="hero-title">
+        <span class="mask-line"><span>Transformamos</span></span>
+        <span class="hero-title-morph">
+          <span class="hero-title-morph-word is-active scene-day" data-scene="day"     >espaços</span>
+          <span class="hero-title-morph-word scene-twilight" data-scene="twilight">ambientes</span>
+          <span class="hero-title-morph-word scene-detail" data-scene="detail"  >atmosferas</span>
+        </span>
+        <span class="mask-line"><span>em experiências.</span></span>
+      </h1>
+
+      <p class="hero-sub">
+        Construção, modernização e manutenção de piscinas premium em Moçambique há mais de 19 anos.
+      </p>
+
+      <div class="hero-ctas">
+        <a class="btn btn-primary magnetic" href="#projetos" data-cursor="hover">
+          <span>Ver Projetos</span>
+          <i data-lucide="arrow-up-right" class="btn-arrow"></i>
+        </a>
+        <a class="btn btn-ghost magnetic" href="#orcamento" data-cursor="hover">
+          <span>Solicitar Orçamento</span>
+          <i data-lucide="arrow-up-right" class="btn-arrow"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Scroll cue -->
+    <div class="hero-scroll-cue">
+      <div class="hero-scroll-cue-line"></div>
+      <span class="hero-scroll-cue-text">Mergulhe</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SOBRE ═══════════ -->
+<section id="sobre" class="sobre section-pad">
+  <div class="water-field"></div>
+  <div class="container sobre-grid">
+    <div class="sobre-media" data-reveal-parent>
+      <div class="sobre-image-wrap">
+        <img class="parallax-media" data-parallax-strength="-60" data-img-key="1" alt="Piscina premium SOLIMA" />
+        <div class="sobre-image-meta">
+          <div>Vista do Vale · Província de Maputo</div>
+          <div>01 / 32</div>
+        </div>
+      </div>
+      <div class="sobre-stat-card" data-reveal>
+        <div class="sobre-stat-num">19+</div>
+        <div class="sobre-stat-label">Anos de excelência aquática</div>
+      </div>
+    </div>
+    <div class="sobre-copy-column" data-reveal-parent>
+      <div class="eyebrow" data-reveal>Quem Somos</div>
+      <h2 class="sobre-headline">
+        <span class="mask-line" data-reveal-text><span>Engenharia de</span></span>
+        <span class="mask-line" data-reveal-text><span class="italic">precisão</span></span>
+        <span class="mask-line" data-reveal-text><span>encontra design.</span></span>
+      </h2>
+      <p class="sobre-copy" data-reveal>A SOLIMA é referência moçambicana em projetar, construir e manter piscinas privadas, comerciais e institucionais — combinando engenharia de precisão com design moderno.</p>
+      <p class="sobre-copy soft" data-reveal>Mais do que construir piscinas, criamos ambientes de lazer, saúde e convívio — uma nova forma de viver o espaço exterior.</p>
+      <div class="sobre-stats">
+        <div class="sobre-stat" data-reveal><div class="sobre-stat-value">32+</div><div class="sobre-stat-key">Piscinas Residenciais</div></div>
+        <div class="sobre-stat" data-reveal><div class="sobre-stat-value">100%</div><div class="sobre-stat-key">Acompanhamento</div></div>
+        <div class="sobre-stat" data-reveal><div class="sobre-stat-value">MZ</div><div class="sobre-stat-key">Marca Moçambicana</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ INSPIRAÇÃO ═══════════ -->
+<section class="inspiracao section-pad">
+  <div class="water-field"></div>
+  <div class="container inspiracao-content">
+    <div class="eyebrow" data-reveal>Inspiração & Profissionalismo</div>
+    <h2 class="inspiracao-quote">
+      <span class="mask-line" data-reveal-text><span>Cada projeto é guiado</span></span>
+      <span class="mask-line" data-reveal-text><span>pela <span class="italic">paixão</span> em construir</span></span>
+      <span class="mask-line" data-reveal-text><span>piscinas duradouras,</span></span>
+      <span class="mask-line" data-reveal-text><span>elegantes e sustentáveis.</span></span>
+    </h2>
+    <div class="inspiracao-pillars">
+      <div class="inspiracao-pillar" data-reveal>
+        <div class="inspiracao-pillar-num">01</div>
+        <div class="inspiracao-pillar-title">Engenharia<br/>de precisão</div>
+        <div class="inspiracao-pillar-desc">Cálculos estruturais, sistemas hidráulicos de alto desempenho e supervisão técnica integral em cada etapa.</div>
+      </div>
+      <div class="inspiracao-pillar" data-reveal>
+        <div class="inspiracao-pillar-num">02</div>
+        <div class="inspiracao-pillar-title">Design<br/>moderno</div>
+        <div class="inspiracao-pillar-desc">Linhas contemporâneas, formas orgânicas, borda infinita e acabamentos premium personalizados ao espaço.</div>
+      </div>
+      <div class="inspiracao-pillar" data-reveal>
+        <div class="inspiracao-pillar-num">03</div>
+        <div class="inspiracao-pillar-title">Compromisso<br/>sustentável</div>
+        <div class="inspiracao-pillar-desc">Uso eficiente de recursos hídricos e energéticos. Bombas de calor, automatização, durabilidade de longo prazo.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SERVIÇOS ═══════════ -->
+<section id="servicos" class="servicos section-pad">
+  <div class="water-field"></div>
+  <div class="container">
+    <div class="servicos-header">
+      <div data-reveal-parent>
+        <div class="eyebrow" data-reveal>Serviços</div>
+        <h2 class="servicos-headline">
+          <span class="mask-line" data-reveal-text><span>Soluções</span></span>
+          <span class="mask-line" data-reveal-text><span>completas,</span></span>
+          <span class="mask-line" data-reveal-text><span class="italic">do projeto à manutenção.</span></span>
+        </h2>
+      </div>
+      <p class="servicos-intro" data-reveal>Acompanhamos cada projeto de ponta a ponta — da engenharia hidráulica à iluminação LED automatizada e aos revestimentos modernos.</p>
+    </div>
+    <div class="servicos-grid">
+      <button class="servico-card" data-cursor="hover" data-toggle data-reveal>
+        <div class="servico-head"><div class="servico-num">01</div><div class="servico-icon"><i data-lucide="hammer"></i></div></div>
+        <div class="servico-title">Construção</div>
+        <div class="servico-sub">de Piscinas</div>
+        <p class="servico-desc">Piscinas em betão armado. Modelos personalizados: retangulares, orgânicas e de borda infinita.</p>
+        <ul class="servico-list">
+          <li>Betão armado de alta resistência</li>
+          <li>Borda infinita & formas orgânicas</li>
+          <li>Sistemas hidráulicos premium</li>
+          <li>Acompanhamento técnico integral</li>
+        </ul>
+        <div class="servico-toggle"><span class="plus"><i data-lucide="plus"></i></span><span>Saber mais</span></div>
+      </button>
+      <button class="servico-card" data-cursor="hover" data-toggle data-reveal>
+        <div class="servico-head"><div class="servico-num">02</div><div class="servico-icon"><i data-lucide="wrench"></i></div></div>
+        <div class="servico-title">Manutenção</div>
+        <div class="servico-sub">preventiva & correctiva</div>
+        <p class="servico-desc">Limpeza, aspiração e controlo químico da água. Revisão completa de filtros, bombas e sistemas elétricos.</p>
+        <ul class="servico-list">
+          <li>Controlo químico contínuo</li>
+          <li>Revisão de filtros e bombas</li>
+          <li>Diagnóstico elétrico</li>
+          <li>Condomínios, hotéis e escolas</li>
+        </ul>
+        <div class="servico-toggle"><span class="plus"><i data-lucide="plus"></i></span><span>Saber mais</span></div>
+      </button>
+      <button class="servico-card" data-cursor="hover" data-toggle data-reveal>
+        <div class="servico-head"><div class="servico-num">03</div><div class="servico-icon"><i data-lucide="zap"></i></div></div>
+        <div class="servico-title">Modernização</div>
+        <div class="servico-sub">& tecnologia</div>
+        <p class="servico-desc">Bombas de calor, iluminação LED subaquática, automatização via aplicativo e novos revestimentos.</p>
+        <ul class="servico-list">
+          <li>Bombas de calor — uso anual</li>
+          <li>LED subaquático automatizado</li>
+          <li>Composite Decking & pergolas</li>
+          <li>Cemcrete e tijoleiras modernas</li>
+        </ul>
+        <div class="servico-toggle"><span class="plus"><i data-lucide="plus"></i></span><span>Saber mais</span></div>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PROJETOS — Fullscreen Showcase ═══════════ -->
+<section id="projetos" class="projetos">
+  <div class="projetos-intro container">
+    <div class="eyebrow" data-reveal>Portfolio · 2023–2024</div>
+    <h2 class="projetos-intro-title">
+      <span class="mask-line" data-reveal-text><span>Seis projetos.</span></span>
+      <span class="mask-line" data-reveal-text><span class="italic">uma assinatura.</span></span>
+    </h2>
+    <p class="projetos-intro-sub" data-reveal>Cada piscina é um manifesto. Desça para mergulhar em seis projetos reais — engenharia, design e luz, em escala cinematográfica.</p>
+  </div>
+
+  <div class="projeto-slide" data-project="1">
+    <div class="projeto-image-wrap"><img data-img-key="1" alt="Vista do Vale" /></div>
+    <div class="projeto-ghost-num">01</div>
+    <div class="projeto-meta-top">
+      <span class="projeto-category">Construção</span>
+      <div class="projeto-counter">01 / 06</div>
+    </div>
+    <div class="projeto-side"><div class="line"></div><span class="label">Construção</span><div class="line"></div></div>
+    <div class="projeto-content container">
+      <div class="projeto-meta-info"><span>Província de Maputo</span><span class="dot"></span><span>2023</span></div>
+      <h3 class="projeto-title">Vista do Vale</h3>
+      <p class="projeto-subtitle">Piscina de borda orgânica com vista panorâmica</p>
+      <p class="projeto-desc">Uma piscina esculpida na paisagem moçambicana. Forma orgânica integrada ao terreno, acabamento em tijolo artesanal e estrutura projetada para resistir à inclinação natural do vale.</p>
+      <div class="projeto-tags"><span class="projeto-tag">Borda Orgânica</span><span class="projeto-tag">Decking de Tijolo</span><span class="projeto-tag">Engenharia de Talude</span></div>
+    </div>
+  </div>
+
+  <div class="projeto-slide" data-project="2">
+    <div class="projeto-image-wrap"><img data-img-key="2" alt="Residência Sommerschield" /></div>
+    <div class="projeto-ghost-num">02</div>
+    <div class="projeto-meta-top">
+      <span class="projeto-category">Modernização</span>
+      <div class="projeto-counter">02 / 06</div>
+    </div>
+    <div class="projeto-side"><div class="line"></div><span class="label">Modernização</span><div class="line"></div></div>
+    <div class="projeto-content container">
+      <div class="projeto-meta-info"><span>Maputo · Sommerschield</span><span class="dot"></span><span>2024</span></div>
+      <h3 class="projeto-title">Residência Sommerschield</h3>
+      <p class="projeto-subtitle">Modernização integral com iluminação LED</p>
+      <p class="projeto-desc">Reabilitação completa de uma residência premium. Iluminação LED RGB automatizada via aplicativo, novo revestimento e integração total com a arquitetura existente — uma experiência noturna cinematográfica.</p>
+      <div class="projeto-tags"><span class="projeto-tag">LED Subaquático</span><span class="projeto-tag">Automatização</span><span class="projeto-tag">Arquitetura Noturna</span></div>
+    </div>
+  </div>
+
+  <div class="projeto-slide" data-project="3">
+    <div class="projeto-image-wrap"><img data-img-key="3" alt="Composite Deck" /></div>
+    <div class="projeto-ghost-num">03</div>
+    <div class="projeto-meta-top">
+      <span class="projeto-category">Construção</span>
+      <div class="projeto-counter">03 / 06</div>
+    </div>
+    <div class="projeto-side"><div class="line"></div><span class="label">Construção</span><div class="line"></div></div>
+    <div class="projeto-content container">
+      <div class="projeto-meta-info"><span>Maputo Cidade</span><span class="dot"></span><span>2024</span></div>
+      <h3 class="projeto-title">Composite Deck</h3>
+      <p class="projeto-subtitle">Piscina residencial com decking premium</p>
+      <p class="projeto-desc">Um pátio transformado em retiro privado. Composite decking antiderrapante, parede vegetal decorativa e geometria que maximiza o espaço útil sem comprometer a elegância.</p>
+      <div class="projeto-tags"><span class="projeto-tag">Composite Decking</span><span class="projeto-tag">Design Personalizado</span><span class="projeto-tag">Acabamentos Premium</span></div>
+    </div>
+  </div>
+
+  <div class="projeto-slide" data-project="4">
+    <div class="projeto-image-wrap"><img data-img-key="4" alt="Crepúsculo Aquático" /></div>
+    <div class="projeto-ghost-num">04</div>
+    <div class="projeto-meta-top">
+      <span class="projeto-category">Modernização</span>
+      <div class="projeto-counter">04 / 06</div>
+    </div>
+    <div class="projeto-side"><div class="line"></div><span class="label">Modernização</span><div class="line"></div></div>
+    <div class="projeto-content container">
+      <div class="projeto-meta-info"><span>Maputo · Bairro Central</span><span class="dot"></span><span>2024</span></div>
+      <h3 class="projeto-title">Crepúsculo Aquático</h3>
+      <p class="projeto-subtitle">Iluminação cinemática com cascata</p>
+      <p class="projeto-desc">A piscina como peça arquitetónica ao crepúsculo. Cascata de água com iluminação dinâmica, controle de cores via aplicativo e revestimento que reflete o céu noturno.</p>
+      <div class="projeto-tags"><span class="projeto-tag">Cascata</span><span class="projeto-tag">LED RGB</span><span class="projeto-tag">Pergola Decorativa</span></div>
+    </div>
+  </div>
+
+  <div class="projeto-slide" data-project="5">
+    <div class="projeto-image-wrap"><img data-img-key="5" alt="Conjunto Familiar" /></div>
+    <div class="projeto-ghost-num">05</div>
+    <div class="projeto-meta-top">
+      <span class="projeto-category">Famílias</span>
+      <div class="projeto-counter">05 / 06</div>
+    </div>
+    <div class="projeto-side"><div class="line"></div><span class="label">Famílias</span><div class="line"></div></div>
+    <div class="projeto-content container">
+      <div class="projeto-meta-info"><span>Província de Maputo</span><span class="dot"></span><span>2023</span></div>
+      <h3 class="projeto-title">Conjunto Familiar</h3>
+      <p class="projeto-subtitle">Piscina adulto e infantil integradas</p>
+      <p class="projeto-desc">Projeto pensado para famílias. Duas piscinas integradas — uma para adultos, outra para crianças — partilham o mesmo sistema hidráulico, garantindo segurança, economia e harmonia visual.</p>
+      <div class="projeto-tags"><span class="projeto-tag">Multi-Nível</span><span class="projeto-tag">Segurança Infantil</span><span class="projeto-tag">Decking Antiderrapante</span></div>
+    </div>
+  </div>
+
+  <div class="projeto-slide" data-project="6">
+    <div class="projeto-image-wrap"><img data-img-key="6" alt="Pergola & Lounge" /></div>
+    <div class="projeto-ghost-num">06</div>
+    <div class="projeto-meta-top">
+      <span class="projeto-category">Lazer</span>
+      <div class="projeto-counter">06 / 06</div>
+    </div>
+    <div class="projeto-side"><div class="line"></div><span class="label">Lazer</span><div class="line"></div></div>
+    <div class="projeto-content container">
+      <div class="projeto-meta-info"><span>Maputo Cidade</span><span class="dot"></span><span>2024</span></div>
+      <h3 class="projeto-title">Pergola & Lounge</h3>
+      <p class="projeto-subtitle">Espaço de convívio com pergola integrada</p>
+      <p class="projeto-desc">Mais do que uma piscina — um espaço de vida. Pergola em madeira maciça, mobiliário de troncos rústicos e relva sintética compõem um lounge ao ar livre para receber a família.</p>
+      <div class="projeto-tags"><span class="projeto-tag">Pergola Madeira</span><span class="projeto-tag">Área de Convívio</span><span class="projeto-tag">Paisagismo</span></div>
+    </div>
+  </div>
+
+  <div class="projetos-rail" id="projetosRail">
+    <div class="projetos-rail-label">Projeto</div>
+    <div class="projetos-rail-line">
+      <div class="projetos-rail-fill" id="projetosRailFill"></div>
+      <div class="projetos-rail-dot" data-rail-dot="1"></div>
+      <div class="projetos-rail-dot" data-rail-dot="2"></div>
+      <div class="projetos-rail-dot" data-rail-dot="3"></div>
+      <div class="projetos-rail-dot" data-rail-dot="4"></div>
+      <div class="projetos-rail-dot" data-rail-dot="5"></div>
+      <div class="projetos-rail-dot" data-rail-dot="6"></div>
+    </div>
+    <div class="projetos-rail-counter" id="projetosRailCounter">01 <span class="total">/ 06</span></div>
+  </div>
+</section>
+
+<!-- ═══════════ LAZER ═══════════ -->
+<section class="lazer">
+  <div class="lazer-bg"></div>
+  <div class="container lazer-content">
+    <h2 class="lazer-title">
+      <span class="mask-line" data-reveal-text><span>Lazer</span></span>
+      <span class="mask-line" data-reveal-text><span class="italic">& conforto.</span></span>
+    </h2>
+    <div class="lazer-meta" data-reveal>uma nova forma de viver o espaço exterior</div>
+  </div>
+</section>
+
+<!-- ═══════════ VISÃO ═══════════ -->
+<section id="visao" class="visao section-pad">
+  <div class="water-field"></div>
+  <div class="container">
+    <div class="eyebrow" data-reveal>Visão & Missão</div>
+    <h2 class="visao-title">
+      <span class="mask-line" data-reveal-text><span>Construímos</span></span>
+      <span class="mask-line" data-reveal-text><span class="italic">histórias.</span></span>
+      <span class="mask-line" data-reveal-text><span>Inspiramos</span></span>
+      <span class="mask-line" data-reveal-text><span class="italic">estilos de vida.</span></span>
+    </h2>
+    <div class="visao-cols">
+      <div data-reveal>
+        <div class="visao-col-label">01 · Visão</div>
+        <p class="visao-col-text">Ser a marca líder e mais confiável em construção e manutenção de piscinas em Moçambique e na África Austral — através da inovação tecnológica, sustentabilidade ambiental e excelência operacional.</p>
+      </div>
+      <div data-reveal>
+        <div class="visao-col-label">02 · Missão</div>
+        <p class="visao-col-text">Proporcionar soluções completas e sustentáveis com elevado padrão de qualidade, segurança e inovação — garantindo a satisfação plena dos nossos clientes e o uso eficiente dos recursos hídricos e energéticos.</p>
+      </div>
+    </div>
+    <div class="visao-legacy" data-reveal>
+      <span class="visao-legacy-icon"><i data-lucide="sparkles"></i></span>
+      <div class="visao-legacy-label">Legado Social</div>
+      <h3 class="visao-legacy-title">"Nadando para o Futuro"</h3>
+      <p class="visao-legacy-desc">Um programa que une lazer, educação e inclusão — formando uma cultura aquática segura e saudável para a próxima geração moçambicana.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PÚBLICO-ALVO ═══════════ -->
+<section class="publico section-pad">
+  <div class="water-field"></div>
+  <div class="container">
+    <div class="eyebrow" data-reveal>Público-Alvo</div>
+    <h2 class="publico-headline">
+      <span class="mask-line" data-reveal-text><span>Soluções para</span></span>
+      <span class="mask-line" data-reveal-text><span class="italic">quem exige</span></span>
+      <span class="mask-line" data-reveal-text><span>qualidade.</span></span>
+    </h2>
+    <div class="publico-grid">
+      <div class="publico-card" data-cursor="hover" data-reveal>
+        <div class="publico-card-icon"><i data-lucide="home"></i></div>
+        <div class="publico-card-title">Famílias</div>
+        <p class="publico-card-desc">Residências privadas com design personalizado e tecnologia integrada.</p>
+        <div class="publico-card-line"></div>
+      </div>
+      <div class="publico-card" data-cursor="hover" data-reveal>
+        <div class="publico-card-icon"><i data-lucide="building-2"></i></div>
+        <div class="publico-card-title">Condomínios</div>
+        <p class="publico-card-desc">Soluções de escala com manutenção contínua e durabilidade garantida.</p>
+        <div class="publico-card-line"></div>
+      </div>
+      <div class="publico-card" data-cursor="hover" data-reveal>
+        <div class="publico-card-icon"><i data-lucide="hotel"></i></div>
+        <div class="publico-card-title">Hotéis</div>
+        <p class="publico-card-desc">Experiências de hospitalidade premium com acabamentos de luxo.</p>
+        <div class="publico-card-line"></div>
+      </div>
+      <div class="publico-card" data-cursor="hover" data-reveal>
+        <div class="publico-card-icon"><i data-lucide="graduation-cap"></i></div>
+        <div class="publico-card-title">Escolas</div>
+        <p class="publico-card-desc">Piscinas institucionais para iniciação e prática segura da natação.</p>
+        <div class="publico-card-line"></div>
+      </div>
+      <div class="publico-card" data-cursor="hover" data-reveal>
+        <div class="publico-card-icon"><i data-lucide="users"></i></div>
+        <div class="publico-card-title">Empreendimentos</div>
+        <p class="publico-card-desc">Parceria preferencial para grandes projetos imobiliários e mistos.</p>
+        <div class="publico-card-line"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ CLIENTES ═══════════ -->
+<section class="clientes section-pad">
+  <div class="water-field"></div>
+  <div class="container">
+    <div class="eyebrow" data-reveal>Referência de Clientes & Parceiros</div>
+    <h2 class="visao-title">
+      <span class="mask-line" data-reveal-text><span>Parcerias que</span></span>
+      <span class="mask-line" data-reveal-text><span class="italic">constroem confiança.</span></span>
+    </h2>
+    <div class="clientes-grid">
+      <div class="cliente" data-cursor="hover" data-reveal>
+        <div class="cliente-num">01</div>
+        <div class="cliente-name">SS Construções</div>
+        <div class="cliente-location">Condomínio Life Style · Maputo</div>
+        <p class="cliente-desc">Execução de <strong>32 piscinas residenciais</strong>, com sistemas modernos e acabamentos personalizados.</p>
+        <span class="cliente-arrow">Ver projeto <i data-lucide="arrow-up-right"></i></span>
+      </div>
+      <div class="cliente" data-cursor="hover" data-reveal>
+        <div class="cliente-num">02</div>
+        <div class="cliente-name">Mozago Construções</div>
+        <div class="cliente-location">Xai-Xai & Maputo</div>
+        <p class="cliente-desc">Construção de piscina escolar na praia do Xai-Xai e reabilitação/modernização de piscina no bairro Sommerschield em Maputo.</p>
+        <span class="cliente-arrow">Ver projeto <i data-lucide="arrow-up-right"></i></span>
+      </div>
+      <div class="cliente" data-cursor="hover" data-reveal>
+        <div class="cliente-num">03</div>
+        <div class="cliente-name">Colégio Percia</div>
+        <div class="cliente-location">Maputo</div>
+        <p class="cliente-desc">Projeto <em>"Nadando para o Futuro"</em> — iniciação à natação infantil em ambiente seguro.</p>
+        <span class="cliente-arrow">Ver projeto <i data-lucide="arrow-up-right"></i></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ ORÇAMENTO ═══════════ -->
+<section id="orcamento" class="orcamento section-pad">
+  <div class="orcamento-bg"></div>
+  <div class="container orcamento-grid">
+    <div class="orcamento-copy-column" data-reveal-parent>
+      <div class="eyebrow" data-reveal>Simulador de Orçamento</div>
+      <h2 class="orcamento-info-title">
+        <span class="mask-line" data-reveal-text><span>Construa o seu</span></span>
+        <span class="mask-line" data-reveal-text><span class="italic">orçamento</span></span>
+        <span class="mask-line" data-reveal-text><span>em minutos.</span></span>
+      </h2>
+      <p class="orcamento-info-sub" data-reveal>Preencha os detalhes do seu projeto e envie-nos diretamente via WhatsApp. Respondemos com uma estimativa personalizada.</p>
+      <div class="orcamento-promise" data-reveal>
+        <div class="orcamento-promise-row">
+          <div class="orcamento-promise-icon"><i data-lucide="clock"></i></div>
+          <div class="orcamento-promise-text"><strong>45 dias para entregar</strong><span>Da assinatura do contrato à entrega da piscina pronta a usar.</span></div>
+        </div>
+        <div class="orcamento-promise-row">
+          <div class="orcamento-promise-icon"><i data-lucide="shield-check"></i></div>
+          <div class="orcamento-promise-text"><strong>Garantia técnica</strong><span>Acompanhamento integral desde o projeto, durante a obra e após a entrega.</span></div>
+        </div>
+        <div class="orcamento-promise-row">
+          <div class="orcamento-promise-icon"><i data-lucide="message-circle"></i></div>
+          <div class="orcamento-promise-text"><strong>Resposta em 24h</strong><span>Envio direto para o nosso WhatsApp — respondemos com orçamento detalhado.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="orcamento-form-card" data-reveal>
+      <div class="form-progress">
+        <div class="form-progress-fill" id="formProgressFill"></div>
+        <div class="form-step-dot is-current" data-step-dot="1">1</div>
+        <div class="form-step-dot" data-step-dot="2">2</div>
+        <div class="form-step-dot" data-step-dot="3">3</div>
+        <div class="form-step-dot" data-step-dot="4">4</div>
+        <div class="form-step-dot" data-step-dot="5">5</div>
+      </div>
+
+      <form id="orcamentoForm" autocomplete="on" novalidate>
+        <!-- STEP 1 -->
+        <div class="form-step is-current" data-step="1">
+          <div class="form-step-eyebrow">Passo 01 · Identificação</div>
+          <h3 class="form-step-title">Conte-nos quem é</h3>
+          <div class="form-row two-col">
+            <div class="input-float">
+              <input id="f_nome" name="nome" type="text" placeholder=" " required />
+              <label for="f_nome">Nome completo *</label>
+            </div>
+            <div class="input-float">
+              <input id="f_telefone" name="telefone" type="tel" placeholder=" " required />
+              <label for="f_telefone">Telefone / WhatsApp *</label>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="input-float">
+              <input id="f_email" name="email" type="email" placeholder=" " />
+              <label for="f_email">Email (opcional)</label>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="input-float">
+              <input id="f_endereco" name="endereco" type="text" placeholder=" " required />
+              <label for="f_endereco">Endereço completo do projeto *</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="form-step" data-step="2">
+          <div class="form-step-eyebrow">Passo 02 · Tipo de projeto</div>
+          <h3 class="form-step-title">O que precisa?</h3>
+          <div class="choice-grid three">
+            <label class="choice" data-cursor="hover">
+              <input type="radio" name="tipo" value="Construção nova" required>
+              <span class="choice-title">Construção</span>
+              <span class="choice-desc">Piscina nova, do zero ao acabamento.</span>
+              <span class="choice-tag">01</span>
+            </label>
+            <label class="choice" data-cursor="hover">
+              <input type="radio" name="tipo" value="Modernização">
+              <span class="choice-title">Modernização</span>
+              <span class="choice-desc">LED, decking, automatização.</span>
+              <span class="choice-tag">02</span>
+            </label>
+            <label class="choice" data-cursor="hover">
+              <input type="radio" name="tipo" value="Manutenção">
+              <span class="choice-title">Manutenção</span>
+              <span class="choice-desc">Limpeza, química, equipamentos.</span>
+              <span class="choice-tag">03</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="form-step" data-step="3">
+          <div class="form-step-eyebrow">Passo 03 · Dimensões & Estilo</div>
+          <h3 class="form-step-title">Tamanho e estilo desejado?</h3>
+          <div>Tamanho</div>
+          <div class="choice-grid two">
+            <label class="choice" data-cursor="hover">
+              <input type="radio" name="tamanho" value="Pequena (até 20 m²)" required>
+              <span class="choice-title">Pequena</span>
+              <span class="choice-desc">Até 20 m² · pátios e jardins compactos.</span>
+            </label>
+            <label class="choice" data-cursor="hover">
+              <input type="radio" name="tamanho" value="Média (20–40 m²)">
+              <span class="choice-title">Média</span>
+              <span class="choice-desc">20–40 m² · residências familiares.</span>
+            </label>
+            <label class="choice" data-cursor="hover">
+              <input type="radio" name="tamanho" value="Grande (40–80 m²)">
+              <span class="choice-title">Grande</span>
+              <span class="choice-desc">40–80 m² · residências de luxo, condomínios.</span>
+            </label>
+            <label class="choice" data-cursor="hover">
+              <input type="radio" name="tamanho" value="Olímpica / Institucional (80+ m²)">
+              <span class="choice-title">Institucional</span>
+              <span class="choice-desc">80+ m² · escolas, hotéis, empreendimentos.</span>
+            </label>
+          </div>
+          <div>Estilo</div>
+          <div class="choice-grid two">
+            <label class="choice" data-cursor="hover">
+              <input type="radio" name="estilo" value="Retangular clássica" required>
+              <span class="choice-title">Retangular</span>
+              <span class="choice-desc">Linhas limpas, geometria clássica.</span>
+            </label>
+            <label class="choice" data-cursor="hover">
+              <input type="radio" name="estilo" value="Orgânica / formas livres">
+              <span class="choice-title">Orgânica</span>
+              <span class="choice-desc">Formas livres, integração natural.</span>
+            </label>
+            <label class="choice" data-cursor="hover">
+              <input type="radio" name="estilo" value="Borda infinita">
+              <span class="choice-title">Borda Infinita</span>
+              <span class="choice-desc">Borda alagada com vista panorâmica.</span>
+            </label>
+            <label class="choice" data-cursor="hover">
+              <input type="radio" name="estilo" value="A decidir com o arquitecto">
+              <span class="choice-title">A decidir</span>
+              <span class="choice-desc">Vou conversar com o arquitecto SOLIMA.</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div class="form-step" data-step="4">
+          <div class="form-step-eyebrow">Passo 04 · Espaço de trabalho</div>
+          <h3 class="form-step-title">Mostre-nos o local</h3>
+          <label class="upload-box" id="uploadBox" data-cursor="hover">
+            <input type="file" id="f_fotos" name="fotos" accept="image/*" multiple />
+            <div class="upload-icon"><i data-lucide="image-up"></i></div>
+            <div class="upload-title">Anexe fotos do espaço</div>
+            <div class="upload-desc">JPG ou PNG · até 5 imagens · máx 5 MB cada<br/>Clique aqui ou arraste os ficheiros</div>
+          </label>
+          <div class="upload-list" id="uploadList"></div>
+          <div class="form-row">
+            <div class="input-float">
+              <textarea id="f_notas" name="notas" rows="3" placeholder=" "></textarea>
+              <label for="f_notas">Observações adicionais (opcional)</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 5 -->
+        <div class="form-step" data-step="5">
+          <div class="form-step-eyebrow">Passo 05 · Resumo</div>
+          <h3 class="form-step-title">Revise antes<br/>de enviar.</h3>
+          <div class="summary" id="formSummary"></div>
+          <p>
+            Ao clicar em "Enviar via WhatsApp", abriremos uma conversa com a SOLIMA contendo o resumo do seu pedido. A nossa equipa responde com orçamento detalhado em até 24h. <strong>Nota:</strong> as fotos terão de ser anexadas manualmente na conversa do WhatsApp (limitação do protocolo).
+          </p>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost form-prev magnetic" id="formPrev" data-cursor="hover" hidden>
+            <i data-lucide="arrow-left"></i>
+            <span>Voltar</span>
+          </button>
+          <button type="button" class="btn btn-primary magnetic" id="formNext" data-cursor="hover">
+            <span>Continuar</span>
+            <i data-lucide="arrow-right"></i>
+          </button>
+          <button type="submit" class="btn btn-primary magnetic" id="formSubmit" data-cursor="hover" hidden>
+            <span>Enviar via WhatsApp</span>
+            <i data-lucide="send"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ CONTACTO ═══════════ -->
+<section id="contacto" class="contacto section-pad">
+  <div class="contacto-bg"></div>
+  <div class="container">
+    <div class="contacto-header">
+      <span class="contacto-eyebrow" data-reveal>
+        <span>Contacto</span>
+      </span>
+      <h2 class="contacto-headline">
+        <span class="mask-line" data-reveal-text><span>Vamos construir</span></span>
+        <span class="mask-line" data-reveal-text><span class="italic">o seu espaço</span></span>
+        <span class="mask-line" data-reveal-text><span>de lazer.</span></span>
+      </h2>
+    </div>
+
+    <div class="contacto-grid" data-reveal>
+      <div class="contacto-col left">
+        <div class="contacto-col-label">Fale Connosco</div>
+        <div class="contacto-row">
+          <div class="contacto-row-icon"><i data-lucide="map-pin"></i></div>
+          <div class="contacto-row-content">
+            <div>Sede</div>
+            <div>Bairro de Campoane, Casa nº 1845<br/>Município de Boane — Maputo</div>
+          </div>
+        </div>
+        <div class="contacto-row">
+          <div class="contacto-row-icon"><i data-lucide="phone"></i></div>
+          <div class="contacto-row-content">
+            <div>Telefone / WhatsApp</div>
+            <a href="tel:+258824407120" data-cursor="hover">+258 82 440 7120</a>
+            <a href="tel:+258843892558" data-cursor="hover">+258 84 389 2558</a>
+            <a href="tel:+258847949100" data-cursor="hover">+258 84 794 9100</a>
+          </div>
+        </div>
+        <div class="contacto-row">
+          <div class="contacto-row-icon"><i data-lucide="mail"></i></div>
+          <div class="contacto-row-content">
+            <div>Email</div>
+            <a href="mailto:solima.piscinas@gmail.com" data-cursor="hover">solima.piscinas@gmail.com</a>
+          </div>
+        </div>
+        <div class="contacto-social">
+          <a href="https://wa.me/258824407120" data-cursor="hover" aria-label="WhatsApp" target="_blank" rel="noopener"><i data-lucide="message-circle"></i></a>
+          <a href="https://instagram.com/solimapiscinas" data-cursor="hover" aria-label="Instagram" target="_blank" rel="noopener"><i data-lucide="instagram"></i></a>
+          <a href="https://facebook.com/solimapiscinas" data-cursor="hover" aria-label="Facebook" target="_blank" rel="noopener"><i data-lucide="facebook"></i></a>
+          <a href="https://tiktok.com/@solimapiscinas" data-cursor="hover" aria-label="TikTok" target="_blank" rel="noopener"><i data-lucide="music-2"></i></a>
+        </div>
+      </div>
+
+      <div class="contacto-col contacto-cta-block">
+        <div class="contacto-col-label">@solimapiscinas</div>
+        <h3 class="contacto-cta-title">Pronto para<br/><em>começar?</em></h3>
+        <p class="contacto-cta-sub">Use o simulador de orçamento ou fale directamente connosco no WhatsApp. Respondemos em 24h.</p>
+        <div class="contacto-cta-row">
+          <a class="btn btn-primary magnetic" href="https://wa.me/258824407120?text=Ol%C3%A1%20SOLIMA%2C%20gostaria%20de%20saber%20mais%20sobre%20os%20vossos%20servi%C3%A7os." target="_blank" rel="noopener" data-cursor="hover">
+            <span>Falar no WhatsApp</span>
+            <i data-lucide="message-circle"></i>
+          </a>
+          <a class="btn btn-ghost magnetic" href="#orcamento" data-cursor="hover">
+            <span>Simulador</span>
+            <i data-lucide="calculator"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer class="footer">
+  <div class="footer-row">
+    <div>© SOLIMA Lda · Construção & Manutenção de Piscinas</div>
+    <div class="footer-tag">
+      <i data-lucide="droplets"></i>
+      <span>Há mais de 19 anos a transformar espaços</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Production JavaScript modules -->
+
+<script src="/js/assets.js"></script>
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>
