@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { once } from "node:events";
 import { chromium } from "playwright";
+import { createTestSystem } from "../tests/support.js";
 
 process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY = "1";
 
@@ -23,12 +24,12 @@ const viewports = allViewports.slice(offset, offset + limit);
 const requiredScreenshots = new Set(["320x568", "390x844", "844x390", "1180x820", "1440x900", "1920x1080"]);
 const formStateScreenshots = new Set(["390x844", "1440x900"]);
 
-const reportRoot = path.resolve("visual-report-v2.1");
+const reportRoot = path.resolve(process.env.VISUAL_REPORT_ROOT || "visual-report-v2.1");
 const modeRoot = path.join(reportRoot, motion);
 await fs.mkdir(modeRoot, { recursive: true });
 
 let server;
-let prisma;
+let testSystem;
 let browser;
 const results = [];
 const bounded = (promise, ms) => Promise.race([promise, new Promise((resolve) => setTimeout(resolve, ms))]);
@@ -117,11 +118,8 @@ async function captureSuccessAndClose(page, viewport) {
 
 try {
   if (managedServer) {
-    process.env.NODE_ENV = "test";
-    process.env.DATABASE_URL ||= "file:./dev.db";
-    const backend = await import("../server.js");
-    prisma = backend.prisma;
-    server = backend.app.listen(0, "127.0.0.1");
+    testSystem = await createTestSystem();
+    server = testSystem.app.listen(0, "127.0.0.1");
     await once(server, "listening");
     baseURL = `http://127.0.0.1:${server.address().port}`;
   }
@@ -309,7 +307,7 @@ try {
     server.close();
     await bounded(once(server, "close"), 2_000);
   }
-  if (prisma) await bounded(prisma.$disconnect(), 2_000);
+  if (testSystem) await bounded(testSystem.close(), 2_000);
 }
 
 const resultPath = path.join(reportRoot, `results-${motion}-${offset}-${offset + viewports.length - 1}.json`);

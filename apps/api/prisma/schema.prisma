@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model LeadSubmission {
+  id                   String                @id @default(uuid())
+  idempotencyKey       String                @unique
+  requestFingerprint   String
+  customerName         String
+  phoneE164            String
+  location             String
+  serviceType          String
+  notes                String?
+  consentAt            DateTime
+  privacyPolicyVersion String
+  deliveryStatus       String                @default("RECEIVED")
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  extras               LeadSubmissionExtra[]
+  media                LeadMedia[]
+  deliveries           WhatsAppDelivery[]
+
+  @@index([createdAt])
+  @@index([deliveryStatus, createdAt])
+}
+
+model LeadSubmissionExtra {
+  leadSubmissionId String
+  code             String
+  leadSubmission   LeadSubmission @relation(fields: [leadSubmissionId], references: [id], onDelete: Cascade)
+
+  @@id([leadSubmissionId, code])
+}
+
+model LeadMedia {
+  id               String            @id @default(uuid())
+  leadSubmissionId String
+  leadSubmission   LeadSubmission    @relation(fields: [leadSubmissionId], references: [id], onDelete: Cascade)
+  category         String
+  position         Int
+  storageKey       String
+  mimeType         String
+  sizeBytes        Int
+  width            Int
+  height           Int
+  sha256           String
+  status           String            @default("READY")
+  metaMediaId      String?
+  expiresAt        DateTime?
+  localDeletedAt   DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  delivery         WhatsAppDelivery?
+
+  @@unique([leadSubmissionId, category, position])
+  @@index([leadSubmissionId])
+  @@index([status, expiresAt])
+  @@index([sha256])
+}
+
+model WhatsAppDelivery {
+  id                   String          @id @default(uuid())
+  leadSubmissionId     String
+  leadSubmission       LeadSubmission  @relation(fields: [leadSubmissionId], references: [id], onDelete: Cascade)
+  leadMediaId          String?         @unique
+  leadMedia            LeadMedia?      @relation(fields: [leadMediaId], references: [id], onDelete: SetNull)
+  dedupeKey            String          @unique
+  sequence             Int
+  kind                 String
+  destinationPhoneE164 String
+  status               String          @default("PENDING")
+  attempts             Int             @default(0)
+  nextAttemptAt        DateTime        @default(now())
+  processingStartedAt  DateTime?
+  metaMessageId        String?
+  lastErrorCode        String?
+  lastErrorMessage     String?
+  acceptedAt           DateTime?
+  sentAt               DateTime?
+  deliveredAt          DateTime?
+  readAt               DateTime?
+  failedAt             DateTime?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  @@unique([leadSubmissionId, sequence])
+  @@index([leadSubmissionId])
+  @@index([status, nextAttemptAt])
+  @@index([metaMessageId])
+}

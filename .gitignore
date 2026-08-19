@@ -1,8 +1,12 @@
 node_modules/
 .env
-prisma/*.db*
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
 storage/uploads/*
 storage/thumbs/*
 storage/test/
+work/
 !storage/uploads/.gitkeep
 !storage/thumbs/.gitkeep

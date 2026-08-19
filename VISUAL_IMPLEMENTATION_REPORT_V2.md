@@ -1,5 +1,7 @@
 # SOLIMA — Relatório de implementação visual V2
 
+> Histórico: este relatório antecede a arquitetura de leads e pode mencionar administração, tickets ou WhatsApp legado. Consulte `README.md` e `docs/` para o estado atual.
+
 ## Resultado
 
 A landing page foi refinada sem reconstrução e sem remoção de funcionalidades de produção.

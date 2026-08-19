@@ -1,62 +1,35 @@
-# SOLIMA production refactor
+# SOLIMA Piscinas
 
-Landing page SOLIMA preservada em HTML/CSS/JavaScript vanilla, com um backend Node/Express, Prisma/SQLite, upload real de imagens, tickets, idempotência, outbox, painel administrativo e configuração para Railway.
+SOLIMA é uma landing page de conversão para pedidos de construção, modernização e manutenção de piscinas. O visitante envia um único formulário; a API aceita o pedido de forma durável e entrega o resumo e as fotografias à operação SOLIMA pela WhatsApp Business Cloud API.
 
-## Execução local
+## Estrutura
 
-Requisitos: Node.js 22 ou superior.
+- `apps/web`: landing page vanilla preservada e formulário de três passos.
+- `apps/api`: Express, Prisma/SQLite, processamento Sharp, fila de entregas e webhook Meta.
+- `apps/api/prisma`: cadeia de migrações SQLite.
+- `legacy`: implementação anterior isolada, não exposta pela aplicação atual. Não a execute.
 
-```bash
-npm install
-cp .env.example .env
-npx prisma generate
-npx prisma migrate deploy
-npm start
+## Desenvolvimento local
+
+1. Copie `.env.example` para `.env` e configure pelo menos `DATABASE_URL`, `STORAGE_ROOT`, `PRIVACY_POLICY_VERSION` e um destino de teste para `WHATSAPP_DESTINATION_NUMBER`.
+2. Execute `npm ci`.
+3. Execute `npm run prisma:generate` e `npm run prisma:migrate`.
+4. Execute `npm run dev` e abra `http://localhost:3000`.
+
+Com `WHATSAPP_ENABLED=false`, o processo local usa o adaptador falso; não envia mensagens reais. Produção falha no arranque caso a configuração Meta obrigatória não exista.
+
+## Testes e QA
+
+```sh
+npm test
+npm run prisma:validate
+npm run prisma:generate
+npm run qa:normal
+npm run qa:reduced
 ```
 
-Abra `http://localhost:3000`. O health check está em `/health`; o painel está em `/admin/login`.
+Os testes incluem a cadeia completa de migrações, idempotência concorrente, validação de upload, entrega falsa e autenticação de webhook. Consulte [a arquitetura de produção](docs/production-architecture.md) e o [runbook](docs/go-live-runbook.md) antes de qualquer deploy.
 
-Para criar o hash da palavra-passe administrativa:
+## Variáveis de produção
 
-```bash
-npm run seed -- "uma-palavra-passe-forte-com-12-ou-mais-caracteres"
-```
-
-Copie apenas o hash apresentado para `ADMIN_PASSWORD_HASH`. Defina também um `SESSION_SECRET` aleatório com pelo menos 32 caracteres.
-
-## Fluxo do pedido
-
-O formulário tem três passos: contacto, serviço, fotografias/contexto. O browser envia `multipart/form-data` com `Idempotency-Key`. O servidor:
-
-1. normaliza e valida os dados;
-2. confirma o tipo real de cada imagem;
-3. remove EXIF/GPS ao reprocessar para WebP;
-4. cria thumbnails;
-5. guarda pedido, ficheiros, estado inicial e evento outbox numa transação;
-6. devolve HTTP 201 e um ticket `SOL-YYYYMMDD-XXXXXX`.
-
-O WhatsApp é opcional e abre apenas depois de o pedido estar guardado.
-
-## Storage e Railway
-
-O modo funcional por defeito é `STORAGE_DRIVER=local`. Em Railway, monte um volume persistente em `/app/storage` e configure `STORAGE_ROOT=/app/storage`. Para múltiplas réplicas, implemente o adapter S3 usando as variáveis já documentadas em `.env.example`; uma única réplica com volume é a configuração segura atual.
-
-O `Dockerfile` executa `prisma migrate deploy`, inicia o servidor em `PORT` e o `railway.json` verifica `/health`.
-
-## Notificações
-
-Com `EMAIL_NOTIFICATIONS_ENABLED=true`, configure SMTP e `NOTIFICATION_EMAIL`. O worker processa a outbox fora da transação principal e repete falhas com backoff. `WHATSAPP_MODE=link` mantém o sistema funcional sem credenciais Meta. As variáveis Cloud API estão reservadas para o adapter oficial; tokens nunca entram no frontend.
-
-## Operação
-
-- Testes: `npm test`
-- Consolidar CSS/HTML: `npm run build:styles`
-- Smoke visual: `npm run qa:smoke`
-- Matriz visual completa: `npm run qa:visual`
-- Consolidar resultados: `node scripts/merge-visual-results.mjs`
-- Auditoria: `npm audit`
-- Limpeza de pedidos encerrados: `npm run cleanup`
-- Política pública: `/privacy.html`
-- Backup original: `solima-spa.backup.html`
-
-Não versionar `.env`, bases de dados locais nem uploads. Faça backup do volume antes de migrations ou operações de retenção.
+Em Railway, use `DATABASE_URL=file:/app/data/solima.db` e `STORAGE_ROOT=/app/data/pending-media`, num Volume montado em `/app/data`. Os valores Meta são secretos e devem ser definidos como variáveis seladas no serviço, nunca no Git ou no Dockerfile.

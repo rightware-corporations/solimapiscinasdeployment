@@ -1,0 +1,4 @@
+body { margin: 0; background: #061124; color: #dceaf4; font: 17px/1.7 Inter, system-ui, sans-serif; }
+.privacy-wrap { max-width: 760px; margin: auto; padding: 64px 22px; }
+h1, h2 { font-family: Georgia, serif; color: #fff; }
+a { color: #67d6f5; }

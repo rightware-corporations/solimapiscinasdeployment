@@ -1,5 +1,7 @@
 # Relatório de segurança
 
+> Histórico: este relatório antecede a migração para `LeadSubmission` e `WhatsAppDelivery`. Os controlos atuais estão documentados em `docs/production-architecture.md`.
+
 ## Controlos implementados
 
 - Validação server-side com allowlists, limites e normalização Unicode NFKC.

@@ -2,7 +2,14 @@ node_modules
 npm-debug.log
 .git
 .env
-prisma/*.db*
-storage
-solima-spa.backup.html
+legacy
 tests
+apps/api/tests
+scripts
+visual-report-v2.1
+storage
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.md

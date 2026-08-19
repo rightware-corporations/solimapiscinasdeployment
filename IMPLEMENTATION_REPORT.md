@@ -1,5 +1,7 @@
 # Relatório de implementação
 
+> Histórico: este relatório descreve a implementação anterior. A arquitetura atual está em `README.md` e `docs/`.
+
 ## Preservação
 
 O HTML original foi mantido como base e copiado para `solima-spa.backup.html` antes das alterações. A identidade Deep Ocean/Aqua, Fraunces/Inter, hero, secções institucionais, projectos e CTA permaneceram.
