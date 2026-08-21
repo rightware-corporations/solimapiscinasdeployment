@@ -4,20 +4,68 @@ const finePointer = matchMedia("(hover: hover) and (pointer: fine)");
 export function initLoader() {
   const loader = document.querySelector("#loader");
   if (!loader) return;
+  let complete = false;
   const finish = () => {
+    if (complete) return;
+    complete = true;
     loader.classList.add("is-exiting");
     document.documentElement.classList.remove("lenis-stopped");
     setTimeout(() => loader.remove(), reducedMotion.matches ? 20 : 280);
   };
-  setTimeout(finish, reducedMotion.matches ? 80 : 750);
+
+  const minimumDelay = new Promise((resolve) => {
+    setTimeout(resolve, reducedMotion.matches ? 40 : 520);
+  });
+  const fontTimeout = new Promise((resolve) => setTimeout(resolve, 1400));
+  const fontsReady = document.fonts
+    ? Promise.allSettled([
+        document.fonts.load("400 1em Fraunces"),
+        document.fonts.load("300 italic 1em Fraunces"),
+        document.fonts.load("400 1em Inter"),
+      ])
+    : Promise.resolve();
+
+  Promise.all([minimumDelay, Promise.race([fontsReady, fontTimeout])]).then(finish);
 }
 
 export function initSmoothScroll() {
-  if (!window.Lenis || reducedMotion.matches || !finePointer.matches || innerWidth < 1180) return;
-  const lenis = new window.Lenis({ duration: .9, smoothWheel: true, wheelMultiplier: .9, touchMultiplier: 1 });
-  window.solimaLenis = lenis;
-  const raf = (time) => { lenis.raf(time); requestAnimationFrame(raf); };
-  requestAnimationFrame(raf);
+  if (!window.Lenis) return;
+
+  const desktop = matchMedia("(min-width: 1180px)");
+  let lenis;
+  let rafId;
+
+  const stop = () => {
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = undefined;
+    lenis?.destroy?.();
+    lenis = undefined;
+    delete window.solimaLenis;
+    document.documentElement.classList.remove("lenis", "lenis-smooth", "lenis-scrolling", "lenis-stopped");
+  };
+
+  const start = () => {
+    if (lenis || reducedMotion.matches || !finePointer.matches || !desktop.matches) return;
+    lenis = new window.Lenis({ duration: .9, smoothWheel: true, wheelMultiplier: .9 });
+    window.solimaLenis = lenis;
+    const raf = (time) => {
+      if (!lenis) return;
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    };
+    rafId = requestAnimationFrame(raf);
+  };
+
+  const sync = () => {
+    if (reducedMotion.matches || !finePointer.matches || !desktop.matches) stop();
+    else start();
+  };
+
+  desktop.addEventListener?.("change", sync);
+  finePointer.addEventListener?.("change", sync);
+  reducedMotion.addEventListener?.("change", sync);
+  addEventListener("orientationchange", sync, { passive: true });
+  sync();
 }
 
 export function initMotion() {
@@ -26,6 +74,7 @@ export function initMotion() {
   initHero();
   initParallax();
   initProjectRail();
+  initMobileProjectReveals();
 }
 
 function assignImages() {
@@ -60,8 +109,38 @@ function initHero() {
   const layers = [...hero.querySelectorAll(".hero-video-layer")];
   const rows = [...hero.querySelectorAll(".hero-scene-row")];
   const words = [...hero.querySelectorAll(".hero-title-morph-word")];
+  const desktop = matchMedia("(min-width: 1180px)");
+  const saveData = navigator.connection?.saveData === true;
   let active = -1;
+  let ticking = false;
+
+  const videoEnabled = () =>
+    desktop.matches && finePointer.matches && !reducedMotion.matches && !saveData;
+
+  const syncVideoSources = () => {
+    const enabled = videoEnabled();
+    layers.forEach((layer, index) => {
+      const video = layer.querySelector("video");
+      if (!video) return;
+
+      if (!enabled) {
+        video.pause();
+        video.removeAttribute("src");
+        video.preload = "none";
+        video.load();
+        return;
+      }
+
+      if (!video.src && video.dataset.src) {
+        video.src = video.dataset.src;
+        video.preload = index === active ? "auto" : "metadata";
+        video.load();
+      }
+    });
+  };
+
   const update = () => {
+    ticking = false;
     const rect = hero.getBoundingClientRect();
     const distance = Math.max(1, hero.offsetHeight - innerHeight);
     const progress = Math.max(0, Math.min(1, -rect.top / distance));
@@ -72,7 +151,7 @@ function initHero() {
       layers.forEach((layer, index) => {
         const video = layer.querySelector("video");
         if (!video) return;
-        if (index === scene && !reducedMotion.matches) video.play().catch(() => {});
+        if (index === scene && videoEnabled()) video.play().catch(() => {});
         else video.pause();
       });
     }
@@ -85,46 +164,240 @@ function initHero() {
       content.style.opacity = "";
     }
   };
-  addEventListener("scroll", update, { passive: true });
-  addEventListener("resize", update, { passive: true });
+
+  const requestUpdate = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(update);
+  };
+
+  const sync = () => {
+    syncVideoSources();
+    requestUpdate();
+  };
+
+  addEventListener("scroll", requestUpdate, { passive: true });
+  addEventListener("resize", requestUpdate, { passive: true });
+  addEventListener("orientationchange", sync, { passive: true });
+  desktop.addEventListener?.("change", sync);
+  finePointer.addEventListener?.("change", sync);
+  reducedMotion.addEventListener?.("change", sync);
+  syncVideoSources();
   update();
 }
 
 function initParallax() {
-  const media = [...document.querySelectorAll(".parallax-media")];
+  const media = [...document.querySelectorAll(".parallax-media, .projeto-image-wrap img")].map((img) => {
+    const projectImage = img.matches(".projeto-image-wrap img");
+    return {
+      img,
+      projectImage,
+      strength: Number(img.dataset.parallaxStrength || (projectImage ? -36 : -40)),
+      limit: projectImage ? 46 : 60,
+      activeFactor: null
+    };
+  });
   if (!media.length) return;
-  const multiplier = () => reducedMotion.matches ? 0 : innerWidth >= 1180 ? 1 : innerWidth >= 768 ? .4 : .16;
+
+  let ticking = false;
+
+  const multiplier = (item) => {
+    if (reducedMotion.matches) return 0;
+    if (item.projectImage) {
+      return innerWidth >= 1180 && finePointer.matches ? 1 : 0;
+    }
+    if (!finePointer.matches) return 0;
+    return innerWidth >= 1180 ? 1 : innerWidth >= 768 ? .32 : 0;
+  };
+
   const update = () => {
-    const factor = multiplier();
-    media.forEach((img) => {
-      const rect = img.parentElement.getBoundingClientRect();
+    ticking = false;
+    media.forEach((item) => {
+      const factor = multiplier(item);
+      if (!factor) {
+        if (item.activeFactor !== 0) {
+          item.img.style.setProperty("--parallax-y", "0px");
+          item.activeFactor = 0;
+        }
+        return;
+      }
+      item.activeFactor = factor;
+
+      const rect = item.img.parentElement.getBoundingClientRect();
+      if (rect.bottom < -rect.height || rect.top > innerHeight + rect.height) return;
+
       const progress = (rect.top + rect.height / 2 - innerHeight / 2) / innerHeight;
-      const strength = Number(img.dataset.parallaxStrength || -40);
-      img.style.setProperty("--parallax-y", `${Math.max(-60, Math.min(60, progress * strength * factor))}px`);
+      const offset = Math.max(-item.limit, Math.min(item.limit, progress * item.strength * factor));
+      item.img.style.setProperty("--parallax-y", `${offset.toFixed(2)}px`);
     });
   };
-  addEventListener("scroll", update, { passive: true });
-  addEventListener("resize", update, { passive: true });
-  addEventListener("orientationchange", update, { passive: true });
+
+  const requestUpdate = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(update);
+  };
+
+  addEventListener("scroll", requestUpdate, { passive: true });
+  addEventListener("resize", requestUpdate, { passive: true });
+  addEventListener("orientationchange", requestUpdate, { passive: true });
+  reducedMotion.addEventListener?.("change", requestUpdate);
   update();
 }
 
 function initProjectRail() {
+  const section = document.querySelector("#projetos");
   const slides = [...document.querySelectorAll(".projeto-slide")];
+  const rail = document.querySelector("#projetosRail");
   const fill = document.querySelector("#projetosRailFill");
   const counter = document.querySelector("#projetosRailCounter");
   const dots = [...document.querySelectorAll("[data-rail-dot]")];
-  if (!slides.length || !fill || !counter) return;
-  const update = () => {
-    let closest = 0, distance = Infinity;
+  const desktop = matchMedia("(min-width: 1180px)");
+  if (!section || !slides.length) return;
+
+  let activeIndex = -1;
+  let ticking = false;
+
+  dots.forEach((dot, index) => {
+    const denominator = Math.max(1, dots.length - 1);
+    dot.style.top = `${(index / denominator) * 100}%`;
+  });
+
+  const getClosestSlide = () => {
+    const viewportCenter = innerHeight / 2;
+    let closestIndex = 0;
+    let closestDistance = Infinity;
+
     slides.forEach((slide, index) => {
-      const value = Math.abs(slide.getBoundingClientRect().top);
-      if (value < distance) { distance = value; closest = index; }
+      const rect = slide.getBoundingClientRect();
+      const slideCenter = rect.top + rect.height / 2;
+      const distance = Math.abs(slideCenter - viewportCenter);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = index;
+      }
     });
-    fill.style.transform = `scaleY(${(closest + 1) / slides.length})`;
-    counter.innerHTML = `${String(closest + 1).padStart(2, "0")} <span class="total">/ ${String(slides.length).padStart(2, "0")}</span>`;
-    dots.forEach((dot, index) => dot.classList.toggle("is-active", index === closest));
+
+    return closestIndex;
   };
-  addEventListener("scroll", update, { passive: true });
+
+  const setActiveSlide = (nextIndex) => {
+    activeIndex = nextIndex;
+    slides.forEach((slide, index) => {
+      const active = index === activeIndex;
+      slide.classList.toggle("is-active", active);
+      slide.setAttribute("aria-current", active ? "true" : "false");
+    });
+    dots.forEach((dot, index) => dot.classList.toggle("is-active", index === activeIndex));
+    if (counter) {
+      counter.innerHTML =
+        `${String(activeIndex + 1).padStart(2, "0")} ` +
+        `<span class="total">/ ${String(slides.length).padStart(2, "0")}</span>`;
+    }
+    if (fill) fill.style.transform = `scaleY(${(activeIndex + 1) / slides.length})`;
+  };
+
+  const update = () => {
+    ticking = false;
+
+    if (!desktop.matches) {
+      rail?.classList.remove("is-visible");
+      if (activeIndex !== -1) {
+        activeIndex = -1;
+        slides.forEach((slide) => {
+          slide.classList.remove("is-active");
+          slide.setAttribute("aria-current", "false");
+        });
+        dots.forEach((dot) => dot.classList.remove("is-active"));
+        if (fill) fill.style.transform = "scaleY(0)";
+      }
+      return;
+    }
+
+    const sectionRect = section.getBoundingClientRect();
+    const sectionVisible =
+      sectionRect.top < innerHeight * .8 &&
+      sectionRect.bottom > innerHeight * .2;
+
+    rail?.classList.toggle("is-visible", sectionVisible);
+
+    const nextIndex = getClosestSlide();
+    if (nextIndex !== activeIndex) setActiveSlide(nextIndex);
+  };
+
+  const requestUpdate = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(update);
+  };
+
+  addEventListener("scroll", requestUpdate, { passive: true });
+  addEventListener("resize", requestUpdate, { passive: true });
+  addEventListener("orientationchange", requestUpdate, { passive: true });
+  desktop.addEventListener?.("change", requestUpdate);
   update();
+}
+
+function initMobileProjectReveals() {
+  const slides = [...document.querySelectorAll(".projeto-slide")];
+  const mobile = matchMedia("(max-width: 1179px)");
+  if (!slides.length) return;
+
+  let observer;
+
+  slides.forEach((slide, index) => {
+    const nextIndex = (index + 1) % slides.length;
+    const nextTitle = slides[nextIndex].querySelector(".projeto-title")?.textContent?.trim();
+    const content = slide.querySelector(".projeto-content");
+
+    slide.id ||= `projeto-${index + 1}`;
+    if (!content || slide.querySelector(".projeto-next-teaser")) return;
+
+    const teaser = document.createElement("a");
+    teaser.className = "projeto-next-teaser";
+    teaser.href = `#projeto-${nextIndex + 1}`;
+    teaser.setAttribute("aria-label", `Próximo projecto: ${nextTitle}`);
+    teaser.innerHTML =
+      '<span class="projeto-next-label">Próximo projecto</span>' +
+      `<span class="projeto-next-title">${nextTitle}</span>` +
+      '<span class="projeto-next-arrow" aria-hidden="true">↓</span>';
+    content.insertAdjacentElement("afterend", teaser);
+  });
+
+  const reveal = (slide) => {
+    slide.classList.add("is-revealed");
+    setTimeout(() => slide.classList.add("is-reveal-complete"), 1100);
+  };
+
+  const setup = () => {
+    observer?.disconnect();
+    observer = undefined;
+
+    slides.forEach((slide) => slide.classList.toggle("is-mobile-reveal-ready", mobile.matches));
+    if (!mobile.matches) return;
+
+    if (reducedMotion.matches || !("IntersectionObserver" in window)) {
+      slides.forEach(reveal);
+      return;
+    }
+
+    observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        reveal(entry.target);
+        observer?.unobserve(entry.target);
+      });
+    }, {
+      threshold: .22,
+      rootMargin: "0px 0px -4% 0px"
+    });
+
+    slides
+      .filter((slide) => !slide.classList.contains("is-revealed"))
+      .forEach((slide) => observer.observe(slide));
+  };
+
+  mobile.addEventListener?.("change", setup);
+  reducedMotion.addEventListener?.("change", setup);
+  setup();
 }
