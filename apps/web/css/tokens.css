@@ -3,12 +3,14 @@
   --ink:           #020617;
   --ink-soft:      #0a1428;
   --ink-elev:      #0f1c36;
-  --line:          rgba(255,255,255,0.08);
+  --line:          rgba(220,232,248,0.12);
   --line-hi:       rgba(125,211,252,0.3);
-  --white:         #ffffff;
+  --white:         #f7faff;
   --paper:         #f4f7fb;
-  --mute:          rgba(255,255,255,0.55);
-  --mute-soft:     rgba(255,255,255,0.4);
+  --mute:          rgba(228,237,249,0.74);
+  --mute-soft:     rgba(220,232,248,0.58);
+  --text-on-image: rgba(247,250,255,0.92);
+  --text-subtle:   rgba(228,237,249,0.68);
 
   --aqua:          #7dd3fc;
   --aqua-hi:       #38bdf8;
@@ -17,8 +19,8 @@
   --teal:          #5eead4;
   --twilight:      #fb923c;
   --violet:        #a855f7;
-  --font-serif:    'Fraunces', 'Times New Roman', serif;
-  --font-sans:     'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif:    'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-sans:     'Inter', 'Segoe UI', Arial, system-ui, sans-serif;
   --fs-mega:       clamp(3.5rem, 12vw, 11rem);
   --fs-display:    clamp(2.5rem, 8vw, 7rem);
   --fs-h1:         clamp(2.2rem, 6vw, 5rem);

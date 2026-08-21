@@ -149,9 +149,9 @@
     <!-- Scene 1: DAY -->
     <div class="hero-video-layer is-active" data-scene="day">
       <video
-        muted loop playsinline autoplay preload="auto"
-        poster="https://images.pexels.com/videos/5163181/pexels-photo-5163181.jpeg?auto=compress&cs=tinysrgb&h=627&w=1200"
-        src="https://videos.pexels.com/video-files/5163181/5163181-hd_1920_1080_25fps.mp4">
+        muted loop playsinline preload="none"
+        poster="/assets/solima-embedded-1.jpg"
+        data-src="https://videos.pexels.com/video-files/5163181/5163181-hd_1920_1080_25fps.mp4">
       </video>
       <div class="hero-video-tint"></div>
     </div>
@@ -159,9 +159,9 @@
     <!-- Scene 2: TWILIGHT -->
     <div class="hero-video-layer" data-scene="twilight">
       <video
-        muted loop playsinline preload="metadata"
-        poster="https://images.pexels.com/videos/855623/free-video-855623.jpg?auto=compress&cs=tinysrgb&h=627&w=1200"
-        src="https://videos.pexels.com/video-files/855623/855623-hd_1620_1080_24fps.mp4">
+        muted loop playsinline preload="none"
+        poster="/assets/solima-embedded-4.jpg"
+        data-src="https://videos.pexels.com/video-files/855623/855623-hd_1620_1080_24fps.mp4">
       </video>
       <div class="hero-video-tint"></div>
     </div>
@@ -169,9 +169,9 @@
     <!-- Scene 3: DETAIL -->
     <div class="hero-video-layer" data-scene="detail">
       <video
-        muted loop playsinline preload="metadata"
-        poster="https://images.pexels.com/videos/856589/free-video-856589.jpg?auto=compress&cs=tinysrgb&h=627&w=1200"
-        src="https://videos.pexels.com/video-files/856589/856589-uhd_2560_1440_30fps.mp4">
+        muted loop playsinline preload="none"
+        poster="/assets/solima-embedded-3.jpg"
+        data-src="https://videos.pexels.com/video-files/856589/856589-uhd_2560_1440_30fps.mp4">
       </video>
       <div class="hero-video-tint"></div>
     </div>
@@ -409,7 +409,7 @@
   </div>
 
   <div class="projeto-slide" data-project="3">
-    <div class="projeto-image-wrap"><img data-img-key="3" alt="Composite Deck" /></div>
+    <div class="projeto-image-wrap"><picture><source media="(max-width: 767px)" srcset="/assets/solima-project-3-mobile.jpg"/><img data-img-key="3" alt="Composite Deck" /></picture></div>
     <div class="projeto-ghost-num">03</div>
     <div class="projeto-meta-top">
       <span class="projeto-category">Construção</span>
@@ -509,10 +509,10 @@
   <div class="container">
     <div class="eyebrow" data-reveal>Visão & Missão</div>
     <h2 class="visao-title">
-      <span class="mask-line" data-reveal-text><span>Construímos</span></span>
-      <span class="mask-line" data-reveal-text><span class="italic">histórias.</span></span>
-      <span class="mask-line" data-reveal-text><span>Inspiramos</span></span>
-      <span class="mask-line" data-reveal-text><span class="italic">estilos de vida.</span></span>
+      <span class="mask-line" data-reveal-text><span>Construímos <em class="italic">histórias.</em></span></span>
+
+      <span class="mask-line" data-reveal-text><span>Inspiramos <em class="italic">estilos de vida.</em></span></span>
+
     </h2>
     <div class="visao-cols">
       <div data-reveal>
@@ -850,7 +850,7 @@
         <div class="contacto-social">
           <a href="tel:+258824407120" data-cursor="hover" aria-label="Telefone"><i data-lucide="phone"></i></a>
           <a href="https://instagram.com/solimapiscinas" data-cursor="hover" aria-label="Instagram" target="_blank" rel="noopener"><i data-lucide="instagram"></i></a>
-          <a href="https://facebook.com/solimapiscinas" data-cursor="hover" aria-label="Facebook" target="_blank" rel="noopener"><i data-lucide="facebook"></i></a>
+          <a href="https://facebook.com/solimapiscinas" data-cursor="hover" aria-label="Facebook" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
           <a href="https://tiktok.com/@solimapiscinas" data-cursor="hover" aria-label="TikTok" target="_blank" rel="noopener"><i data-lucide="music-2"></i></a>
         </div>
       </div>

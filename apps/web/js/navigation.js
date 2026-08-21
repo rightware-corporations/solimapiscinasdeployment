@@ -36,13 +36,21 @@ export function initNavigation() {
     });
   });
 
+  let scrollTicking = false;
   const updateScrollUI = () => {
+    scrollTicking = false;
     const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
     const progress = Math.min(1, scrollY / max);
     nav?.classList.toggle("is-scrolled", scrollY > 24);
     if (rail) rail.style.transform = `scaleY(${progress})`;
   };
-  addEventListener("scroll", updateScrollUI, { passive: true });
+  const requestScrollUIUpdate = () => {
+    if (scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(updateScrollUI);
+  };
+  addEventListener("scroll", requestScrollUIUpdate, { passive: true });
+  addEventListener("resize", requestScrollUIUpdate, { passive: true });
   updateScrollUI();
 
   document.querySelectorAll("[data-toggle]").forEach((button) => {
