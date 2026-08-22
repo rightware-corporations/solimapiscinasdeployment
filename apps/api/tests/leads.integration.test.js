@@ -67,6 +67,18 @@ test("processes an image to JPEG and deletes it only after the fake provider acc
   } finally { await system.close(); }
 });
 
+test("a database failure after image processing removes staged media before returning an error", async () => {
+  const system = await createTestSystem();
+  try {
+    system.runner.stopped = true;
+    system.repository.createGraph = async () => { throw new Error("simulated database failure"); };
+    const image = await sharp({ create: { width: 40, height: 30, channels: 3, background: "#22c7e8" } }).png().toBuffer();
+    const response = await submit(system.app, crypto.randomUUID()).attach("locationPhotos", image, { filename: "site.png", contentType: "image/png" });
+    assert.equal(response.status, 500);
+    assert.deepEqual((await fs.readdir(system.config.storageRoot)).filter((name) => name.endsWith(".jpg")), []);
+  } finally { await system.close(); }
+});
+
 test("a temporary provider failure remains durable and becomes retryable", async () => {
   const adapter = new FakeWhatsAppAdapter();
   adapter.queueFailure("summary", new ProviderError("Timeout", { code: "timeout", retryable: true }));

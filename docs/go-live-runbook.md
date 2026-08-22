@@ -35,6 +35,10 @@ Faça backup diário e semanal do Volume e crie um backup manual antes de cada m
 
 Rollback de código não faz rollback automático do esquema SQLite nem dos dados. Prefira migrações compatíveis; para um rollback que altere schema, restaure o backup validado em vez de apagar tabelas.
 
+### Restauro seguro da outbox
+
+Nunca aponte um serviço ligado à Meta para um Volume acabado de restaurar. Mantenha o serviço parado durante o restauro e, numa cópia isolada sem credenciais Meta, inspecione as linhas `PENDING`, `PROCESSING` e `RETRY` de `WhatsAppDelivery`. Compare-as com o registo operacional para identificar mensagens que podem já ter sido aceites antes do backup. Só depois decida, por cada entrega, se deve permanecer pendente, ser marcada `ACCEPTED` com o `metaMessageId` conhecido, ou ser marcada `FAILED`. O runner só pode voltar a arrancar depois desta reconciliação; um restauro pode ressuscitar entregas e a Cloud API não fornece exactly-once.
+
 ## Smoke test autorizado
 
 Após deploy, envie um pedido de teste com uma fotografia não sensível e confirme: resposta `201`, linha de entrega, resumo, imagem, webhook assinado e limpeza do JPEG local. Não execute este passo sem autorização explícita, credenciais e templates aprovados.

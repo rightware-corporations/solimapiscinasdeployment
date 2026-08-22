@@ -54,6 +54,8 @@ export function loadConfig(environment = process.env) {
       "WHATSAPP_API_VERSION", "WHATSAPP_WEBHOOK_VERIFY_TOKEN", "META_APP_SECRET",
       "WHATSAPP_SUMMARY_TEMPLATE_NAME", "WHATSAPP_IMAGE_TEMPLATE_NAME", "WHATSAPP_TEMPLATE_LANGUAGE"
     ]) if (!value[key]) missing.push(key);
+    if (value.DATABASE_URL !== "file:/app/data/solima.db") missing.push("DATABASE_URL=file:/app/data/solima.db");
+    if (environment.STORAGE_ROOT !== "/app/data/pending-media") missing.push("STORAGE_ROOT=/app/data/pending-media");
   }
   if (missing.length) throw new Error(`Missing production configuration: ${missing.join(", ")}`);
 

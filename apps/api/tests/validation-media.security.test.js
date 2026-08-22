@@ -1,10 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import crypto from "node:crypto";
+import { constants as fsConstants } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import request from "supertest";
 import sharp from "sharp";
+import { createApp } from "../src/app.js";
 import { createTestSystem, validLead } from "../../../tests/support.js";
 
 const submit = (app, values = validLead(), key = crypto.randomUUID()) => {
@@ -25,6 +27,27 @@ test("server validation normalizes Unicode and rejects invalid lead semantics", 
     assert.equal((await submit(system.app, { ...validLead(), startedAt: String(Date.now()), website: "robot" })).status, 400);
     assert.equal((await submit(system.app, { ...validLead(), customerName: "Ａna Manjate" })).status, 201);
     assert.equal((await system.prisma.leadSubmission.findFirstOrThrow()).customerName, "Ana Manjate");
+  } finally { await system.close(); }
+});
+
+test("invalid JSON is rejected as a client error without exposing internals", async () => {
+  const system = await createTestSystem();
+  try {
+    const response = await request(system.app).post("/api/leads").set("Content-Type", "application/json").send("{invalid");
+    assert.equal(response.status, 400);
+    assert.equal(response.body.code, "invalid_json");
+  } finally { await system.close(); }
+});
+
+test("oversized JSON is rejected with a controlled 413 response", async () => {
+  const system = await createTestSystem();
+  try {
+    const response = await request(system.app)
+      .post("/api/leads")
+      .set("Content-Type", "application/json")
+      .send({ notes: "x".repeat(70 * 1024) });
+    assert.equal(response.status, 413);
+    assert.equal(response.body.code, "payload_too_large");
   } finally { await system.close(); }
 });
 
@@ -84,5 +107,22 @@ test("forged X-Forwarded-For headers do not bypass the lead limiter with trust p
       responses.push(await request(system.app).post("/api/leads").set("X-Forwarded-For", `203.0.113.${index}`).send({}));
     }
     assert.equal(responses.at(-1).status, 429);
+  } finally { await system.close(); }
+});
+
+test("health reports unavailable when the pending-media volume is not writable", async () => {
+  const system = await createTestSystem();
+  try {
+    let accessMode;
+    const app = createApp({
+      config: system.config,
+      prisma: system.prisma,
+      repository: system.repository,
+      leadService: { submit() {} },
+      logger: { error() {}, warn() {} },
+      storageFileSystem: { async access(_path, mode) { accessMode = mode; throw new Error("read only"); } }
+    });
+    assert.equal((await request(app).get("/health")).status, 503);
+    assert.equal(accessMode, fsConstants.W_OK);
   } finally { await system.close(); }
 });

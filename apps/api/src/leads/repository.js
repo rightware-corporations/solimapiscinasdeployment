@@ -114,7 +114,11 @@ export class LeadRepository {
     const delivery = await this.prisma.whatsAppDelivery.findFirst({ where: { metaMessageId } });
     if (!delivery) return { matched: false };
     const precedence = { PENDING: 0, RETRY: 0, PROCESSING: 0, ACCEPTED: 1, SENT: 2, DELIVERED: 3, READ: 4, FAILED: 5 };
-    if ((precedence[nextStatus] ?? -1) < (precedence[delivery.status] ?? -1) || delivery.status === "FAILED") return { matched: true, updated: false };
+    if (
+      (nextStatus === "FAILED" && ["DELIVERED", "READ"].includes(delivery.status)) ||
+      (precedence[nextStatus] ?? -1) <= (precedence[delivery.status] ?? -1) ||
+      delivery.status === "FAILED"
+    ) return { matched: true, updated: false };
     const timestamp = eventAt || new Date();
     await this.prisma.$transaction(async (tx) => {
       await tx.whatsAppDelivery.update({

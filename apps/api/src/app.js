@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import { constants as fsConstants } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import express from "express";
@@ -13,7 +14,7 @@ import { mountLeadRoutes } from "./leads/routes.js";
 
 const webRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../web");
 
-export function createApp({ config, prisma, leadService, repository, logger }) {
+export function createApp({ config, prisma, leadService, repository, logger, storageFileSystem = fs }) {
   const app = express();
   app.set("trust proxy", config.trustProxy);
   app.disable("x-powered-by");
@@ -33,7 +34,7 @@ export function createApp({ config, prisma, leadService, repository, logger }) {
   app.get("/health", async (_req, res) => {
     try {
       await prisma.$queryRaw`SELECT 1`;
-      await fs.access(config.storageRoot);
+      await storageFileSystem.access(config.storageRoot, fsConstants.W_OK);
       res.set("Cache-Control", "no-store").json({ status: "ok" });
     } catch {
       res.set("Cache-Control", "no-store").status(503).json({ status: "unavailable" });

@@ -42,7 +42,7 @@ export class DeliveryRunner {
 
   async runLoop() {
     await this.repository.recoverStaleProcessing(new Date(Date.now() - 5 * 60_000));
-    for (let count = 0; count < 10 && !this.stopped; count += 1) {
+    while (!this.stopped) {
       const delivery = await this.repository.claimNext(new Date());
       if (!delivery) break;
       await this.process(delivery);

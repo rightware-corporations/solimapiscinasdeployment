@@ -3,8 +3,13 @@
   const card = document.querySelector(".orcamento-form-card");
   if (!card) return;
   const startedAt = Date.now();
+  const idempotencyStorageKey = "solima.lead.idempotency-key";
+  const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  function createIdempotencyKey(){const key=crypto.randomUUID();try{sessionStorage.setItem(idempotencyStorageKey,key)}catch{}return key}
+  function loadIdempotencyKey(){try{const key=sessionStorage.getItem(idempotencyStorageKey);if(uuidPattern.test(key||""))return key}catch{}return createIdempotencyKey()}
+  function clearIdempotencyKey(){try{sessionStorage.removeItem(idempotencyStorageKey)}catch{}}
   const labels = { NEW_CONSTRUCTION:"Construção nova", MODERNIZATION:"Modernização / reabilitação", MAINTENANCE:"Manutenção", LED:"Iluminação LED", DECK:"Deck", AUTOMATION:"Automação", HEATING:"Aquecimento", INFINITY_EDGE:"Borda infinita", EQUIPMENT:"Equipamentos", WATER_TREATMENT:"Tratamento de água", UNSURE:"Quero aconselhamento" };
-  const state = { step:1, files:{ locationPhotos:[], inspirationPhotos:[] }, idempotencyKey:crypto.randomUUID(), busy:false, lastFocus:null };
+  const state = { step:1, files:{ locationPhotos:[], inspirationPhotos:[] }, idempotencyKey:loadIdempotencyKey(), busy:false, lastFocus:null };
   card.innerHTML = `
     <div class="form-progress" aria-label="Progresso: passo 1 de 3"><div class="form-progress-fill"></div>${[1,2,3].map(n=>`<div class="form-step-dot ${n===1?"is-current":""}" data-step-dot="${n}">${n}</div>`).join("")}</div>
     <form id="orcamentoForm" novalidate>
@@ -73,10 +78,10 @@
   function renderPreviews(name,zone){const list=zone.querySelector(".preview-list");list.replaceChildren(...state.files[name].map((file,index)=>{const row=document.createElement("div");row.className="preview";const img=document.createElement("img");img.alt="Pré-visualização";img.src=URL.createObjectURL(file);const info=document.createElement("div");const n=document.createElement("div");n.className="preview-name";n.textContent=file.name;const s=document.createElement("div");s.className="preview-size";s.textContent=`${(file.size/1048576).toFixed(1)} MB`;info.append(n,s);const remove=document.createElement("button");remove.type="button";remove.setAttribute("aria-label",`Remover ${file.name}`);remove.textContent="×";remove.onclick=()=>{URL.revokeObjectURL(img.src);state.files[name].splice(index,1);renderPreviews(name,zone)};row.append(img,info,remove);return row}))}
   function updateSummary(){const service=form.querySelector("[name=serviceType]:checked")?.value;const extras=[...form.querySelectorAll("[name=extras]:checked")].map(i=>labels[i.value]);const rows=[["Nome",value("customerName")],["Contacto",value("phone")],["Localização",value("location")],["Serviço",labels[service]||"—"],["Complementos",extras.join(", ")||"Nenhum"],["Fotografias",`${state.files.locationPhotos.length} do local · ${state.files.inspirationPhotos.length} inspiração`]];const summary=card.querySelector(".summary");summary.replaceChildren(...rows.map(([a,b])=>{const r=document.createElement("div");r.className="summary-row";const x=document.createElement("span");x.className="summary-label";x.textContent=a;const y=document.createElement("span");y.className="summary-value";y.textContent=b;r.append(x,y);return r}))}
   form.addEventListener("submit",async(e)=>{e.preventDefault();if(state.busy||!validate(3))return;state.busy=true;const submit=card.querySelector(".form-submit");submit.disabled=true;status.textContent="A validar…";const data=new FormData();["customerName","phone","location","serviceType","notes","website"].forEach(n=>data.append(n,value(n)));data.append("extras",JSON.stringify([...form.querySelectorAll("[name=extras]:checked")].map(i=>i.value)));data.append("consentGiven","true");data.append("startedAt",String(startedAt));Object.entries(state.files).forEach(([name,files])=>files.forEach(file=>data.append(name,file,file.name)));
-    try{status.textContent="A enviar imagens e a registar o pedido…";const res=await fetch("/api/leads",{method:"POST",headers:{"Idempotency-Key":state.idempotencyKey},body:data});const body=await res.json().catch(()=>({}));if(!res.ok)throw new Error(body.error||"Não foi possível concluir o pedido.");showSuccess()}
-    catch(error){status.textContent=error.message+" Pode tentar novamente.";submit.disabled=false;state.busy=false}
+    try{status.textContent="A enviar imagens e a registar o pedido…";const res=await fetch("/api/leads",{method:"POST",headers:{"Idempotency-Key":state.idempotencyKey},body:data});const body=await res.json().catch(()=>({}));if(!res.ok){const error=new Error(body.error||"Não foi possível concluir o pedido.");error.status=res.status;throw error}showSuccess()}
+    catch(error){if(error.status===409)state.idempotencyKey=createIdempotencyKey();status.textContent=error.message+" Pode tentar novamente.";submit.disabled=false;state.busy=false}
   });
-  function showSuccess(){status.textContent="Pedido recebido.";state.lastFocus=document.activeElement;dialog.showModal();dialog.querySelector(".close-dialog").focus()}
+  function showSuccess(){clearIdempotencyKey();state.idempotencyKey=createIdempotencyKey();status.textContent="Pedido recebido.";state.lastFocus=document.activeElement;dialog.showModal();dialog.querySelector(".close-dialog").focus()}
   const close=()=>{dialog.close();state.lastFocus?.focus()};dialog.querySelector(".close-dialog").onclick=close;dialog.addEventListener("cancel",(e)=>{e.preventDefault();close()});dialog.addEventListener("click",(e)=>{if(e.target===dialog)close()});
   renderStep(1,false);
 })();

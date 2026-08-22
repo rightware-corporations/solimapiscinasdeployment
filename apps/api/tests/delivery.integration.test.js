@@ -55,3 +55,17 @@ test("stale PROCESSING work is returned to recovery instead of remaining stuck",
     assert.equal((await system.prisma.whatsAppDelivery.findUniqueOrThrow({ where: { id: delivery.id } })).status, "RETRY");
   } finally { await system.close(); }
 });
+
+test("runner drains a ready durable backlog instead of waiting for the recovery interval", async () => {
+  const system = await createTestSystem();
+  try {
+    system.runner.stopped = true;
+    for (let index = 0; index < 11; index += 1) {
+      assert.equal((await postLead(system.app)).status, 201);
+    }
+    system.runner.stopped = false;
+    await system.runner.run();
+    assert.equal(system.adapter.calls.filter((call) => call.operation === "summary").length, 11);
+    assert.equal(await system.prisma.whatsAppDelivery.count({ where: { status: "ACCEPTED" } }), 11);
+  } finally { await system.close(); }
+});
