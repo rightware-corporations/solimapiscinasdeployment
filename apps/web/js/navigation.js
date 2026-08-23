@@ -207,9 +207,11 @@ export function initNavigation() {
 
   document.querySelectorAll('a[href^="#"]').forEach((link) => {
     link.addEventListener("click", (event) => {
-      // F10: quote intents own their scroll/focus lifecycle. The attributes can
-      // be added after navigation initialization, so evaluate them at click time.
-      if (link.matches('[data-intent-action="QUOTE"], [data-intent-type="PROCESS"]')) {
+      // F10: every route to #orcamento belongs to the Quote Controller. This is
+      // evaluated at click time because contextual attributes may be added later.
+      const quoteIntent = link.getAttribute("href") === "#orcamento"
+        || link.matches('[data-intent-action="QUOTE"], [data-intent-type="PROCESS"]');
+      if (quoteIntent) {
         if (menuIsOpen()) closeMenu({ restoreFocus: false });
         return;
       }
