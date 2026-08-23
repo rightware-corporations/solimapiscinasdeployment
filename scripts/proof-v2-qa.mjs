@@ -4,14 +4,18 @@ import { createTestSystem } from "../tests/support.js";
 
 const viewports = [
   { name: "320x568", width: 320, height: 568, kind: "phone" },
+  { name: "360x640", width: 360, height: 640, kind: "phone" },
   { name: "390x844", width: 390, height: 844, kind: "phone" },
+  { name: "414x896", width: 414, height: 896, kind: "phone" },
   { name: "844x390", width: 844, height: 390, kind: "tablet" },
   { name: "768x1024", width: 768, height: 1024, kind: "tablet" },
+  { name: "1024x768", width: 1024, height: 768, kind: "tablet" },
+  { name: "1366x768", width: 1366, height: 768, kind: "desktop" },
   { name: "1440x900", width: 1440, height: 900, kind: "desktop" },
   { name: "1920x1080", width: 1920, height: 1080, kind: "desktop" },
 ];
 
-const forbiddenClaims = /(desde\s+2006|19\+|32\+|100%|45\s*dias)/i;
+const forbiddenClaims = /(desde\s+2006|19\+|mais\s+de\s+19\s+anos|32\+|01\s*\/\s*32|100%|45\s*dias)/i;
 const executablePath = process.env.BROWSER_PATH || chromium.executablePath();
 
 function contextOptions(viewport) {
@@ -75,7 +79,8 @@ try {
         return { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom };
       });
       const proofRect = proof?.getBoundingClientRect();
-      const text = proof?.textContent?.replace(/\s+/g, " ").trim() || "";
+      const proofText = proof?.innerText?.replace(/\s+/g, " ").trim() || "";
+      const visiblePageText = document.body.innerText.replace(/\s+/g, " ").trim();
       const mobileComposition = kind !== "phone" || (
         itemRects.length === 3 &&
         Math.abs(itemRects[0].top - itemRects[1].top) < 2 &&
@@ -88,10 +93,14 @@ try {
         styleLoaded: Boolean(document.querySelector('link[data-solima-proof-v2]')),
         immediatelyAfterHero: hero?.nextElementSibling === proof,
         itemCount: items.length,
-        text,
+        proofText,
+        visiblePageText,
         horizontalOverflow: document.documentElement.scrollWidth - innerWidth,
         proofInsideViewport: Boolean(proofRect) && proofRect.left >= -1 && proofRect.right <= innerWidth + 1,
         mobileComposition,
+        legacyStatCardHidden: document.querySelector(".sobre-stat-card")?.hidden === true,
+        legacyStatsHidden: document.querySelector(".sobre-stats")?.hidden === true,
+        safeScheduleCopy: document.querySelector(".orcamento-promise-row:first-child strong")?.textContent?.trim() === "Prazo definido antes da obra",
       };
     }, { kind: viewport.kind });
 
@@ -99,13 +108,17 @@ try {
     if (!metrics.styleLoaded) failures.push("proof stylesheet not loaded");
     if (!metrics.immediatelyAfterHero) failures.push("proof strip is not immediately after hero");
     if (metrics.itemCount !== 3) failures.push(`expected 3 proof items, got ${metrics.itemCount}`);
-    if (forbiddenClaims.test(metrics.text)) failures.push("proof strip contains an unvalidated claim");
+    if (forbiddenClaims.test(metrics.proofText)) failures.push("proof strip contains an unvalidated claim");
+    if (forbiddenClaims.test(metrics.visiblePageText)) failures.push("rendered landing contains an unvalidated quantified claim");
     if (metrics.horizontalOverflow > 1) failures.push(`horizontal overflow ${metrics.horizontalOverflow}px`);
     if (!metrics.proofInsideViewport) failures.push("proof strip exceeds viewport width");
     if (!metrics.mobileComposition) failures.push("phone proof layout is not 2+1");
+    if (!metrics.legacyStatCardHidden) failures.push("legacy experience stat card is still visible");
+    if (!metrics.legacyStatsHidden) failures.push("legacy quantified stats are still visible");
+    if (!metrics.safeScheduleCopy) failures.push("legacy 45-day promise was not replaced with neutral schedule copy");
     if (consoleErrors.length) failures.push(`console errors: ${consoleErrors.join(" | ")}`);
 
-    results.push({ ...viewport, ...metrics, consoleErrors, failures, passed: failures.length === 0 });
+    results.push({ ...viewport, ...metrics, visiblePageText: undefined, consoleErrors, failures, passed: failures.length === 0 });
     await context.close();
   }
 
