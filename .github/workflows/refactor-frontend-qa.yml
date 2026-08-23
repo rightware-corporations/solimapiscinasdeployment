@@ -76,6 +76,9 @@ jobs:
       - name: Focused F8 Process QA
         run: node scripts/process-f8-qa.mjs
 
+      - name: Focused F9 Clients & Markets QA
+        run: node scripts/clients-f9-qa.mjs
+
       - name: Visual QA — normal motion
         run: npm run qa:normal
 
