@@ -50,7 +50,7 @@ async function inspectHero(page) {
     const ctas = document.querySelector(".hero-ctas")?.getBoundingClientRect();
     const primary = document.querySelector(".hero-quote-cta")?.getBoundingClientRect();
     const letterbox = [...document.querySelectorAll(".hero-letterbox")].some((element) => getComputedStyle(element).display !== "none");
-    const sceneList = document.querySelector(".hero-scene-index");
+    const sceneList = document.querySelector(".hero-scene-indicator");
     const sceneListVisible = !!sceneList && getComputedStyle(sceneList).display !== "none" && getComputedStyle(sceneList).visibility !== "hidden";
     const scrollCue = document.querySelector(".hero-scroll-cue");
     const scrollCueVisible = !!scrollCue && getComputedStyle(scrollCue).display !== "none" && getComputedStyle(scrollCue).visibility !== "hidden";
