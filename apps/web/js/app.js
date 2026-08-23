@@ -2,6 +2,7 @@ import { initNavigation } from "./navigation.js";
 import { initHeroV2, prepareHeroForV2 } from "./hero-v2.js";
 import { initProofV2 } from "./proof-v2.js";
 import { initProjectsV2 } from "./projects-v2.js";
+import { initServicesV2 } from "./services-v2.js";
 import { initLoader, initMotion, initSmoothScroll } from "./motion.js";
 import "./quote-form.js";
 
@@ -24,5 +25,9 @@ initProofV2();
 // taxonomy from theme, move Projects directly after Proof and expose a
 // contextual quote CTA without changing the lead API contract yet.
 initProjectsV2();
+
+// Phase F6: make service choice intent-led and semantic. Cards are no longer
+// giant buttons; detail controls and contextual quote CTAs are separate.
+initServicesV2();
 
 window.lucide?.createIcons();
