@@ -68,13 +68,29 @@ function createTaxonomy(project) {
   if (project.serviceLabel) {
     const service = document.createElement("span");
     service.className = "project-v2-taxonomy-item is-service";
-    service.innerHTML = `<span class="project-v2-taxonomy-key">Serviço</span><span>${project.serviceLabel}</span>`;
+
+    const serviceKey = document.createElement("span");
+    serviceKey.className = "project-v2-taxonomy-key";
+    serviceKey.textContent = "Serviço";
+
+    const serviceValue = document.createElement("span");
+    serviceValue.textContent = project.serviceLabel;
+
+    service.append(serviceKey, serviceValue);
     group.append(service);
   }
 
   const theme = document.createElement("span");
   theme.className = "project-v2-taxonomy-item is-theme";
-  theme.innerHTML = `<span class="project-v2-taxonomy-key">Tema</span><span>${project.themeLabel}</span>`;
+
+  const themeKey = document.createElement("span");
+  themeKey.className = "project-v2-taxonomy-key";
+  themeKey.textContent = "Tema";
+
+  const themeValue = document.createElement("span");
+  themeValue.textContent = project.themeLabel;
+
+  theme.append(themeKey, themeValue);
   group.append(theme);
 
   return group;
@@ -84,16 +100,23 @@ function createQuoteCta(project, title) {
   const cta = document.createElement("a");
   cta.className = "project-v2-quote-cta";
   cta.href = "#orcamento";
+  cta.dataset.intentAction = "QUOTE";
   cta.dataset.intentSource = "PROJECT";
   cta.dataset.projectRef = project.slug;
   cta.dataset.projectName = title;
   cta.dataset.projectTheme = project.theme;
   if (project.serviceCategory) cta.dataset.suggestedService = project.serviceCategory;
   cta.setAttribute("aria-label", `Quero algo como ${title}`);
-  cta.innerHTML = [
-    '<span>Quero algo como isto</span>',
-    '<span class="project-v2-quote-arrow" aria-hidden="true">↗</span>',
-  ].join("");
+
+  const label = document.createElement("span");
+  label.textContent = "Quero algo como isto";
+
+  const arrow = document.createElement("span");
+  arrow.className = "project-v2-quote-arrow";
+  arrow.setAttribute("aria-hidden", "true");
+  arrow.textContent = "↗";
+
+  cta.append(label, arrow);
   return cta;
 }
 
@@ -104,10 +127,22 @@ function normalizeIntro(section) {
 
   if (eyebrow) eyebrow.textContent = "Projetos SOLIMA";
   if (title) {
-    title.innerHTML = [
-      '<span class="mask-line"><span>Inspire-se em</span></span>',
-      '<span class="mask-line"><span class="italic">soluções construídas.</span></span>',
-    ].join("");
+    title.replaceChildren();
+
+    const firstLine = document.createElement("span");
+    firstLine.className = "mask-line";
+    const firstText = document.createElement("span");
+    firstText.textContent = "Inspire-se em";
+    firstLine.append(firstText);
+
+    const secondLine = document.createElement("span");
+    secondLine.className = "mask-line";
+    const secondText = document.createElement("span");
+    secondText.className = "italic";
+    secondText.textContent = "soluções construídas.";
+    secondLine.append(secondText);
+
+    title.append(firstLine, secondLine);
   }
   if (description) {
     description.textContent = "Explore diferentes formas de integrar piscina, arquitetura, tecnologia e espaço exterior — e use um projeto como ponto de partida para o seu pedido.";
@@ -119,7 +154,7 @@ function enhanceProject(section, project) {
   if (!slide) return;
 
   const title = slide.querySelector(".projeto-title")?.textContent?.trim() || `Projeto ${project.index}`;
-  slide.id = `projeto-${project.slug}`;
+  slide.id ||= `projeto-${project.index}`;
   slide.dataset.projectSlug = project.slug;
   slide.dataset.projectTheme = project.theme;
   if (project.serviceCategory) slide.dataset.serviceCategory = project.serviceCategory;
@@ -148,6 +183,16 @@ function enhanceProject(section, project) {
   else content.append(cta);
 }
 
+function syncNextProjectLinks(section) {
+  const slides = [...section.querySelectorAll(".projeto-slide")];
+  slides.forEach((slide, index) => {
+    const teaser = slide.querySelector(".projeto-next-teaser");
+    if (!teaser) return;
+    const nextSlide = slides[(index + 1) % slides.length];
+    if (nextSlide?.id) teaser.href = `#${nextSlide.id}`;
+  });
+}
+
 function placeAfterProof(section) {
   const proof = document.querySelector("[data-proof-v2]");
   if (!proof || proof.nextElementSibling === section) return;
@@ -167,5 +212,6 @@ export function initProjectsV2() {
 
   normalizeIntro(section);
   PROJECTS.forEach((project) => enhanceProject(section, project));
+  syncNextProjectLinks(section);
   placeAfterProof(section);
 }
