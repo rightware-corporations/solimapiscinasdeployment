@@ -3,6 +3,7 @@ import { initHeroV2, prepareHeroForV2 } from "./hero-v2.js";
 import { initProofV2 } from "./proof-v2.js";
 import { initProjectsV2 } from "./projects-v2.js";
 import { initServicesV2 } from "./services-v2.js";
+import { initWhyV2 } from "./why-v2.js";
 import { initLoader, initMotion, initSmoothScroll } from "./motion.js";
 import "./quote-form.js";
 
@@ -29,5 +30,9 @@ initProjectsV2();
 // Phase F6: make service choice intent-led and semantic. Cards are no longer
 // giant buttons; detail controls and contextual quote CTAs are separate.
 initServicesV2();
+
+// Phase F7: consolidate Sobre, Inspiração, Lazer and Visão into one calm,
+// factual capability layer with five clear pillars and no business-number claims.
+initWhyV2();
 
 window.lucide?.createIcons();
