@@ -1,0 +1,309 @@
+/* SOLIMA Landing v2 — F10 Quote experience
+ * One existing form, two presentations:
+ * - generic visit: calm inline conversion island
+ * - contextual CTA: focused task panel using the exact same form DOM
+ */
+
+body.quote-v2-open {
+  overflow: hidden;
+}
+
+.quote-v2-placeholder {
+  width: 100%;
+  pointer-events: none;
+}
+
+.orcamento[data-quote-v2] {
+  isolation: isolate;
+}
+
+.orcamento[data-quote-v2] .orcamento-grid {
+  position: relative;
+  z-index: 1;
+}
+
+.orcamento[data-quote-v2] .orcamento-copy-column .eyebrow {
+  color: var(--color-brand-aqua, #00cff4);
+}
+
+.orcamento[data-quote-v2] .orcamento-info-title {
+  max-width: 10ch;
+  font-size: clamp(3rem, 5.5vw, 6.2rem);
+  line-height: .99;
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+
+.orcamento[data-quote-v2] .orcamento-info-title .italic {
+  display: block;
+  color: var(--color-brand-aqua, #00cff4);
+  font-weight: 300;
+}
+
+.orcamento[data-quote-v2] .orcamento-info-sub {
+  max-width: 48ch;
+  color: var(--color-text-inverse-muted, rgba(228, 237, 249, .72));
+  line-height: 1.72;
+  text-wrap: pretty;
+}
+
+.orcamento[data-quote-v2] .orcamento-form-card {
+  position: relative;
+  border: 1px solid var(--color-border-inverse, rgba(220, 232, 248, .14));
+  border-radius: var(--radius-lg, .875rem);
+  box-shadow: var(--shadow-soft, 0 12px 32px rgba(4, 30, 60, .08));
+}
+
+.orcamento[data-quote-v2] .form-field input,
+.orcamento[data-quote-v2] .form-field textarea,
+.orcamento[data-quote-v2] .choice-card,
+.orcamento[data-quote-v2] .chip,
+.orcamento[data-quote-v2] .upload-card,
+.orcamento[data-quote-v2] .upload-picker {
+  border-radius: var(--radius-sm, .5rem);
+}
+
+.orcamento[data-quote-v2] .form-field input:focus,
+.orcamento[data-quote-v2] .form-field textarea:focus,
+.orcamento[data-quote-v2] .choice-card:has(input:focus-visible),
+.orcamento[data-quote-v2] .chip:has(input:focus-visible) {
+  outline: 2px solid var(--color-brand-aqua, #00cff4);
+  outline-offset: 2px;
+}
+
+.quote-v2-context {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: .9rem;
+  align-items: center;
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
+  padding: .85rem;
+  border: 1px solid var(--color-border-strong, rgba(0, 107, 175, .34));
+  border-radius: var(--radius-md, .625rem);
+  background: rgba(0, 145, 200, .075);
+}
+
+.quote-v2-context[hidden] {
+  display: none;
+}
+
+.quote-v2-context-media {
+  width: 4.25rem;
+  height: 4.25rem;
+  overflow: hidden;
+  border-radius: var(--radius-sm, .5rem);
+  background: rgba(255, 255, 255, .04);
+}
+
+.quote-v2-context-media[hidden] {
+  display: none;
+}
+
+.quote-v2-context-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.quote-v2-context-copy {
+  display: grid;
+  min-width: 0;
+  gap: .25rem;
+}
+
+.quote-v2-context-eyebrow {
+  color: var(--color-brand-aqua, #00cff4);
+  font: 700 .62rem/1.25 var(--font-ui, var(--font-sans));
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.quote-v2-context-title {
+  overflow-wrap: anywhere;
+  color: var(--color-text-inverse, #f7faff);
+  font: 600 .94rem/1.35 var(--font-ui, var(--font-sans));
+}
+
+.quote-v2-context-detail {
+  max-width: 52ch;
+  color: var(--color-text-inverse-muted, rgba(228, 237, 249, .72));
+  font: 400 .76rem/1.5 var(--font-ui, var(--font-sans));
+}
+
+.quote-v2-context-clear {
+  min-height: var(--control-touch-min, 44px);
+  padding-inline: .65rem;
+  color: var(--color-text-inverse-muted, rgba(228, 237, 249, .72));
+  border-radius: var(--radius-sm, .5rem);
+  font: 600 .68rem/1.3 var(--font-ui, var(--font-sans));
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+
+.quote-v2-context-clear:hover,
+.quote-v2-context-clear:focus-visible {
+  color: var(--color-brand-aqua, #00cff4);
+}
+
+.quote-v2-task-close {
+  position: relative;
+  z-index: 4;
+  display: inline-flex;
+  min-width: var(--control-touch-min, 44px);
+  min-height: var(--control-touch-min, 44px);
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  margin: 0 0 1.2rem auto;
+  padding: .45rem .7rem;
+  border: 1px solid var(--color-border-inverse, rgba(220, 232, 248, .14));
+  border-radius: var(--radius-sm, .5rem);
+  color: var(--color-text-inverse-muted, rgba(228, 237, 249, .72));
+  background: rgba(4, 30, 60, .84);
+  font: 650 .72rem/1 var(--font-ui, var(--font-sans));
+}
+
+.quote-v2-task-close[hidden] {
+  display: none;
+}
+
+.quote-v2-task-close > span:first-child {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.quote-v2-task-close:hover,
+.quote-v2-task-close:focus-visible {
+  color: var(--color-brand-aqua, #00cff4);
+  border-color: var(--color-border-strong, rgba(0, 107, 175, .34));
+}
+
+.quote-v2-backdrop {
+  display: none;
+}
+
+.orcamento.quote-v2-task-open {
+  position: fixed;
+  inset: 0;
+  z-index: var(--layer-drawer, 110);
+  width: 100%;
+  min-height: 100dvh;
+  padding: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: transparent;
+}
+
+.orcamento.quote-v2-task-open .quote-v2-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: rgba(2, 12, 28, .78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: default;
+}
+
+.orcamento.quote-v2-task-open .orcamento-bg {
+  display: none;
+}
+
+.orcamento.quote-v2-task-open .orcamento-grid {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: min(100%, 40rem);
+  max-width: none;
+  min-height: 100dvh;
+  margin: 0 0 0 auto;
+  padding:
+    max(1rem, var(--safe-top, 0px))
+    max(1.25rem, var(--safe-right, 0px))
+    max(1.5rem, var(--safe-bottom, 0px))
+    max(1.25rem, var(--safe-left, 0px));
+  background: var(--color-brand-navy, #041e3c);
+  box-shadow: var(--shadow-dialog, 0 30px 90px rgba(2, 12, 28, .34));
+}
+
+.orcamento.quote-v2-task-open .orcamento-copy-column {
+  display: none;
+}
+
+.orcamento.quote-v2-task-open .orcamento-form-card {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.orcamento.quote-v2-task-open .quote-v2-task-close {
+  position: sticky;
+  top: max(.5rem, var(--safe-top, 0px));
+}
+
+.orcamento.quote-v2-task-open .form-progress {
+  margin-top: .35rem;
+}
+
+@media (max-width: 767px) {
+  .orcamento[data-quote-v2] .orcamento-info-title {
+    font-size: clamp(2.8rem, 13vw, 4.5rem);
+  }
+
+  .quote-v2-context {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    padding: .75rem;
+  }
+
+  .quote-v2-context-media {
+    width: 3.65rem;
+    height: 3.65rem;
+  }
+
+  .quote-v2-context-clear {
+    grid-column: 1 / -1;
+    justify-self: start;
+    min-height: 44px;
+    margin-top: -.2rem;
+    padding-inline: 0;
+  }
+
+  .orcamento.quote-v2-task-open .orcamento-grid {
+    width: 100%;
+    padding:
+      max(.65rem, var(--safe-top, 0px))
+      max(1rem, var(--safe-right, 0px))
+      max(1.25rem, var(--safe-bottom, 0px))
+      max(1rem, var(--safe-left, 0px));
+    box-shadow: none;
+  }
+
+  .orcamento.quote-v2-task-open .orcamento-form-card {
+    padding-inline: 0;
+  }
+
+  .orcamento.quote-v2-task-open .quote-v2-task-close {
+    margin-bottom: .75rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1179px) {
+  .orcamento.quote-v2-task-open .orcamento-grid {
+    width: min(88vw, 44rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orcamento[data-quote-v2],
+  .orcamento[data-quote-v2] *,
+  .quote-v2-placeholder {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
