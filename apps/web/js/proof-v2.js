@@ -72,6 +72,11 @@ function applyLegacyClaimGuard() {
     aboutCopy.textContent = "A SOLIMA projeta, constrói e mantém piscinas privadas, comerciais e institucionais — combinando engenharia, execução técnica e design contemporâneo.";
   }
 
+  const firstClientDescription = document.querySelector(".clientes-grid .cliente:first-child .cliente-desc");
+  if (firstClientDescription) {
+    firstClientDescription.textContent = "Colaboração em projetos residenciais, com sistemas modernos e acabamentos personalizados.";
+  }
+
   const deliveryPromise = document.querySelector(".orcamento-promise-row:first-child .orcamento-promise-text");
   if (deliveryPromise) {
     const title = deliveryPromise.querySelector("strong");
