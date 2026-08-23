@@ -1,5 +1,12 @@
 /* SOLIMA Landing v2 — F4 proof strip */
 
+/* Legacy sections can declare display:grid/flex in author CSS, which can
+   override the browser's default [hidden] rule. Claim guards must remain
+   non-rendered until the corresponding v2 sections replace them. */
+[data-claim-guarded][hidden] {
+  display: none !important;
+}
+
 .proof-v2 {
   position: relative;
   z-index: 2;
