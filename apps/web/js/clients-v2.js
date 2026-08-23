@@ -144,7 +144,7 @@ function createClientsSection() {
 
   const proofCopy = document.createElement("p");
   proofCopy.className = "clients-v2-proof-copy";
-  proofCopy.textContent = "Alguns nomes já presentes na comunicação atual da empresa, apresentados aqui sem métricas ou testemunhos não validados.";
+  proofCopy.textContent = "Alguns nomes presentes na comunicação da SOLIMA, apresentados como referências de diferentes contextos de projeto.";
 
   proofIntro.append(proofLabel, proofCopy);
 
