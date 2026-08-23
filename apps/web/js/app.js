@@ -4,6 +4,7 @@ import { initProofV2 } from "./proof-v2.js";
 import { initProjectsV2 } from "./projects-v2.js";
 import { initServicesV2 } from "./services-v2.js";
 import { initWhyV2 } from "./why-v2.js";
+import { initProcessV2 } from "./process-v2.js";
 import { initLoader, initMotion, initSmoothScroll } from "./motion.js";
 import "./quote-form.js";
 
@@ -34,5 +35,9 @@ initServicesV2();
 // Phase F7: consolidate Sobre, Inspiração, Lazer and Visão into one calm,
 // factual capability layer with five clear pillars and no business-number claims.
 initWhyV2();
+
+// Phase F8: make the delivery journey explicit, move reassurance out of the
+// quote card, and keep timing/guarantee copy factual rather than absolute.
+initProcessV2();
 
 window.lucide?.createIcons();
