@@ -67,6 +67,9 @@ jobs:
       - name: Focused F5 Projects QA
         run: node scripts/projects-f5-qa.mjs
 
+      - name: Focused F6 Services QA
+        run: node scripts/services-f6-qa.mjs
+
       - name: Visual QA — normal motion
         run: npm run qa:normal
 
