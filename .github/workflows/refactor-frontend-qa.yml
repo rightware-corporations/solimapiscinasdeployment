@@ -4,6 +4,17 @@ on:
   push:
     branches:
       - refactor/v2-frontend-foundation
+  pull_request:
+    branches:
+      - integration/pre-production-hardened
+    paths:
+      - "apps/web/**"
+      - "scripts/**"
+      - "tests/**"
+      - "apps/api/tests/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/refactor-frontend-qa.yml"
   workflow_dispatch:
 
 permissions:
@@ -46,6 +57,11 @@ jobs:
         id: browser
         shell: bash
         run: echo "path=$(node -e \"const { chromium } = require('playwright'); process.stdout.write(chromium.executablePath())\")" >> "$GITHUB_OUTPUT"
+
+      - name: Focused F3 Hero QA
+        env:
+          BROWSER_PATH: ${{ steps.browser.outputs.path }}
+        run: node scripts/hero-f3-qa.mjs
 
       - name: Visual QA — normal motion
         env:
