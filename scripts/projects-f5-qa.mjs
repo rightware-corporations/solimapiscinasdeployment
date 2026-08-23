@@ -105,6 +105,8 @@ try {
         const title = slide.querySelector(".projeto-title")?.textContent?.trim() || "";
         const category = slide.querySelector(".projeto-category")?.textContent?.trim() || "";
         const taxonomyItems = [...slide.querySelectorAll(".project-v2-taxonomy-item")];
+        const taxonomyKeys = [...slide.querySelectorAll(".project-v2-taxonomy-key")]
+          .map((node) => node.textContent?.trim() || "");
         return {
           index: index + 1,
           title,
@@ -113,8 +115,9 @@ try {
           service: slide.dataset.serviceCategory || null,
           category,
           taxonomyItems: taxonomyItems.length,
-          taxonomyText: slide.querySelector(".project-v2-taxonomy")?.innerText?.replace(/\s+/g, " ").trim() || "",
-          ctaText: cta?.innerText?.replace(/\s+/g, " ").trim() || "",
+          taxonomyKeys,
+          ctaLabel: cta?.querySelector("span:first-child")?.textContent?.trim() || "",
+          ctaArrow: cta?.querySelector(".project-v2-quote-arrow")?.textContent?.trim() || "",
           ctaHref: cta?.getAttribute("href") || "",
           intentAction: cta?.dataset.intentAction || "",
           intentSource: cta?.dataset.intentSource || "",
@@ -192,10 +195,10 @@ try {
       if (actual.theme !== expected.theme) failures.push(`project ${expected.index} theme mismatch: ${actual.theme}`);
       if (actual.service !== expected.service) failures.push(`project ${expected.index} service mismatch: ${actual.service}`);
       if (actual.taxonomyItems !== expected.taxonomyItems) failures.push(`project ${expected.index} expected ${expected.taxonomyItems} taxonomy items, got ${actual.taxonomyItems}`);
-      if (!actual.taxonomyText.includes("Tema")) failures.push(`project ${expected.index} has no theme taxonomy`);
-      if (expected.service && !actual.taxonomyText.includes("Serviço")) failures.push(`project ${expected.index} has no service taxonomy`);
+      if (!actual.taxonomyKeys.includes("Tema")) failures.push(`project ${expected.index} has no theme taxonomy`);
+      if (expected.service && !actual.taxonomyKeys.includes("Serviço")) failures.push(`project ${expected.index} has no service taxonomy`);
       if (!expected.service && /Famílias|Lazer/.test(actual.category)) failures.push(`project ${expected.index} still mixes theme into service category: ${actual.category}`);
-      if (actual.ctaText !== "Quero algo como isto ↗") failures.push(`project ${expected.index} CTA copy mismatch: ${actual.ctaText}`);
+      if (actual.ctaLabel !== "Quero algo como isto" || actual.ctaArrow !== "↗") failures.push(`project ${expected.index} CTA semantic copy mismatch: ${actual.ctaLabel} ${actual.ctaArrow}`);
       if (actual.ctaHref !== "#orcamento") failures.push(`project ${expected.index} CTA does not target quote section`);
       if (actual.intentAction !== "QUOTE" || actual.intentSource !== "PROJECT") failures.push(`project ${expected.index} CTA intent metadata is incomplete`);
       if (actual.projectRef !== expected.slug || actual.projectName !== expected.title || actual.projectTheme !== expected.theme) failures.push(`project ${expected.index} CTA project context mismatch`);
