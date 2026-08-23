@@ -48,8 +48,45 @@ function proofItemMarkup({ label, detail }) {
   return item;
 }
 
+function applyLegacyClaimGuard() {
+  // These elements belong to sections scheduled for later v2 replacement.
+  // Until their business claims are explicitly validated, keep the rendered
+  // page factual rather than exposing legacy quantified/absolute promises.
+  const imageCounter = document.querySelector(".sobre-image-meta > div:last-child");
+  if (imageCounter) imageCounter.textContent = "Projeto SOLIMA";
+
+  const legacyStatCard = document.querySelector(".sobre-stat-card");
+  if (legacyStatCard) {
+    legacyStatCard.hidden = true;
+    legacyStatCard.dataset.claimGuarded = "";
+  }
+
+  const legacyStats = document.querySelector(".sobre-stats");
+  if (legacyStats) {
+    legacyStats.hidden = true;
+    legacyStats.dataset.claimGuarded = "";
+  }
+
+  const aboutCopy = document.querySelector(".sobre-copy");
+  if (aboutCopy) {
+    aboutCopy.textContent = "A SOLIMA projeta, constrói e mantém piscinas privadas, comerciais e institucionais — combinando engenharia, execução técnica e design contemporâneo.";
+  }
+
+  const deliveryPromise = document.querySelector(".orcamento-promise-row:first-child .orcamento-promise-text");
+  if (deliveryPromise) {
+    const title = deliveryPromise.querySelector("strong");
+    const detail = deliveryPromise.querySelector("span");
+    if (title) title.textContent = "Prazo definido antes da obra";
+    if (detail) detail.textContent = "O cronograma é definido de acordo com cada projeto e apresentado na proposta.";
+  }
+
+  const footerTag = document.querySelector(".footer-tag span");
+  if (footerTag) footerTag.textContent = "Engenharia, design e acompanhamento em Moçambique";
+}
+
 export function initProofV2() {
   ensureProofStyles();
+  applyLegacyClaimGuard();
 
   if (document.querySelector("[data-proof-v2]")) return;
   const hero = document.querySelector(".hero");
