@@ -61,6 +61,9 @@ jobs:
       - name: Focused F3 Hero QA
         run: node scripts/hero-f3-qa.mjs
 
+      - name: Focused F4 Proof QA
+        run: node scripts/proof-v2-qa.mjs
+
       - name: Visual QA — normal motion
         run: npm run qa:normal
 
