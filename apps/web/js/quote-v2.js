@@ -11,6 +11,7 @@ const quoteState = {
   taskOpen: false,
   trigger: null,
   placeholder: null,
+  lastAutoService: "",
 };
 
 function ensureQuoteStyles() {
@@ -63,10 +64,9 @@ function createBackdrop(section) {
   let backdrop = section.querySelector(".quote-v2-backdrop");
   if (backdrop) return backdrop;
 
-  backdrop = document.createElement("button");
-  backdrop.type = "button";
+  backdrop = document.createElement("div");
   backdrop.className = "quote-v2-backdrop";
-  backdrop.setAttribute("aria-label", "Fechar formulário de orçamento");
+  backdrop.setAttribute("aria-hidden", "true");
   backdrop.hidden = true;
   section.prepend(backdrop);
   return backdrop;
@@ -165,6 +165,12 @@ function contextFromTrigger(trigger) {
   return { type: "GENERIC" };
 }
 
+function findServiceInput(card, serviceType) {
+  if (!serviceType) return null;
+  return [...card.querySelectorAll('input[name="serviceType"]')]
+    .find((element) => element.value === serviceType) || null;
+}
+
 function syncServiceSummary(card, serviceType) {
   if (!serviceType) return;
   const summary = card.querySelector(".summary");
@@ -175,14 +181,28 @@ function syncServiceSummary(card, serviceType) {
   if (value) value.textContent = SERVICE_LABELS[serviceType] || serviceType;
 }
 
+function clearStaleAutoService(card, nextServiceType) {
+  if (!quoteState.lastAutoService || nextServiceType) return;
+  const input = findServiceInput(card, quoteState.lastAutoService);
+  if (input?.checked) input.checked = false;
+  quoteState.lastAutoService = "";
+}
+
 function preselectService(card, serviceType) {
-  if (!serviceType) return;
-  const input = [...card.querySelectorAll('input[name="serviceType"]')]
-    .find((element) => element.value === serviceType);
+  const input = findServiceInput(card, serviceType);
   if (!input) return;
   input.checked = true;
+  quoteState.lastAutoService = serviceType;
   input.dispatchEvent(new Event("change", { bubbles: true }));
   syncServiceSummary(card, serviceType);
+}
+
+function watchManualServiceChoice(card) {
+  card.querySelectorAll('input[name="serviceType"]').forEach((input) => {
+    input.addEventListener("change", (event) => {
+      if (event.isTrusted) quoteState.lastAutoService = "";
+    });
+  });
 }
 
 function renderContext(section, card) {
@@ -193,6 +213,13 @@ function renderContext(section, card) {
   const title = banner.querySelector(".quote-v2-context-title");
   const detail = banner.querySelector(".quote-v2-context-detail");
   const context = quoteState.context;
+  const nextServiceType = context.type === "SERVICE"
+    ? context.serviceType
+    : context.type === "PROJECT"
+      ? context.suggestedService
+      : "";
+
+  clearStaleAutoService(card, nextServiceType);
 
   section.dataset.quoteContextType = context.type;
   delete section.dataset.quoteContextRef;
@@ -202,6 +229,7 @@ function renderContext(section, card) {
     banner.hidden = true;
     media.hidden = true;
     image.removeAttribute("src");
+    image.alt = "";
     return;
   }
 
@@ -213,6 +241,7 @@ function renderContext(section, card) {
     detail.textContent = "Fica pré-selecionado no passo 2 e pode ser alterado antes do envio.";
     media.hidden = true;
     image.removeAttribute("src");
+    image.alt = "";
     section.dataset.quoteSuggestedService = context.serviceType;
     preselectService(card, context.serviceType);
     return;
@@ -238,6 +267,7 @@ function renderContext(section, card) {
     } else {
       media.hidden = true;
       image.removeAttribute("src");
+      image.alt = "";
     }
     return;
   }
@@ -247,6 +277,7 @@ function renderContext(section, card) {
   detail.textContent = "O pedido mantém os mesmos três passos e todas as escolhas continuam editáveis.";
   media.hidden = true;
   image.removeAttribute("src");
+  image.alt = "";
 }
 
 function setContext(section, card, context) {
@@ -348,7 +379,7 @@ function installTaskBehavior(section, card) {
   });
 
   document.addEventListener("click", (event) => {
-    const trigger = event.target.closest('[data-intent-action="QUOTE"], [data-intent-type="PROCESS"]');
+    const trigger = event.target.closest('[data-intent-action="QUOTE"], [data-intent-type="PROCESS"], a[href="#orcamento"]');
     if (!trigger) return;
     event.preventDefault();
     setContext(section, card, contextFromTrigger(trigger));
@@ -394,6 +425,7 @@ export function initQuoteV2() {
   if (!section || !card || !form) return;
 
   normalizeQuoteCopy(section);
+  watchManualServiceChoice(card);
   installTaskBehavior(section, card);
   setContext(section, card, { type: "GENERIC" });
 }
