@@ -64,6 +64,9 @@ jobs:
       - name: Focused F4 Proof QA
         run: node scripts/proof-v2-qa.mjs
 
+      - name: Focused F5 Projects QA
+        run: node scripts/projects-f5-qa.mjs
+
       - name: Visual QA — normal motion
         run: npm run qa:normal
 
