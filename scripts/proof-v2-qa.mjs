@@ -88,6 +88,10 @@ try {
         itemRects[2].left <= itemRects[0].left + 2 &&
         itemRects[2].right >= itemRects[1].right - 2
       );
+      const legacyStatCard = document.querySelector(".sobre-stat-card");
+      const legacyStats = document.querySelector(".sobre-stats");
+      const statCardSafe = !legacyStatCard || legacyStatCard.hidden === true || getComputedStyle(legacyStatCard).display === "none";
+      const statsSafe = !legacyStats || legacyStats.hidden === true || getComputedStyle(legacyStats).display === "none";
 
       return {
         styleLoaded: Boolean(document.querySelector('link[data-solima-proof-v2]')),
@@ -98,8 +102,8 @@ try {
         horizontalOverflow: document.documentElement.scrollWidth - innerWidth,
         proofInsideViewport: Boolean(proofRect) && proofRect.left >= -1 && proofRect.right <= innerWidth + 1,
         mobileComposition,
-        legacyStatCardHidden: document.querySelector(".sobre-stat-card")?.hidden === true,
-        legacyStatsHidden: document.querySelector(".sobre-stats")?.hidden === true,
+        legacyStatCardHidden: statCardSafe,
+        legacyStatsHidden: statsSafe,
         safeScheduleCopy: document.querySelector(".orcamento-promise-row:first-child strong")?.textContent?.trim() === "Prazo definido antes da obra",
       };
     }, { kind: viewport.kind });
