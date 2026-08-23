@@ -207,6 +207,10 @@ export function initNavigation() {
 
   document.querySelectorAll('a[href^="#"]').forEach((link) => {
     link.addEventListener("click", (event) => {
+      // F10: quote intents own their scroll/focus lifecycle. The attributes can
+      // be added after navigation initialization, so evaluate them at click time.
+      if (link.matches('[data-intent-action="QUOTE"], [data-intent-type="PROCESS"]')) return;
+
       const href = link.getAttribute("href");
       if (!href || href === "#") return;
       const target = document.querySelector(href);
