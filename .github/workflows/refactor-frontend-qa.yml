@@ -53,24 +53,18 @@ jobs:
       - name: Backend and integration regression tests
         run: npm test
 
-      - name: Resolve Playwright browser path
-        id: browser
+      - name: Export Playwright browser path
         shell: bash
-        run: echo "path=$(node -e \"const { chromium } = require('playwright'); process.stdout.write(chromium.executablePath())\")" >> "$GITHUB_OUTPUT"
+        run: |
+          node --input-type=module -e 'import { chromium } from "playwright"; console.log("BROWSER_PATH=" + chromium.executablePath())' >> "$GITHUB_ENV"
 
       - name: Focused F3 Hero QA
-        env:
-          BROWSER_PATH: ${{ steps.browser.outputs.path }}
         run: node scripts/hero-f3-qa.mjs
 
       - name: Visual QA — normal motion
-        env:
-          BROWSER_PATH: ${{ steps.browser.outputs.path }}
         run: npm run qa:normal
 
       - name: Visual QA — reduced motion
-        env:
-          BROWSER_PATH: ${{ steps.browser.outputs.path }}
         run: npm run qa:reduced
 
       - name: Merge visual QA results
