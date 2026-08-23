@@ -82,6 +82,9 @@ jobs:
       - name: Focused F10 Quote QA
         run: node scripts/quote-f10-qa.mjs
 
+      - name: Focused F11 Contact & Footer QA
+        run: node scripts/contact-f11-qa.mjs
+
       - name: Visual QA — normal motion
         run: npm run qa:normal
 
