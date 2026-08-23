@@ -219,7 +219,7 @@ try {
   await submitPage.locator("#phone").fill("+258 82 000 0000");
   await submitPage.locator("#location").fill("Maputo");
   await submitPage.locator(".form-next").click();
-  await submitPage.locator('input[name="serviceType"][value="MAINTENANCE"]').check();
+  await submitPage.locator('label.choice-card:has(input[name="serviceType"][value="MAINTENANCE"])').click();
   await submitPage.locator(".form-next").click();
   await submitPage.locator('input[name="consentGiven"]').check();
   await submitPage.locator(".form-submit").click();
