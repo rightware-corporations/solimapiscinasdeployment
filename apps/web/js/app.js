@@ -7,6 +7,7 @@ import { initWhyV2 } from "./why-v2.js";
 import { initProcessV2 } from "./process-v2.js";
 import { initClientsV2 } from "./clients-v2.js";
 import { initQuoteV2 } from "./quote-v2.js";
+import { initContactV2 } from "./contact-v2.js";
 import { initLoader, initMotion, initSmoothScroll } from "./motion.js";
 import "./quote-form.js";
 
@@ -49,5 +50,9 @@ initClientsV2();
 // Phase F10: keep one hardened lead form/API while presenting it as a focused,
 // contextual task when the visitor arrives from a project, service or CTA.
 initQuoteV2();
+
+// Phase F11: replace the legacy contact/footer runtime with factual contact
+// channels, no assumed public WhatsApp, no experience-age claims and no Admin link.
+initContactV2();
 
 window.lucide?.createIcons();
