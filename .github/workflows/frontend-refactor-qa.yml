@@ -7,7 +7,11 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: frontend-refactor-qa
+  cancel-in-progress: true
 
 jobs:
   frontend-qa:
@@ -38,6 +42,8 @@ jobs:
           echo "Using Playwright Chromium from a managed install."
 
       - name: JavaScript syntax checks
+        id: syntax
+        continue-on-error: true
         run: |
           node --check apps/web/js/app.js
           node --check apps/web/js/navigation.js
@@ -46,19 +52,90 @@ jobs:
           node --check scripts/hero-v2-qa.mjs
 
       - name: Hardened backend regression suite
+        id: backend
+        continue-on-error: true
         run: npm test
 
       - name: F3 Hero capability and viewport QA
+        id: hero
+        continue-on-error: true
         run: node scripts/hero-v2-qa.mjs
 
       - name: Existing visual QA — normal motion
+        id: visual_normal
+        continue-on-error: true
         run: npm run qa:normal
 
       - name: Existing visual QA — reduced motion
+        id: visual_reduced
+        continue-on-error: true
         run: npm run qa:reduced
 
       - name: Merge existing visual QA matrix
+        id: visual_merge
+        continue-on-error: true
         run: npm run qa:merge
+
+      - name: Write auditable QA report
+        if: always()
+        shell: bash
+        env:
+          SYNTAX_OUTCOME: ${{ steps.syntax.outcome }}
+          BACKEND_OUTCOME: ${{ steps.backend.outcome }}
+          HERO_OUTCOME: ${{ steps.hero.outcome }}
+          VISUAL_NORMAL_OUTCOME: ${{ steps.visual_normal.outcome }}
+          VISUAL_REDUCED_OUTCOME: ${{ steps.visual_reduced.outcome }}
+          VISUAL_MERGE_OUTCOME: ${{ steps.visual_merge.outcome }}
+        run: |
+          mkdir -p docs/architecture
+          {
+            echo "# F3 Automated QA Result"
+            echo
+            echo "**Tested commit:** \`$GITHUB_SHA\`  "
+            echo "**Runner:** GitHub Actions / Ubuntu / Node 22 / Playwright Chromium  "
+            echo "**Generated:** $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            echo
+            echo "| Gate | Outcome |"
+            echo "|---|---|"
+            echo "| JavaScript syntax | $SYNTAX_OUTCOME |"
+            echo "| Hardened backend regression | $BACKEND_OUTCOME |"
+            echo "| F3 hero capability/viewports | $HERO_OUTCOME |"
+            echo "| Existing visual QA normal | $VISUAL_NORMAL_OUTCOME |"
+            echo "| Existing visual QA reduced | $VISUAL_REDUCED_OUTCOME |"
+            echo "| Existing visual matrix merge | $VISUAL_MERGE_OUTCOME |"
+            echo
+            if [[ -f hero-report-f3/summary.json ]]; then
+              echo "## Hero F3 summary"
+              echo
+              echo '```json'
+              cat hero-report-f3/summary.json
+              echo '```'
+              echo
+            fi
+            if [[ -f visual-report-v2.1/matrix-summary.json ]]; then
+              echo "## Existing visual matrix summary"
+              echo
+              echo '```json'
+              cat visual-report-v2.1/matrix-summary.json
+              echo '```'
+              echo
+            fi
+            echo "This file is test evidence only. It does not deploy or change Railway."
+          } > docs/architecture/F3-QA-AUTOMATED.md
+
+      - name: Commit QA report to refactor branch
+        if: always()
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/architecture/F3-QA-AUTOMATED.md
+          if git diff --cached --quiet; then
+            echo "No QA report change to commit."
+          else
+            git commit -m "test: record F3 automated QA"
+            git push
+          fi
 
       - name: Upload QA evidence
         if: always()
@@ -70,3 +147,28 @@ jobs:
             visual-report-v2.1
           if-no-files-found: warn
           retention-days: 7
+
+      - name: Enforce QA gate
+        if: always()
+        shell: bash
+        env:
+          SYNTAX_OUTCOME: ${{ steps.syntax.outcome }}
+          BACKEND_OUTCOME: ${{ steps.backend.outcome }}
+          HERO_OUTCOME: ${{ steps.hero.outcome }}
+          VISUAL_NORMAL_OUTCOME: ${{ steps.visual_normal.outcome }}
+          VISUAL_REDUCED_OUTCOME: ${{ steps.visual_reduced.outcome }}
+          VISUAL_MERGE_OUTCOME: ${{ steps.visual_merge.outcome }}
+        run: |
+          for outcome in \
+            "$SYNTAX_OUTCOME" \
+            "$BACKEND_OUTCOME" \
+            "$HERO_OUTCOME" \
+            "$VISUAL_NORMAL_OUTCOME" \
+            "$VISUAL_REDUCED_OUTCOME" \
+            "$VISUAL_MERGE_OUTCOME"; do
+            if [[ "$outcome" != "success" ]]; then
+              echo "Frontend QA gate failed. See docs/architecture/F3-QA-AUTOMATED.md and workflow logs."
+              exit 1
+            fi
+          done
+          echo "Frontend QA gate passed."
