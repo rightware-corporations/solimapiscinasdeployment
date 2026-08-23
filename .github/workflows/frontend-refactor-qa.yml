@@ -1,0 +1,72 @@
+name: Frontend Refactor QA
+
+on:
+  push:
+    branches:
+      - refactor/v2-frontend-foundation
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frontend-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Resolve Playwright browser path
+        shell: bash
+        run: |
+          BROWSER_PATH="$(node --input-type=module -e "import { chromium } from 'playwright'; process.stdout.write(chromium.executablePath())")"
+          echo "BROWSER_PATH=$BROWSER_PATH" >> "$GITHUB_ENV"
+          echo "Using Playwright Chromium from a managed install."
+
+      - name: JavaScript syntax checks
+        run: |
+          node --check apps/web/js/app.js
+          node --check apps/web/js/navigation.js
+          node --check apps/web/js/capability.js
+          node --check apps/web/js/hero-v2.js
+          node --check scripts/hero-v2-qa.mjs
+
+      - name: Hardened backend regression suite
+        run: npm test
+
+      - name: F3 Hero capability and viewport QA
+        run: node scripts/hero-v2-qa.mjs
+
+      - name: Existing visual QA — normal motion
+        run: npm run qa:normal
+
+      - name: Existing visual QA — reduced motion
+        run: npm run qa:reduced
+
+      - name: Merge existing visual QA matrix
+        run: npm run qa:merge
+
+      - name: Upload QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-refactor-qa-${{ github.sha }}
+          path: |
+            hero-report-f3
+            visual-report-v2.1
+          if-no-files-found: warn
+          retention-days: 7
