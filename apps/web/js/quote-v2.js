@@ -33,6 +33,7 @@ function normalizeQuoteCopy(section) {
   const title = section.querySelector(".orcamento-info-title");
   if (title) {
     title.id = "quoteV2Title";
+    title.setAttribute("aria-label", "Conte-nos o que precisa.");
     title.replaceChildren();
 
     const first = document.createElement("span");
@@ -48,7 +49,7 @@ function normalizeQuoteCopy(section) {
     secondText.textContent = "o que precisa.";
     second.append(secondText);
 
-    title.append(first, second);
+    title.append(first, document.createTextNode(" "), second);
   }
 
   const intro = section.querySelector(".orcamento-info-sub");
