@@ -42,19 +42,6 @@ function expectedMode(viewport, motion) {
   return "AMBIENT_VIDEO";
 }
 
-const rect = (element) => {
-  if (!element) return null;
-  const value = element.getBoundingClientRect();
-  return {
-    left: value.left,
-    top: value.top,
-    right: value.right,
-    bottom: value.bottom,
-    width: value.width,
-    height: value.height,
-  };
-};
-
 let system;
 let server;
 let browser;
@@ -107,6 +94,18 @@ try {
 
       const expected = expectedMode(viewport, motion);
       const initial = await page.evaluate(({ viewportKind }) => {
+        const rect = (element) => {
+          if (!element) return null;
+          const value = element.getBoundingClientRect();
+          return {
+            left: value.left,
+            top: value.top,
+            right: value.right,
+            bottom: value.bottom,
+            width: value.width,
+            height: value.height,
+          };
+        };
         const hero = document.querySelector(".hero");
         const nav = rect(document.querySelector("#nav"));
         const title = rect(document.querySelector(".hero-title"));
