@@ -105,11 +105,13 @@ try {
     }, { kind: viewport.kind });
 
     const failures = [];
+    const proofClaim = metrics.proofText.match(forbiddenClaims)?.[0];
+    const pageClaim = metrics.visiblePageText.match(forbiddenClaims)?.[0];
     if (!metrics.styleLoaded) failures.push("proof stylesheet not loaded");
     if (!metrics.immediatelyAfterHero) failures.push("proof strip is not immediately after hero");
     if (metrics.itemCount !== 3) failures.push(`expected 3 proof items, got ${metrics.itemCount}`);
-    if (forbiddenClaims.test(metrics.proofText)) failures.push("proof strip contains an unvalidated claim");
-    if (forbiddenClaims.test(metrics.visiblePageText)) failures.push("rendered landing contains an unvalidated quantified claim");
+    if (proofClaim) failures.push(`proof strip contains unvalidated claim: ${proofClaim}`);
+    if (pageClaim) failures.push(`rendered landing contains unvalidated claim: ${pageClaim}`);
     if (metrics.horizontalOverflow > 1) failures.push(`horizontal overflow ${metrics.horizontalOverflow}px`);
     if (!metrics.proofInsideViewport) failures.push("proof strip exceeds viewport width");
     if (!metrics.mobileComposition) failures.push("phone proof layout is not 2+1");
