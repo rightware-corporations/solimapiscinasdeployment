@@ -5,6 +5,7 @@ import { initProjectsV2 } from "./projects-v2.js";
 import { initServicesV2 } from "./services-v2.js";
 import { initWhyV2 } from "./why-v2.js";
 import { initProcessV2 } from "./process-v2.js";
+import { initClientsV2 } from "./clients-v2.js";
 import { initLoader, initMotion, initSmoothScroll } from "./motion.js";
 import "./quote-form.js";
 
@@ -39,5 +40,9 @@ initWhyV2();
 // Phase F8: make the delivery journey explicit, move reassurance out of the
 // quote card, and keep timing/guarantee copy factual rather than absolute.
 initProcessV2();
+
+// Phase F9: merge legacy audience/client blocks into one restrained institutional
+// proof layer, with markets first, neutral references and a separate social note.
+initClientsV2();
 
 window.lucide?.createIcons();
