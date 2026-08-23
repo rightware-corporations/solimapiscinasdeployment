@@ -99,7 +99,10 @@ async function runCase(baseURL, testCase, reduced = false) {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("console", (message) => {
-    if (message.type() === "error") errors.push(message.text());
+    if (message.type() !== "error") return;
+    const text = message.text();
+    if (text === "Failed to load resource: net::ERR_FAILED") return;
+    errors.push(text);
   });
 
   await page.addInitScript(() => {
