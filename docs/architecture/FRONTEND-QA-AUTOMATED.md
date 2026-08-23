@@ -1,8 +1,8 @@
 # Frontend Automated QA Result
 
-**Tested commit:** `df9b71b12ecd970f7517f5de547aac5fa160420b`  
+**Tested commit:** `8bfe8bfbce575b8fa51ea5e27f8b053cd5a9e9e0`  
 **Runner:** GitHub Actions / Ubuntu / Node 22 / Playwright Chromium  
-**Generated:** 2026-08-23T16:39:00Z
+**Generated:** 2026-08-23T16:52:13Z
 
 | Gate | Outcome |
 |---|---|
