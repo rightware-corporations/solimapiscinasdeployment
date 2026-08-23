@@ -79,6 +79,9 @@ jobs:
       - name: Focused F9 Clients & Markets QA
         run: node scripts/clients-f9-qa.mjs
 
+      - name: Focused F10 Quote QA
+        run: node scripts/quote-f10-qa.mjs
+
       - name: Visual QA — normal motion
         run: npm run qa:normal
 
