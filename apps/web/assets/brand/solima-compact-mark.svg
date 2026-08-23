@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">SOLIMA compact mark</title>
+  <desc id="desc">Geometric SOLIMA S with blue and aqua mosaic fragments.</desc>
+  <defs>
+    <linearGradient id="solima-face" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#00CFF4"/>
+      <stop offset="1" stop-color="#006BAF"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="108" fill="#041E3C"/>
+  <path d="M 235.24,95.00 L 215.53,99.38 L 202.39,105.95 L 180.50,125.66 L 169.55,147.55 L 167.36,176.02 L 171.74,191.35 L 189.26,219.82 L 272.47,294.27 L 281.23,309.60 L 281.23,320.55 L 268.09,338.07 L 244.00,344.64 L 235.24,342.45 L 217.72,331.50 L 204.58,316.17 L 202.39,309.60 L 195.82,307.41 L 154.22,333.69 L 169.55,357.77 L 195.82,381.86 L 226.48,392.81 L 265.90,392.81 L 287.80,386.24 L 305.31,375.29 L 316.26,364.34 L 327.21,346.82 L 331.59,331.50 L 331.59,294.27 L 325.02,276.75 L 307.50,252.66 L 224.29,178.21 L 219.91,162.88 L 230.86,149.74 L 248.38,145.36 L 268.09,154.12 L 287.80,176.02 L 314.07,154.12 L 327.21,138.80 L 305.31,116.90 L 285.61,103.76 L 254.95,95.00 Z" fill="url(#solima-face)"/>
+  <g fill="#00B7D7">
+    <rect x="345" y="70" width="46" height="46" rx="6"/>
+    <rect x="397" y="90" width="36" height="36" rx="5"/>
+    <rect x="430" y="132" width="27" height="27" rx="4"/>
+    <rect x="365" y="140" width="30" height="30" rx="4"/>
+    <rect x="455" y="100" width="20" height="20" rx="3"/>
+    <rect x="92" y="330" width="44" height="44" rx="6"/>
+    <rect x="135" y="380" width="34" height="34" rx="5"/>
+    <rect x="72" y="410" width="24" height="24" rx="3"/>
+    <rect x="172" y="414" width="22" height="22" rx="3"/>
+    <rect x="106" y="452" width="17" height="17" rx="3"/>
+  </g>
+</svg>

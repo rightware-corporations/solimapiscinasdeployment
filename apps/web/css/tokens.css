@@ -1,5 +1,139 @@
+/*
+ * SOLIMA Design Tokens — Frontend v2 foundation
+ *
+ * This file is intentionally backward-compatible with the hardened landing.
+ * Existing legacy token values remain unchanged below so Phase F1 does not
+ * alter production behavior. New semantic tokens are additive and will be
+ * adopted section-by-section during the Landing v2 refactor.
+ */
 
 :root {
+  /* ──────────────────────────────────────────────────────────────
+     Brand primitives
+     Derived from the approved SOLIMA blue / aqua identity.
+     These do not replace the official horizontal logo.
+     ────────────────────────────────────────────────────────────── */
+  --solima-navy-950: #041e3c;
+  --solima-navy-900: #063052;
+  --solima-blue-700: #006baf;
+  --solima-blue-600: #0091c8;
+  --solima-aqua-500: #00cff4;
+  --solima-cyan-400: #32bbd7;
+  --solima-water-white: #f7faff;
+  --solima-mist-50: #f4f7fb;
+  --solima-ink: #071426;
+
+  /* Brand semantic roles */
+  --color-brand-navy: var(--solima-navy-950);
+  --color-brand-blue: var(--solima-blue-700);
+  --color-brand-aqua: var(--solima-aqua-500);
+  --color-brand-cyan: var(--solima-cyan-400);
+
+  /* Light surfaces */
+  --color-surface-base: var(--solima-water-white);
+  --color-surface-subtle: var(--solima-mist-50);
+  --color-surface-dark: var(--solima-navy-950);
+
+  /* Text */
+  --color-text-primary: var(--solima-ink);
+  --color-text-secondary: #46566b;
+  --color-text-inverse: rgba(247, 250, 255, 0.94);
+  --color-text-inverse-muted: rgba(228, 237, 249, 0.72);
+
+  /* Borders */
+  --color-border-default: rgba(37, 68, 99, 0.16);
+  --color-border-strong: rgba(0, 107, 175, 0.34);
+  --color-border-inverse: rgba(220, 232, 248, 0.14);
+
+  /* Semantic state colors — independent from brand colors */
+  --color-status-success: #178a5b;
+  --color-status-warning: #b7791f;
+  --color-status-danger: #b83a3a;
+  --color-status-critical: #9f2020;
+  --color-status-info: var(--solima-blue-700);
+  --color-status-neutral: #68778a;
+
+  /* Typography */
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-ui: 'Inter', 'Segoe UI', Arial, system-ui, -apple-system, sans-serif;
+
+  --type-display-xl: clamp(3.5rem, 12vw, 11rem);
+  --type-display: clamp(2.5rem, 8vw, 7rem);
+  --type-h1: clamp(2.2rem, 6vw, 5rem);
+  --type-h2: clamp(1.8rem, 4.5vw, 3.5rem);
+  --type-h3: clamp(1.4rem, 3vw, 2.2rem);
+  --type-body-lg: clamp(1rem, 1.25vw, 1.125rem);
+  --type-body: clamp(0.95rem, 1.1vw, 1.0625rem);
+  --type-body-sm: 0.8125rem;
+  --type-label: 0.75rem;
+  --type-caption: 0.6875rem;
+
+  /* Spacing — rem based and deliberately short */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* Radius */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.125rem;
+  --radius-round: 999px;
+
+  /* Shadows */
+  --shadow-soft: 0 12px 32px rgba(4, 30, 60, 0.08);
+  --shadow-overlay: 0 24px 70px rgba(2, 12, 28, 0.24);
+  --shadow-dialog: 0 30px 90px rgba(2, 12, 28, 0.34);
+
+  /* Motion */
+  --motion-fast: 160ms;
+  --motion-interface: 260ms;
+  --motion-story: 720ms;
+  --motion-cinema: 1200ms;
+
+  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-enter: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --ease-cinematic: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Layout */
+  --layout-gutter: clamp(1.25rem, 4vw, 3rem);
+  --layout-content-max: 1320px;
+  --layout-content-wide: 1560px;
+  --layout-readable: 60ch;
+  --layout-section-y: clamp(5rem, 9vw, 9rem);
+
+  /* Touch / viewport */
+  --control-touch-min: 44px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+
+  /* Layers */
+  --layer-base: 0;
+  --layer-sticky: 20;
+  --layer-nav: 80;
+  --layer-dropdown: 90;
+  --layer-overlay: 100;
+  --layer-drawer: 110;
+  --layer-modal: 120;
+  --layer-toast: 130;
+
+  /* ──────────────────────────────────────────────────────────────
+     Legacy compatibility tokens
+     Keep these values unchanged during Phase F1.
+     Existing site.css/responsive.css continue to render as before.
+     ────────────────────────────────────────────────────────────── */
   --ink:           #020617;
   --ink-soft:      #0a1428;
   --ink-elev:      #0f1c36;
@@ -19,8 +153,10 @@
   --teal:          #5eead4;
   --twilight:      #fb923c;
   --violet:        #a855f7;
+
   --font-serif:    'Fraunces', Georgia, 'Times New Roman', serif;
   --font-sans:     'Inter', 'Segoe UI', Arial, system-ui, sans-serif;
+
   --fs-mega:       clamp(3.5rem, 12vw, 11rem);
   --fs-display:    clamp(2.5rem, 8vw, 7rem);
   --fs-h1:         clamp(2.2rem, 6vw, 5rem);
@@ -29,19 +165,24 @@
   --fs-body:       clamp(0.95rem, 1.1vw, 1.0625rem);
   --fs-small:      0.75rem;
   --fs-tiny:       0.625rem;
+
   --gutter:        clamp(1.25rem, 4vw, 3rem);
+
   --ease:          cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out:      cubic-bezier(0.33, 1, 0.68, 1);
   --ease-in-out:   cubic-bezier(0.65, 0, 0.35, 1);
+
   --dur-fast:      0.4s;
   --dur:           0.7s;
   --dur-slow:      1.2s;
   --dur-cinema:    1.8s;
+
   --nav-h: 88px;
   --content-max: 1320px;
   --content-readable: 60ch;
   --section-y: clamp(5rem, 9vw, 9rem);
   --card-pad: clamp(1.25rem, 2.8vw, 2.5rem);
+
   --z-nav: 80;
   --z-overlay: 70;
   --z-cue: 20;
