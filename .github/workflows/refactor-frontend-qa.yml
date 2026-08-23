@@ -70,6 +70,9 @@ jobs:
       - name: Focused F6 Services QA
         run: node scripts/services-f6-qa.mjs
 
+      - name: Focused F7 Why SOLIMA QA
+        run: node scripts/why-f7-qa.mjs
+
       - name: Visual QA — normal motion
         run: npm run qa:normal
 
