@@ -12,6 +12,17 @@ function expect(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+function thirdPartyLibrary(url) {
+  if (/cdn\.jsdelivr\.net\/npm\/lenis@/i.test(url)) return "lenis";
+  if (/unpkg\.com\/lucide@/i.test(url)) return "lucide";
+  try {
+    const parsed = new URL(url);
+    return `${parsed.origin}${parsed.pathname}`;
+  } catch {
+    return url;
+  }
+}
+
 try {
   system = await createTestSystem();
   server = system.app.listen(0, "127.0.0.1");
@@ -115,7 +126,12 @@ try {
   expect(metrics.webglLikeScriptCount === 0, `unexpected 3D/WebGL runtime dependency: ${metrics.webglLikeScriptCount}`);
   expect(!metrics.serviceWorkerControlled, "landing unexpectedly uses a service worker/PWA controller");
   expect(metrics.horizontalOverflow <= 1, `horizontal overflow ${metrics.horizontalOverflow}px`);
-  expect(thirdPartyScripts.length <= 2, `unexpected third-party script expansion: ${thirdPartyScripts.join(" | ")}`);
+
+  const libraries = [...new Set(thirdPartyScripts.map(thirdPartyLibrary))];
+  const allowedLibraries = new Set(["lenis", "lucide"]);
+  expect(libraries.every((library) => allowedLibraries.has(library)), `unexpected third-party script library: ${libraries.join(" | ")}`);
+  expect(libraries.length <= 2, `unexpected third-party library expansion: ${libraries.join(" | ")}`);
+
   results.push({ name: "Save-Data / lazy media budget", passed: true });
 
   await context.close();
