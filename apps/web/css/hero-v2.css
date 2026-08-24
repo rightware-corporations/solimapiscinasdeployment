@@ -303,7 +303,7 @@
   }
 
   .hero[data-hero-controller="v2"] .hero-project-cta {
-    min-height: 42px;
+    min-height: 44px;
   }
 }
 
@@ -339,7 +339,7 @@
   }
 
   .hero[data-hero-controller="v2"] .hero-ctas .btn {
-    min-height: 40px;
+    min-height: 44px;
     padding: .6rem 1.1rem;
   }
 }
