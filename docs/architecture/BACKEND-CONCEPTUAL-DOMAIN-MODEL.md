@@ -178,15 +178,39 @@ A Customer can submit multiple Leads. Repeated contact does not overwrite prior 
 
 Project is operational work accepted by SOLIMA.
 
+Approved compact lifecycle:
+
+```text
+PLANNED -> IN_PROGRESS -> COMPLETED -> ARCHIVED
+             |    ^
+             v    |
+           PAUSED
+
+PLANNED/IN_PROGRESS -> CANCELLED -> ARCHIVED
+```
+
 Invariant:
 
 - at most one Project is created from one Lead
 - Project creation requires Lead state `APPROVED`
 - the transition and Project creation occur atomically
+- a paused Project can resume
+- completed and cancelled Projects can be archived
+- planned dates, actual dates and warranty dates are attributes, not statuses
+- every status transition appends history
 
 ### SupportCase aggregate
 
 SupportCase represents a support request, incident, complaint or warranty concern.
+
+Approved category policy:
+
+- categories are database records, not PostgreSQL enums
+- categories can be added and reordered by an authorized administrator
+- a category already in use can be deactivated but not deleted
+- initial categories: Maintenance, Warranty, Technical Issue, Complaint, Administrative Question and Other
+- priority is selected manually by the administrator
+- the approved priority scale has three levels; exact names remain pending
 
 Invariant:
 
@@ -232,7 +256,7 @@ PENDING -> PROCESSING -> RETRY -> ACCEPTED -> SENT -> DELIVERED -> READ
 
 ### Support state
 
-Initial proposal:
+Pending approval:
 
 ```text
 OPEN -> TRIAGED -> IN_PROGRESS -> WAITING_CUSTOMER
@@ -293,7 +317,8 @@ Proposed administrator command:
 
 ## 10. Open conceptual decisions
 
-- support categories and priorities
+- exact three-level support-priority scale
+- support status lifecycle approval
 - SLA rules
 - commercial transition permissions
 - project lifecycle
