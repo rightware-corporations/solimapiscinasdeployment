@@ -88,6 +88,9 @@ jobs:
       - name: Focused F12 Sticky / Intent QA
         run: node scripts/sticky-f12-qa.mjs
 
+      - name: Focused F13 Responsive Polish QA
+        run: node scripts/responsive-f13-qa.mjs
+
       - name: Visual QA — normal motion
         run: npm run qa:normal
 
