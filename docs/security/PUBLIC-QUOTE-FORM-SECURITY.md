@@ -8,9 +8,9 @@ Public endpoint: `POST /api/leads`
 
 ## 1. Official product direction
 
-- photographs of the work location will become mandatory
-- inspiration photographs remain optional
-- the exact minimum number of location photographs is pending approval
+- every public submission requires at least one and at most five work-location photographs
+- the rule applies to every service type
+- inspiration photographs remain optional, from zero to two
 - every rule must be enforced by the server; browser validation is only usability assistance
 - WAF and bot controls supplement application security and never replace it
 
@@ -170,6 +170,13 @@ Required:
 - simultaneous idempotent submissions create one business graph
 - WAF bypass through the direct Railway hostname is prevented or detected
 
-## 6. Pending product decision
+## 6. Approved media contract
 
-Choose the minimum number of mandatory location photographs. Recommended initial rule: at least one and at most five.
+```text
+locationPhotos: required, 1..5
+inspirationPhotos: optional, 0..2
+maximum file size: 5 MB each
+accepted source formats: JPEG, PNG, WebP
+```
+
+The API must reject a submission with zero location photographs before creating Lead, media or delivery records.
