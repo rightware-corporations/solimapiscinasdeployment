@@ -147,9 +147,14 @@ try {
       const desktopCinema = width < 1180 || !firstSlideRect
         ? true
         : firstSlideRect.height >= innerHeight * .95;
-      const desktopRail = width < 1180
+      const desktopNavigationClean = width < 1180
         ? true
-        : getComputedStyle(document.querySelector("#projetosRail")).display !== "none";
+        : getComputedStyle(document.querySelector("#projetosRail")).display === "none"
+          && getComputedStyle(firstSlide.querySelector(".projeto-next-teaser")).display === "none"
+          && getComputedStyle(firstSlide.querySelector(".projeto-ghost-num")).display === "none";
+      const desktopCounterVisible = width < 1180
+        ? true
+        : firstSlide.querySelector(".projeto-counter")?.getBoundingClientRect().width > 0;
 
       return {
         styleLoaded: Boolean(document.querySelector('link[data-solima-projects-v2]')),
@@ -166,7 +171,8 @@ try {
         stackedEditorial,
         landscapeSplit,
         desktopCinema,
-        desktopRail,
+        desktopNavigationClean,
+        desktopCounterVisible,
         projectData,
       };
     }, { expectedProjects: PROJECTS, width: viewport.width });
@@ -186,7 +192,8 @@ try {
     if (!metrics.stackedEditorial) failures.push("sub-900 project composition is not image-then-copy stacked");
     if (!metrics.landscapeSplit) failures.push("900-1179 project composition is not split image/copy");
     if (!metrics.desktopCinema) failures.push("desktop project slide no longer preserves full-screen cinema");
-    if (!metrics.desktopRail) failures.push("desktop project rail is not available");
+    if (!metrics.desktopNavigationClean) failures.push("legacy desktop project navigation is still visible");
+    if (!metrics.desktopCounterVisible) failures.push("compact desktop project counter is not visible");
 
     metrics.projectData.forEach((actual, index) => {
       const expected = PROJECTS[index];
