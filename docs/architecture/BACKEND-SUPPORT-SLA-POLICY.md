@@ -14,7 +14,7 @@ Regular business time:
 - 17:00 exclusive
 - timezone: Africa/Maputo
 
-The regular day currently contributes nine business hours. Holiday and exceptional-closure behavior remains pending explicit approval.
+The regular day contributes nine business hours. The initial release uses only the weekly schedule: public holidays and exceptional closures do not alter SLA calculations. Calendar exceptions may be introduced through a later versioned policy.
 
 All persisted timestamps use UTC. Calendar evaluation and Office display use `Africa/Maputo`.
 
@@ -85,9 +85,22 @@ Changing future policy must not recalculate historical cases silently.
 
 `REOPENED` creates a new SLA cycle linked to the original SupportCase.
 
-The original cycle remains immutable, including prior achievements and breaches. Exact reopen eligibility and the new-cycle target behavior remain pending approval.
+A `CLOSED` case can be reopened for up to 30 calendar days after `closedAt`. After that window, the administrator must create a new SupportCase linked to the same Project and may reference the prior case.
 
-## 6. Events and auditability
+The original cycle remains immutable, including prior achievements and breaches. A reopened cycle uses the case priority in effect at reopening; any priority change is explicit and audited.
+
+## 6. Pause behavior
+
+`WAITING_CUSTOMER` pauses only the resolution milestone.
+
+- first-response deadline never pauses
+- mitigation deadline never pauses
+- resolution deadline is extended by the exact paused business duration
+- entering WAITING_CUSTOMER requires an explicit reason
+- leaving WAITING_CUSTOMER appends an SLA resume event
+- repeated pauses remain individually auditable
+
+## 7. Events and auditability
 
 Material SLA events are append-only:
 
@@ -104,7 +117,7 @@ Material SLA events are append-only:
 
 The system must be able to explain every displayed deadline from persisted policy, calendar and event data.
 
-## 7. Alerts
+## 8. Alerts
 
 The first release should support internal warning states:
 
@@ -117,7 +130,7 @@ The first release should support internal warning states:
 
 Alert delivery channels and thresholds remain operational decisions.
 
-## 8. Non-contractual nature
+## 9. Non-contractual nature
 
 SLA values are internal management targets.
 
@@ -131,7 +144,7 @@ They must not automatically appear in:
 
 Making them customer-facing requires a separate explicit commercial/legal approval.
 
-## 9. Logical entities
+## 10. Logical entities
 
 Conceptual entities:
 
@@ -145,12 +158,9 @@ Conceptual entities:
 
 The logical PostgreSQL model will decide whether regular weekly intervals are normalized rows or validated structured configuration.
 
-## 10. Pending decisions
+## 11. Pending decisions
 
-- treatment of Mozambique public holidays
-- exceptional closure administration
-- whether WAITING_CUSTOMER pauses resolution only
-- reopen time window and authorization
-- SLA targets used by reopened cycles
 - warning thresholds
 - priority downgrade restrictions
+- authorization required to reopen
+- later introduction of versioned holiday/closure exceptions
