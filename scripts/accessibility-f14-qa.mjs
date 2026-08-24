@@ -68,6 +68,7 @@ try {
 
     const semantics = await page.evaluate(() => {
       const visible = (element) => {
+        if (element.closest('[aria-hidden="true"]')) return false;
         const style = getComputedStyle(element);
         const rect = element.getBoundingClientRect();
         return !element.hidden
@@ -146,7 +147,6 @@ try {
     if (semantics.successDialogLabelledBy !== "success-title") failures.push(`success dialog label is broken: ${semantics.successDialogLabelledBy}`);
     if (semantics.horizontalOverflow > 1) failures.push(`horizontal overflow ${semantics.horizontalOverflow}px`);
 
-    // Skip-link keyboard behavior and visible focus indication.
     await page.keyboard.press("Tab");
     const skipFocus = await page.evaluate(() => {
       const active = document.activeElement;
@@ -162,7 +162,6 @@ try {
     if (skipFocus.outline === "none") failures.push("skip link lacks a visible focus outline");
     if (!skipFocus.visible) failures.push("focused skip link is not visible");
 
-    // Mobile menu: keyboard-open, focus enters menu, Escape returns to burger.
     if (viewport.width < 900) {
       const burger = page.locator("#navBurger");
       await burger.focus();
@@ -185,7 +184,6 @@ try {
       if (closed.expanded !== "false" || !closed.focusReturned) failures.push(`mobile menu Escape/focus restore failed: ${JSON.stringify(closed)}`);
     }
 
-    // Contextual quote dialog: accessible dialog semantics, focus, Escape restore.
     const serviceCta = page.locator('.service-v2-quote-cta[data-service-type="NEW_CONSTRUCTION"]').first();
     await serviceCta.scrollIntoViewIfNeeded();
     await serviceCta.focus();
