@@ -100,6 +100,7 @@ Consequences:
 - LeadStatusHistory
 - Quote
 - QuoteVersion
+- QuoteLineItem
 - Project
 - ProjectStatusHistory
 - SiteVisit
@@ -137,6 +138,7 @@ erDiagram
     LEAD ||--o{ LEAD_STATUS_HISTORY : transitions
     LEAD ||--o| QUOTE : owns
     QUOTE ||--|{ QUOTE_VERSION : versions
+    QUOTE_VERSION ||--|{ QUOTE_LINE_ITEM : prices
     LEAD ||--o{ SITE_VISIT : schedules_before_approval
     LEAD ||--o| PROJECT : creates_when_approved
     PROJECT ||--o{ PROJECT_STATUS_HISTORY : transitions
@@ -227,6 +229,18 @@ Transition rules:
 - at most one version per Quote may be ACCEPTED
 - acceptance records administrator, timestamp and evidence source
 - Quote overall status is derived from its current or accepted version instead of duplicated independently
+
+Approved financial structure:
+
+- every QuoteVersion contains structured QuoteLineItems
+- line items preserve description, classification, quantity, unit, unit price and ordering
+- subtotal, adjustments, tax and total are calculated from version-owned values
+- monetary values use exact decimal arithmetic, never binary floating point
+- an issued version snapshots every financial value and calculation input
+- changing scope, price, discount or tax after issue requires a new QuoteVersion
+- a free-text-only total is not an acceptable canonical commercial record
+
+Exact currency, tax and discount policies remain pending explicit approval.
 
 ### Project aggregate
 
