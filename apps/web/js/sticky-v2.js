@@ -194,9 +194,11 @@ export function initStickyV2() {
   ensureStickyStyles();
   document.querySelector("[data-sticky-v2]")?.remove();
   const sticky = createSticky();
+  const cta = sticky.querySelector(".sticky-v2-cta");
   document.documentElement.dataset.stickyV2Ready = "true";
 
   let ticking = false;
+  let restoreFocusAfterQuote = false;
   const schedule = () => {
     if (ticking) return;
     ticking = true;
@@ -206,11 +208,32 @@ export function initStickyV2() {
     });
   };
 
+  cta?.addEventListener("click", () => {
+    restoreFocusAfterQuote = true;
+  });
+
   addEventListener("scroll", schedule, { passive: true });
   addEventListener("resize", schedule, { passive: true });
   matchMedia(MOBILE_QUERY).addEventListener?.("change", schedule);
 
-  const bodyObserver = new MutationObserver(schedule);
+  const bodyObserver = new MutationObserver(() => {
+    const quoteOpen = document.body.classList.contains("quote-v2-open");
+    schedule();
+
+    if (!quoteOpen && restoreFocusAfterQuote) {
+      // The Quote controller removes its overlay class before this observer runs.
+      // The sticky was hidden while the task was open, so wait until its own
+      // responsive/context RAF has made the original trigger focusable again.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (!sticky.hidden && cta?.isConnected) {
+            cta.focus({ preventScroll: true });
+          }
+          restoreFocusAfterQuote = false;
+        });
+      });
+    }
+  });
   bodyObserver.observe(document.body, { attributes: true, attributeFilter: ["class"] });
 
   schedule();
