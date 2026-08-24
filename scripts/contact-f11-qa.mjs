@@ -9,6 +9,7 @@ const PHONES = [
 ];
 
 const CURRENT_PUBLIC_EMAIL = "solima.piscinas@gmail.com";
+const OFFICIAL_WHATSAPP = "https://wa.me/258843892558";
 const YOUTUBE_URL = "https://www.youtube.com/watch?v=MgiXGiHG8_I";
 const forbiddenClaims = /(?:desde\s+2006|19\s*\+?|mais\s+de\s+19\s+anos|32\+|01\s*\/\s*32|100%|45\s+dias)/iu;
 const forbiddenAdminHref = /(?:\/admin(?:\/|$)|\/dashboard(?:\/|$)|admin\/login|administrator|phpmyadmin|wp-admin)/iu;
@@ -96,6 +97,14 @@ try {
         width: link.getBoundingClientRect().width,
         height: link.getBoundingClientRect().height,
       }));
+      const whatsappLinks = [...section.querySelectorAll('a[data-contact-channel="WHATSAPP"]')].map((link) => ({
+        href: link.href,
+        label: link.getAttribute("aria-label") || "",
+        target: link.target,
+        rel: link.rel,
+        width: link.getBoundingClientRect().width,
+        height: link.getBoundingClientRect().height,
+      }));
       const socialLinks = [...section.querySelectorAll(".contact-v2-social-link")].map((link) => ({
         label: link.getAttribute("aria-label") || "",
         href: link.href,
@@ -123,7 +132,7 @@ try {
         emailHref: email?.getAttribute("href") || "",
         emailSource: email?.dataset.contactEmailSource || "",
         socialLinks,
-        waLinks: document.querySelectorAll('a[href*="wa.me"], a[href*="whatsapp.com"], a[href^="whatsapp:"]').length,
+        whatsappLinks,
         singlePhonePrimaryCta: section.querySelectorAll('.contact-v2-action a[href^="tel:"]').length,
         quoteHref: quote.getAttribute("href") || "",
         quoteIntentAction: quote.dataset.intentAction || "",
@@ -145,8 +154,12 @@ try {
     if (!metrics.styleLoaded) failures.push("F11 stylesheet not loaded");
     if (metrics.uniqueContact !== 1) failures.push(`expected one #contacto, got ${metrics.uniqueContact}`);
     if (metrics.title !== "Estamos em Maputo. Fale com a SOLIMA.") failures.push(`unexpected accessible contact title: ${metrics.title}`);
-    if (/telefone\s*\/\s*whatsapp|whatsapp/iu.test(metrics.contactText)) failures.push("contact still implies a public WhatsApp channel");
-    if (metrics.waLinks !== 0) failures.push(`unexpected WhatsApp/wa.me links: ${metrics.waLinks}`);
+    if (metrics.whatsappLinks.length !== 1) failures.push(`expected one official WhatsApp link, got ${metrics.whatsappLinks.length}`);
+    const whatsapp = metrics.whatsappLinks[0];
+    if (!whatsapp || whatsapp.href !== OFFICIAL_WHATSAPP) failures.push(`official WhatsApp link missing or wrong: ${whatsapp?.href || "none"}`);
+    if (whatsapp && (!whatsapp.label.includes("+258 84 389 2558") || whatsapp.target !== "_blank")) failures.push("official WhatsApp label/target is incorrect");
+    if (whatsapp && (!whatsapp.rel.split(/\s+/).includes("noopener") || !whatsapp.rel.split(/\s+/).includes("noreferrer"))) failures.push("official WhatsApp link missing noopener/noreferrer");
+    if (whatsapp && (whatsapp.height < 44 || whatsapp.width < 44)) failures.push(`WhatsApp target below 44px: ${whatsapp.width}x${whatsapp.height}`);
     if (metrics.singlePhonePrimaryCta !== 0) failures.push("one phone was promoted as the primary contact CTA before business approval");
     if (metrics.phones.length !== 3) failures.push(`expected 3 phone links, got ${metrics.phones.length}`);
     PHONES.forEach(([href, label], index) => {
@@ -158,7 +171,7 @@ try {
     if (metrics.phoneGridColumns !== expectedPhoneCols) failures.push(`phone grid expected ${expectedPhoneCols} columns, got ${metrics.phoneGridColumns}`);
 
     if (metrics.emailText !== CURRENT_PUBLIC_EMAIL || metrics.emailHref !== `mailto:${CURRENT_PUBLIC_EMAIL}`) failures.push(`current public email changed silently: ${metrics.emailText} / ${metrics.emailHref}`);
-    if (metrics.emailSource !== "CURRENT_PUBLIC_SITE") failures.push("temporary public-email provenance marker missing");
+    if (metrics.emailSource !== "OFFICIAL_APPROVED") failures.push("official public-email approval marker missing");
 
     if (metrics.socialLinks.length !== 4) failures.push(`expected 4 social/proof links, got ${metrics.socialLinks.length}`);
     const youtube = metrics.socialLinks.find((link) => link.label === "YouTube");
