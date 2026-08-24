@@ -35,6 +35,17 @@ The primary normalized telephone number is the operational customer identity.
 - Telephone reassignment, customer merging and anonymization require audited administrative operations.
 - A telephone must never be silently transferred between customers.
 
+### Public lead media requirement
+
+Every public Lead submission must include between one and five work-location photographs, regardless of selected service.
+
+- server validation is authoritative
+- browser validation mirrors the rule for usability
+- inspiration photographs remain optional, from zero to two
+- a missing location photograph rejects the submission before business persistence
+- all existing media signature, size, pixel, decode, re-encode, metadata-removal and cleanup controls remain mandatory
+- rollout is a versioned public-contract change and requires frontend/API compatibility testing
+
 ### Commercial approval prerequisite
 
 A Lead can transition to `APPROVED` only when it has an accepted QuoteVersion.
