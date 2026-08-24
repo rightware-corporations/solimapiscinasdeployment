@@ -135,7 +135,7 @@ erDiagram
     LEAD ||--o{ LEAD_EXTRA : selects
     LEAD ||--o{ COMMERCIAL_ACTIVITY : records
     LEAD ||--o{ LEAD_STATUS_HISTORY : transitions
-    LEAD ||--o{ QUOTE : receives
+    LEAD ||--o| QUOTE : owns
     QUOTE ||--|{ QUOTE_VERSION : versions
     LEAD ||--o{ SITE_VISIT : schedules_before_approval
     LEAD ||--o| PROJECT : creates_when_approved
@@ -191,14 +191,12 @@ A Customer can submit multiple Leads. Repeated contact does not overwrite prior 
 
 Quote represents the commercial proposal process for one Lead. QuoteVersion preserves every material proposal revision.
 
-Approved invariant:
+Approved invariants:
 
+- a Lead has at most one Quote
+- a Quote has one or more ordered QuoteVersions
+- a materially different commercial opportunity requires a new Lead
 - only an accepted QuoteVersion permits Lead approval
-
-Proposed invariants pending explicit approval:
-
-- the Lead-to-Quote cardinality is not yet approved
-- a Quote has one or more ordered versions
 - only one QuoteVersion is current at a time
 - a sent version is immutable; corrections create a new version
 - acceptance applies to a specific QuoteVersion
@@ -361,7 +359,7 @@ Proposed administrator command:
 - reopen eligibility and SLA clock-reset behavior
 - commercial transition permissions
 - project lifecycle
-- exact quote/version lifecycle after the accepted-version prerequisite
+- exact Quote and QuoteVersion state lifecycle
 - appointment ownership
 - customer-visible versus internal communication
 - retention and anonymization rules
