@@ -191,14 +191,17 @@ A Customer can submit multiple Leads. Repeated contact does not overwrite prior 
 
 Quote represents the commercial proposal process for one Lead. QuoteVersion preserves every material proposal revision.
 
-Approved invariants:
+Approved invariant:
 
-- a Lead may have multiple Quotes
+- only an accepted QuoteVersion permits Lead approval
+
+Proposed invariants pending explicit approval:
+
+- the Lead-to-Quote cardinality is not yet approved
 - a Quote has one or more ordered versions
 - only one QuoteVersion is current at a time
 - a sent version is immutable; corrections create a new version
 - acceptance applies to a specific QuoteVersion
-- only an accepted QuoteVersion permits Lead approval
 - acceptance and Lead approval are separate audited administrator actions
 - SiteVisit belongs to Lead because it occurs before Project creation
 - a Lead may have multiple SiteVisits
