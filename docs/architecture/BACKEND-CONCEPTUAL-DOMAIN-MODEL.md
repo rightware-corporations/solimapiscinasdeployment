@@ -27,11 +27,13 @@ Rules:
 The primary normalized telephone number is the operational customer identity.
 
 - Input is normalized to E.164.
-- Two submissions with the same normalized primary telephone resolve to the same Customer.
+- A public submission stores a contact snapshot on Lead and does not create Customer.
+- When a Lead is approved, its normalized phone resolves the existing Customer or creates one.
+- Each Customer has exactly one active telephone.
 - Display formatting is presentation-only.
 - The normalized phone must be unique among active customer records.
-- Customer merging, number reassignment and anonymization require audited administrative operations.
-- A telephone should not be silently transferred between customers.
+- Telephone reassignment, customer merging and anonymization require audited administrative operations.
+- A telephone must never be silently transferred between customers.
 
 ### Lead-to-project conversion
 
@@ -49,12 +51,14 @@ Repeating the command must return the existing Project instead of creating anoth
 
 ### Support intake
 
-Support and complaints are initially registered only by the administrator inside SOLIMA Office.
+Support and complaints are initially registered only by the administrator inside SOLIMA Office and must reference an existing Project.
 
 Consequences:
 
 - no public support submission endpoint in the first release
 - no anonymous ticket intake
+- no support case without a SOLIMA Project
+- Customer ownership is derived through Project to avoid contradictory duplicate ownership
 - every case records the administrator who registered it
 - the source of the report must be recorded
 - public support UI remains disabled
@@ -74,7 +78,6 @@ Consequences:
 ### Customer and Contact
 
 - Customer
-- CustomerPhone
 - CustomerEmail
 - CustomerAddress
 
@@ -115,7 +118,6 @@ Consequences:
 
 ```mermaid
 erDiagram
-    CUSTOMER ||--|{ CUSTOMER_PHONE : has
     CUSTOMER ||--o{ CUSTOMER_EMAIL : has
     CUSTOMER ||--o{ CUSTOMER_ADDRESS : uses
     CUSTOMER ||--o{ LEAD : submits
@@ -127,8 +129,7 @@ erDiagram
     LEAD ||--o| PROJECT : creates_when_approved
     PROJECT ||--o{ PROJECT_STATUS_HISTORY : transitions
     PROJECT ||--o{ SITE_VISIT : schedules
-    CUSTOMER ||--o{ SUPPORT_CASE : owns
-    PROJECT o|--o{ SUPPORT_CASE : concerns
+    PROJECT ||--o{ SUPPORT_CASE : receives
     SUPPORT_CASE ||--o{ SUPPORT_MESSAGE : contains
     SUPPORT_CASE ||--o{ SUPPORT_CASE_STATUS_HISTORY : transitions
     ADMIN_USER ||--o{ ADMIN_SESSION : owns
@@ -147,13 +148,16 @@ erDiagram
 
 ### Customer aggregate
 
-Customer is the stable business party. Its phone, email and address are contact points, not independent customers.
+Customer is created only when a Lead is approved. Before approval, contact data remains an immutable business snapshot on Lead.
 
 Invariant:
 
-- one active primary phone per Customer
-- one active Customer per normalized primary phone
-- contact-point changes are audited
+- one active telephone per Customer
+- one active Customer per normalized telephone
+- Customer creation happens inside the approval transaction
+- an existing Customer with the Lead phone is reused
+- contact changes are audited
+- prior Lead contact snapshots are not rewritten when Customer contact changes
 
 ### Lead aggregate
 
@@ -187,8 +191,8 @@ SupportCase represents a support request, incident, complaint or warranty concer
 Invariant:
 
 - it is registered by an authenticated administrator
-- it belongs to a Customer
-- it may reference a Project
+- it must reference a Project
+- its Customer is derived from Project
 - state changes append history
 - internal notes and customer-visible messages are distinguishable
 - closure records who closed it and why
@@ -245,12 +249,11 @@ These state machines must be approved before SQL enums or application transition
 Proposed submission transaction:
 
 1. Normalize public telephone to E.164.
-2. Find active CustomerPhone by normalized value.
-3. If found, attach the new Lead to its Customer.
-4. If not found, create Customer and primary CustomerPhone.
-5. Create Lead and public-submission graph.
-6. Create durable messaging outbox.
-7. Commit atomically.
+2. Create Lead with an immutable contact snapshot.
+3. Do not create or modify Customer.
+4. Create the public-submission graph.
+5. Create the durable messaging outbox.
+6. Commit atomically.
 
 Idempotency is still evaluated before creating duplicate business records.
 
@@ -264,18 +267,21 @@ Proposed administrator command:
 4. If Project exists, return it.
 5. Validate allowed current Lead state.
 6. Append LeadStatusHistory.
-7. Set Lead to `APPROVED`.
-8. Create Project with unique `sourceLeadId`.
-9. Append initial ProjectStatusHistory.
-10. Write AuditEvent.
-11. Commit one transaction.
+7. Resolve Customer by the Lead normalized phone.
+8. Create Customer if no active Customer exists for that phone.
+9. Attach Lead to Customer without changing the original Lead snapshot.
+10. Set Lead to `APPROVED`.
+11. Create Project with unique `sourceLeadId` and resolved Customer.
+12. Append initial ProjectStatusHistory.
+13. Write AuditEvent.
+14. Commit one transaction.
 
 ## 9. Support registration flow
 
 Proposed administrator command:
 
-1. Resolve Customer by normalized phone.
-2. Select optional related Project.
+1. Select an existing Project.
+2. Derive Customer from Project.
 3. Select case type/category.
 4. Record report source and description.
 5. Attach safe media if provided.
@@ -287,9 +293,6 @@ Proposed administrator command:
 
 ## 10. Open conceptual decisions
 
-- whether public lead submission automatically creates a Customer or creates a provisional identity first
-- whether a Customer can have multiple active phone numbers
-- whether support can exist without a related Project
 - support categories and priorities
 - SLA rules
 - commercial transition permissions
