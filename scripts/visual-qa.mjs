@@ -265,7 +265,7 @@ try {
     await scrollToSection(page, "#contacto");
     await screenshotViewport(page, viewport, "contacto");
     if (requiredScreenshots.has(viewport.name)) {
-      await page.locator(".contacto-grid").scrollIntoViewIfNeeded();
+      await page.locator(".contact-v2-layout").scrollIntoViewIfNeeded();
       await settle(page, 180);
       await screenshotViewport(page, viewport, "contacto-details");
     }
