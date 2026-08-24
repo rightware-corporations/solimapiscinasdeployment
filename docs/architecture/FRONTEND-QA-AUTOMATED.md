@@ -1,8 +1,8 @@
 # Frontend Automated QA Result
 
-**Tested commit:** `3b27b0775d6bb2ad080b7da1bee2a74184418f83`  
+**Tested commit:** `4f1d4b60bb8d25d81f76e512da3eb4c6ef97ca9e`  
 **Runner:** GitHub Actions / Ubuntu / Node 22 / Playwright Chromium  
-**Generated:** 2026-08-23T23:59:11Z
+**Generated:** 2026-08-24T00:06:14Z
 
 | Gate | Outcome |
 |---|---|
@@ -10,8 +10,8 @@
 | Hardened backend regression | success |
 | F3 hero capability/viewports | success |
 | F4 proof strip | success |
-| Existing visual QA normal | failure |
-| Existing visual QA reduced | failure |
+| Existing visual QA normal | success |
+| Existing visual QA reduced | success |
 | Existing visual matrix merge | success |
 
 ## Hero F3 summary
