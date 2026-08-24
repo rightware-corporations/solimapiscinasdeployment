@@ -101,6 +101,8 @@ async function quoteMetrics(page) {
       closeHeight: closeRect.height,
       activeIsClose: document.activeElement === close,
       panelWidth: panelRect.width,
+      panelLeft: panelRect.left,
+      panelRight: innerWidth - panelRect.right,
       horizontalOverflow: document.documentElement.scrollWidth - innerWidth,
       inertedCount: document.querySelectorAll("[data-quote-v2-inerted]").length,
       placeholderCount: document.querySelectorAll(".quote-v2-placeholder").length,
@@ -147,7 +149,8 @@ try {
     if (service.inertedCount < 1 || service.placeholderCount !== 1) failures.push("background isolation/scroll placeholder not active");
     if (viewport.kind === "phone" && service.panelWidth < viewport.width * 0.94) failures.push(`phone task is not near-full-width: ${service.panelWidth}px`);
     if (viewport.kind === "tablet" && service.panelWidth >= viewport.width) failures.push(`tablet task should remain a sheet: ${service.panelWidth}px`);
-    if (viewport.kind === "desktop" && service.panelWidth > 660) failures.push(`desktop drawer too wide: ${service.panelWidth}px`);
+    if (viewport.kind === "desktop" && service.panelWidth < Math.min(1000, viewport.width * 0.68)) failures.push(`desktop workspace too narrow: ${service.panelWidth}px`);
+    if (viewport.kind === "desktop" && Math.abs(service.panelLeft - service.panelRight) > 3) failures.push(`desktop workspace is not centred: ${service.panelLeft}px / ${service.panelRight}px`);
     if (service.horizontalOverflow > 1) failures.push(`task horizontal overflow ${service.horizontalOverflow}px`);
 
     await page.keyboard.press("Escape");
