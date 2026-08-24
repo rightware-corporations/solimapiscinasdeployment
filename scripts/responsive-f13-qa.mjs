@@ -11,6 +11,7 @@ const viewports = [
   { name: "600x960", width: 600, height: 960, kind: "phone" },
   { name: "768x1024", width: 768, height: 1024, kind: "tablet" },
   { name: "820x1180", width: 820, height: 1180, kind: "tablet" },
+  { name: "844x390", width: 844, height: 390, kind: "tablet" },
   { name: "1024x768", width: 1024, height: 768, kind: "tablet" },
   { name: "1366x768", width: 1366, height: 768, kind: "desktop" },
   { name: "1440x900", width: 1440, height: 900, kind: "desktop" },
