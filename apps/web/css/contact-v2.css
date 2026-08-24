@@ -130,15 +130,44 @@
   gap: .65rem;
 }
 
+.contact-v2-phone-item {
+  display: grid;
+  min-width: 0;
+  border: 1px solid var(--color-border-inverse, rgba(220, 232, 248, .14));
+  border-radius: var(--radius-sm, .5rem);
+  overflow: hidden;
+}
+
 .contact-v2-phone {
   min-height: var(--control-touch-min, 44px);
   display: inline-flex;
   align-items: center;
   padding: .55rem .7rem;
-  border: 1px solid var(--color-border-inverse, rgba(220, 232, 248, .14));
-  border-radius: var(--radius-sm, .5rem);
   font-size: .88rem;
   line-height: 1.3;
+}
+
+.contact-v2-whatsapp {
+  min-height: var(--control-touch-min, 44px);
+  display: inline-flex;
+  align-items: center;
+  gap: .42rem;
+  padding: .5rem .7rem;
+  border-top: 1px solid var(--color-border-inverse, rgba(220, 232, 248, .14));
+  color: #7ce8a6;
+  text-decoration: none;
+  font: 700 .72rem/1.2 var(--font-ui, var(--font-sans));
+}
+
+.contact-v2-whatsapp:hover,
+.contact-v2-whatsapp:focus-visible {
+  color: #a6f4c5;
+  background: rgba(37, 211, 102, .08);
+}
+
+.contact-v2-whatsapp .lucide {
+  width: .9rem;
+  height: .9rem;
 }
 
 .contact-v2-socials {
@@ -319,6 +348,7 @@
 @media (max-width: 699px) {
   .contact-v2-phone-list { grid-template-columns: 1fr; }
 
+  .contact-v2-phone-item,
   .contact-v2-phone { width: 100%; }
 
   .contact-v2-footer-inner {
