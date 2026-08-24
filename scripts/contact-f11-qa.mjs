@@ -117,7 +117,7 @@ try {
       const phoneGridColumns = getComputedStyle(phoneList).gridTemplateColumns.split(" ").filter(Boolean).length;
       const quote = section.querySelector(".contact-v2-quote-cta");
       const quoteRect = quote.getBoundingClientRect();
-      const email = section.querySelector('a[data-contact-email-source="CURRENT_PUBLIC_SITE"]');
+      const email = section.querySelector('a[data-contact-email-source="OFFICIAL_APPROVED"]');
       const footerLinks = [...footer.querySelectorAll("a[href]")].map((link) => link.getAttribute("href") || "");
 
       return {
