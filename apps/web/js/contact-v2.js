@@ -2,13 +2,11 @@ const CONTACT_STYLE_HREF = "/css/contact-v2.css";
 
 const PHONES = Object.freeze([
   { href: "tel:+258824407120", label: "+258 82 440 7120" },
-  { href: "tel:+258843892558", label: "+258 84 389 2558" },
+  { href: "tel:+258843892558", label: "+258 84 389 2558", whatsappHref: "https://wa.me/258843892558" },
   { href: "tel:+258847949100", label: "+258 84 794 9100" },
 ]);
 
-// Retain the address/email already exposed by the current public landing.
-// Final public contact approval remains a production cutover gate; F11 does not
-// silently choose between competing business contact details.
+// Official public contact details approved for the SOLIMA landing.
 const CURRENT_PUBLIC_EMAIL = "solima.piscinas@gmail.com";
 const CURRENT_PUBLIC_ADDRESS = "Bairro de Campoane, Casa nº 1845, Município de Boane — Maputo";
 
@@ -67,12 +65,33 @@ function createPhoneList() {
   list.setAttribute("aria-label", "Telefones da SOLIMA");
 
   PHONES.forEach((phone) => {
+    const item = document.createElement("div");
+    item.className = "contact-v2-phone-item";
+
     const link = document.createElement("a");
     link.href = phone.href;
     link.textContent = phone.label;
     link.className = "contact-v2-phone";
     link.dataset.contactChannel = "PHONE";
-    list.append(link);
+    item.append(link);
+
+    if (phone.whatsappHref) {
+      const whatsapp = document.createElement("a");
+      whatsapp.href = phone.whatsappHref;
+      whatsapp.target = "_blank";
+      whatsapp.rel = "noopener noreferrer";
+      whatsapp.className = "contact-v2-whatsapp";
+      whatsapp.dataset.contactChannel = "WHATSAPP";
+      whatsapp.setAttribute("aria-label", `Conversar pelo WhatsApp: ${phone.label}`);
+      whatsapp.append(icon("message-circle"));
+
+      const whatsappLabel = document.createElement("span");
+      whatsappLabel.textContent = "WhatsApp";
+      whatsapp.append(whatsappLabel);
+      item.append(whatsapp);
+    }
+
+    list.append(item);
   });
   return list;
 }
@@ -146,7 +165,7 @@ function buildContact(section) {
   const email = document.createElement("a");
   email.href = `mailto:${CURRENT_PUBLIC_EMAIL}`;
   email.textContent = CURRENT_PUBLIC_EMAIL;
-  email.dataset.contactEmailSource = "CURRENT_PUBLIC_SITE";
+  email.dataset.contactEmailSource = "OFFICIAL_APPROVED";
   details.append(createContactItem({ iconName: "mail", label: "Email", content: email }));
   details.append(createSocials());
 
