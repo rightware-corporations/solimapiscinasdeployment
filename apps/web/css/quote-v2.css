@@ -298,6 +298,41 @@ body.quote-v2-open {
   }
 }
 
+
+/* Desktop task: a centred workspace, not a mobile drawer. */
+@media (min-width: 1180px) {
+  .orcamento.quote-v2-task-open {
+    display: grid;
+    place-items: center;
+    padding: clamp(1.25rem, 3vh, 2.5rem) clamp(1.5rem, 4vw, 4rem);
+  }
+
+  .orcamento.quote-v2-task-open .orcamento-grid {
+    width: min(100%, 72rem);
+    min-height: 0;
+    max-height: calc(100dvh - clamp(2.5rem, 6vh, 5rem));
+    margin: 0;
+    padding: clamp(1.25rem, 2.5vw, 2rem);
+    overflow: auto;
+    border: 1px solid rgba(125, 211, 252, .16);
+    border-radius: clamp(.85rem, 1.5vw, 1.25rem);
+  }
+
+  .orcamento.quote-v2-task-open .orcamento-form-card {
+    width: min(100%, 62rem);
+    margin-inline: auto;
+    padding: clamp(1.75rem, 3vw, 2.75rem);
+    border-color: rgba(125, 211, 252, .12);
+    border-radius: .85rem;
+    background: rgba(5, 35, 67, .74);
+  }
+
+  .orcamento.quote-v2-task-open .quote-v2-task-close {
+    top: 0;
+    margin-left: auto;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .orcamento[data-quote-v2],
   .orcamento[data-quote-v2] *,
