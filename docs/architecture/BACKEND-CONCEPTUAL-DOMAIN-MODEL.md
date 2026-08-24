@@ -35,9 +35,19 @@ The primary normalized telephone number is the operational customer identity.
 - Telephone reassignment, customer merging and anonymization require audited administrative operations.
 - A telephone must never be silently transferred between customers.
 
+### Commercial approval prerequisite
+
+A Lead can transition to `APPROVED` only when it has an accepted QuoteVersion.
+
+- acceptance is recorded explicitly with timestamp and administrator attribution
+- a draft or merely sent quote does not authorize approval
+- approval remains a separate authenticated administrator command
+- accepting a quote never creates Customer or Project silently
+- the accepted version becomes immutable commercial evidence
+
 ### Lead-to-project conversion
 
-When an administrator changes a lead to `APPROVED`, the system creates the associated Project in the same business operation.
+After a QuoteVersion is accepted, when an administrator changes the Lead to `APPROVED`, the system creates the associated Project in the same business operation.
 
 The operation must be:
 
@@ -126,9 +136,10 @@ erDiagram
     LEAD ||--o{ COMMERCIAL_ACTIVITY : records
     LEAD ||--o{ LEAD_STATUS_HISTORY : transitions
     LEAD ||--o{ QUOTE : receives
+    QUOTE ||--|{ QUOTE_VERSION : versions
+    LEAD ||--o{ SITE_VISIT : schedules_before_approval
     LEAD ||--o| PROJECT : creates_when_approved
     PROJECT ||--o{ PROJECT_STATUS_HISTORY : transitions
-    PROJECT ||--o{ SITE_VISIT : schedules
     PROJECT ||--o{ SUPPORT_CASE : receives
     SUPPORT_CASE ||--o{ SUPPORT_MESSAGE : contains
     SUPPORT_CASE ||--o{ SUPPORT_CASE_STATUS_HISTORY : transitions
@@ -171,8 +182,26 @@ It owns:
 - lead media references
 - commercial state history
 - commercial activities
+- site visits before project approval
+- quotes and their immutable versions
 
 A Customer can submit multiple Leads. Repeated contact does not overwrite prior opportunities.
+
+### Quote aggregate
+
+Quote represents the commercial proposal process for one Lead. QuoteVersion preserves every material proposal revision.
+
+Approved invariants:
+
+- a Lead may have multiple Quotes
+- a Quote has one or more ordered versions
+- only one QuoteVersion is current at a time
+- a sent version is immutable; corrections create a new version
+- acceptance applies to a specific QuoteVersion
+- only an accepted QuoteVersion permits Lead approval
+- acceptance and Lead approval are separate audited administrator actions
+- SiteVisit belongs to Lead because it occurs before Project creation
+- a Lead may have multiple SiteVisits
 
 ### Project aggregate
 
@@ -241,7 +270,7 @@ Proposed conceptual lifecycle:
 
 ```text
 NEW -> CONTACTED -> SITE_VISIT_SCHEDULED -> QUOTE_PREPARING
-    -> QUOTE_SENT -> NEGOTIATION -> APPROVED -> PROJECT_CREATED
+    -> QUOTE_SENT -> NEGOTIATION -> QUOTE_ACCEPTED -> APPROVED -> PROJECT_CREATED
 
 Terminal alternatives:
 LOST
@@ -294,16 +323,17 @@ Proposed administrator command:
 2. Authorize `lead.approve`.
 3. Load Lead and existing Project relation.
 4. If Project exists, return it.
-5. Validate allowed current Lead state.
-6. Append LeadStatusHistory.
-7. Resolve Customer by the Lead normalized phone.
-8. Create Customer if no active Customer exists for that phone.
-9. Attach Lead to Customer without changing the original Lead snapshot.
-10. Set Lead to `APPROVED`.
-11. Create Project with unique `sourceLeadId` and resolved Customer.
-12. Append initial ProjectStatusHistory.
-13. Write AuditEvent.
-14. Commit one transaction.
+5. Validate that a specific QuoteVersion is accepted.
+6. Validate allowed current Lead state.
+7. Append LeadStatusHistory.
+8. Resolve Customer by the Lead normalized phone.
+9. Create Customer if no active Customer exists for that phone.
+10. Attach Lead to Customer without changing the original Lead snapshot.
+11. Set Lead to `APPROVED`.
+12. Create Project with unique `sourceLeadId`, accepted QuoteVersion and resolved Customer.
+13. Append initial ProjectStatusHistory.
+14. Write AuditEvent.
+15. Commit one transaction.
 
 ## 9. Support registration flow
 
@@ -328,7 +358,7 @@ Proposed administrator command:
 - reopen eligibility and SLA clock-reset behavior
 - commercial transition permissions
 - project lifecycle
-- quote/version lifecycle
+- exact quote/version lifecycle after the accepted-version prerequisite
 - appointment ownership
 - customer-visible versus internal communication
 - retention and anonymization rules
