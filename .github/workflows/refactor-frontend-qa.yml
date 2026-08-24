@@ -85,6 +85,9 @@ jobs:
       - name: Focused F11 Contact & Footer QA
         run: node scripts/contact-f11-qa.mjs
 
+      - name: Focused F12 Sticky / Intent QA
+        run: node scripts/sticky-f12-qa.mjs
+
       - name: Visual QA — normal motion
         run: npm run qa:normal
 
