@@ -13,6 +13,29 @@ import { errorHandler } from "./middleware/error-handler.js";
 import { mountLeadRoutes } from "./leads/routes.js";
 
 const webRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../web");
+const cacheableStaticExtensions = new Set([
+  ".css",
+  ".js",
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".webp",
+  ".svg",
+  ".ico",
+]);
+
+function setStaticCacheHeaders(res, filePath) {
+  const extension = path.extname(filePath).toLowerCase();
+  if (extension === ".html") {
+    res.setHeader("Cache-Control", "no-cache");
+    return;
+  }
+  if (cacheableStaticExtensions.has(extension)) {
+    res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+    return;
+  }
+  res.setHeader("Cache-Control", "no-cache");
+}
 
 export function createApp({ config, prisma, leadService, repository, logger, storageFileSystem = fs }) {
   const app = express();
@@ -46,7 +69,7 @@ export function createApp({ config, prisma, leadService, repository, logger, sto
   mountLeadRoutes(app, { upload: createUpload(config), uploadLimiter: createLeadLimiter(), leadService });
   app.use(express.static(webRoot, {
     etag: true,
-    setHeaders: (res) => res.setHeader("Cache-Control", "no-cache")
+    setHeaders: setStaticCacheHeaders,
   }));
   app.use(notFound);
   app.use(errorHandler(logger));

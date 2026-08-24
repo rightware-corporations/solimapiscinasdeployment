@@ -1,0 +1,170 @@
+/* SOLIMA Landing v2 — F4 proof strip */
+
+/* Legacy sections can declare display:grid/flex in author CSS, which can
+   override the browser's default [hidden] rule. Claim guards must remain
+   non-rendered until the corresponding v2 sections replace them. */
+[data-claim-guarded][hidden] {
+  display: none !important;
+}
+
+.proof-v2 {
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(4, 30, 60, .98), rgba(3, 20, 40, .98));
+  border-block: 1px solid var(--color-border-inverse, var(--line));
+  color: var(--color-text-inverse, var(--white));
+}
+
+.proof-v2::before {
+  content: "";
+  position: absolute;
+  width: 18rem;
+  height: 18rem;
+  top: -12rem;
+  right: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 207, 244, .12), transparent 68%);
+  pointer-events: none;
+}
+
+.proof-v2-inner {
+  box-sizing: border-box;
+  width: min(100%, var(--layout-content-wide, 1560px));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.proof-v2-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.proof-v2-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.proof-v2-item {
+  min-width: 0;
+  padding: clamp(1.4rem, 2.4vw, 2.2rem) clamp(1rem, 2.2vw, 2rem);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: .8rem;
+}
+
+.proof-v2-item + .proof-v2-item {
+  border-left: 1px solid var(--color-border-inverse, var(--line));
+}
+
+.proof-v2-marker {
+  width: .55rem;
+  height: .55rem;
+  margin-top: .38rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 1px;
+  transform: rotate(45deg);
+  flex: none;
+}
+
+.proof-v2-marker::before,
+.proof-v2-marker::after {
+  content: "";
+  display: block;
+  background: var(--color-brand-aqua, var(--aqua));
+}
+
+.proof-v2-marker::before {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+
+.proof-v2-marker::after {
+  grid-column: 2;
+  grid-row: 2;
+  background: var(--color-brand-blue, var(--aqua-deep));
+}
+
+.proof-v2-copy {
+  min-width: 0;
+}
+
+.proof-v2-label {
+  display: block;
+  color: var(--color-text-inverse, var(--white));
+  font: 600 clamp(.72rem, .85vw, .82rem)/1.35 var(--font-ui, var(--font-sans));
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.proof-v2-detail {
+  display: block;
+  margin-top: .38rem;
+  max-width: 34ch;
+  color: var(--color-text-inverse-muted, var(--mute));
+  font: 400 clamp(.78rem, .9vw, .9rem)/1.55 var(--font-ui, var(--font-sans));
+  text-wrap: pretty;
+}
+
+@media (max-width: 767px) {
+  .proof-v2-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .proof-v2-item {
+    padding: 1.2rem .8rem;
+    gap: .65rem;
+  }
+
+  .proof-v2-item + .proof-v2-item {
+    border-left: 0;
+  }
+
+  .proof-v2-item:nth-child(2) {
+    border-left: 1px solid var(--color-border-inverse, var(--line));
+  }
+
+  .proof-v2-item:nth-child(3) {
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--color-border-inverse, var(--line));
+  }
+
+  .proof-v2-item:nth-child(3) .proof-v2-detail {
+    max-width: 52ch;
+  }
+}
+
+@media (max-width: 359px) {
+  .proof-v2-inner {
+    padding-inline: max(.8rem, var(--safe-left, 0px)) max(.8rem, var(--safe-right, 0px));
+  }
+
+  .proof-v2-item {
+    padding-inline: .55rem;
+  }
+
+  .proof-v2-label {
+    font-size: .66rem;
+    letter-spacing: .09em;
+  }
+
+  .proof-v2-detail {
+    font-size: .74rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .proof-v2::before { display: none; }
+}

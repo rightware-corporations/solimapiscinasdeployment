@@ -176,23 +176,7 @@ try {
     await screenshotViewport(page, viewport, "hero");
 
     await scrollToSection(page, "#sobre");
-    await page.locator("#sobre img.parallax-media").evaluate((image) => {
-      if (image.complete && image.naturalWidth > 0) return;
-      return new Promise((resolve, reject) => {
-        image.addEventListener("load", resolve, { once: true });
-        image.addEventListener("error", () => reject(new Error("Imagem da secção Sobre não carregou")), { once: true });
-      });
-    });
-    await page.locator("#sobre img.parallax-media").evaluate((image) =>
-      Promise.race([image.decode().catch(() => {}), new Promise((resolve) => setTimeout(resolve, 2_000))])
-    );
-    await page.evaluate(() => {
-      const media = document.querySelector(".sobre-media")?.getBoundingClientRect();
-      if (!media || media.bottom <= innerHeight - 20) return;
-      const destination = scrollY + media.bottom - innerHeight + 20;
-      if (window.solimaLenis) window.solimaLenis.scrollTo(destination, { immediate: true, force: true });
-      else window.scrollTo({ top: destination, behavior: "instant" });
-    });
+    await page.locator("#sobre[data-why-v2]").waitFor({ state: "visible", timeout: 5_000 });
     await settle(page, 180);
     const aboutMetrics = await page.evaluate(() => {
       const rect = (element) => {
@@ -200,17 +184,17 @@ try {
         const value = element.getBoundingClientRect();
         return { left: value.left, top: value.top, right: value.right, bottom: value.bottom, width: value.width, height: value.height };
       };
-      const metadataElement = document.querySelector(".sobre-image-meta");
-      const statElement = document.querySelector(".sobre-stat-card");
-      const metadataVisible = metadataElement && getComputedStyle(metadataElement).display !== "none";
-      const metadata = metadataVisible ? rect(metadataElement) : null;
-      const stat = rect(statElement);
-      const overlaps = metadata && stat && !(metadata.right <= stat.left || metadata.left >= stat.right || metadata.bottom <= stat.top || metadata.top >= stat.bottom);
+      const section = rect(document.querySelector("#sobre[data-why-v2]"));
+      const inner = rect(document.querySelector("#sobre .why-v2-inner"));
+      const pillars = [...document.querySelectorAll("#sobre .why-v2-pillar")].map(rect).filter(Boolean);
       return {
-        metadataVisible: !!metadataVisible,
-        metadataBox: metadata,
-        statBox: stat,
-        metadataOverlapsStat: !!overlaps
+        metadataVisible: false,
+        metadataBox: null,
+        statBox: null,
+        metadataOverlapsStat: false,
+        whySectionPresent: !!section,
+        whyInsideViewport: !!inner && inner.left >= -1 && inner.right <= innerWidth + 1,
+        whyPillarsVisible: pillars.length === 5 && pillars.every((pillar) => pillar.width > 0 && pillar.height > 0)
       };
     });
     await screenshotViewport(page, viewport, "sobre");
@@ -281,7 +265,7 @@ try {
     await scrollToSection(page, "#contacto");
     await screenshotViewport(page, viewport, "contacto");
     if (requiredScreenshots.has(viewport.name)) {
-      await page.locator(".contacto-grid").scrollIntoViewIfNeeded();
+      await page.locator(".contact-v2-layout").scrollIntoViewIfNeeded();
       await settle(page, 180);
       await screenshotViewport(page, viewport, "contacto-details");
     }
@@ -319,6 +303,9 @@ const failures = results.filter((result) =>
   !result.titleClearsNav ||
   !result.touchCursorHidden ||
   result.metadataOverlapsStat ||
+  !result.whySectionPresent ||
+  !result.whyInsideViewport ||
+  !result.whyPillarsVisible ||
   !result.actionInsideCard ||
   !result.actionRoundedBothSides ||
   !result.desktopTwoColumns ||

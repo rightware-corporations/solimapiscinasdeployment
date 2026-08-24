@@ -1,0 +1,117 @@
+name: Refactor Frontend QA
+
+on:
+  push:
+    branches:
+      - refactor/v2-frontend-foundation
+  pull_request:
+    branches:
+      - integration/pre-production-hardened
+    paths:
+      - "apps/web/**"
+      - "scripts/**"
+      - "tests/**"
+      - "apps/api/tests/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/refactor-frontend-qa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression-and-visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NODE_ENV: test
+      WHATSAPP_ENABLED: "false"
+      DATABASE_URL: file:/tmp/solima-ci.db
+      STORAGE_ROOT: /tmp/solima-ci-media
+      VISUAL_REPORT_ROOT: visual-report-v2.1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Generate Prisma client
+        run: npm run prisma:generate
+
+      - name: Backend and integration regression tests
+        run: npm test
+
+      - name: Export Playwright browser path
+        shell: bash
+        run: |
+          node --input-type=module -e 'import { chromium } from "playwright"; console.log("BROWSER_PATH=" + chromium.executablePath())' >> "$GITHUB_ENV"
+
+      - name: Focused F3 Hero QA
+        run: node scripts/hero-f3-qa.mjs
+
+      - name: Focused F4 Proof QA
+        run: node scripts/proof-v2-qa.mjs
+
+      - name: Focused F5 Projects QA
+        run: node scripts/projects-f5-qa.mjs
+
+      - name: Focused F6 Services QA
+        run: node scripts/services-f6-qa.mjs
+
+      - name: Focused F7 Why SOLIMA QA
+        run: node scripts/why-f7-qa.mjs
+
+      - name: Focused F8 Process QA
+        run: node scripts/process-f8-qa.mjs
+
+      - name: Focused F9 Clients & Markets QA
+        run: node scripts/clients-f9-qa.mjs
+
+      - name: Focused F10 Quote QA
+        run: node scripts/quote-f10-qa.mjs
+
+      - name: Focused F11 Contact & Footer QA
+        run: node scripts/contact-f11-qa.mjs
+
+      - name: Focused F12 Sticky / Intent QA
+        run: node scripts/sticky-f12-qa.mjs
+
+      - name: Focused F13 Responsive Polish QA
+        run: node scripts/responsive-f13-qa.mjs
+
+      - name: Focused F14 Accessibility QA
+        run: node scripts/accessibility-f14-qa.mjs
+
+      - name: Focused F15 Performance QA
+        run: node scripts/performance-f15-qa.mjs
+
+      - name: Visual QA — normal motion
+        run: npm run qa:normal
+
+      - name: Visual QA — reduced motion
+        run: npm run qa:reduced
+
+      - name: Merge visual QA results
+        if: always()
+        run: npm run qa:merge
+
+      - name: Upload visual QA report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-report-v2.1
+          path: visual-report-v2.1/
+          if-no-files-found: warn
+          retention-days: 7

@@ -1,0 +1,97 @@
+/* SOLIMA Landing v2 — F12 contextual mobile quote sticky */
+
+.sticky-v2 {
+  position: fixed;
+  z-index: calc(var(--layer-nav, 80) - 4);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding:
+    .65rem
+    max(1rem, var(--safe-right, 0px))
+    max(.65rem, var(--safe-bottom, 0px))
+    max(1rem, var(--safe-left, 0px));
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(4, 30, 60, .94), rgba(4, 30, 60, .72) 58%, transparent);
+}
+
+.sticky-v2[hidden] {
+  display: none;
+}
+
+.sticky-v2-cta {
+  display: flex;
+  width: min(100%, 34rem);
+  min-height: 54px;
+  margin-inline: auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: .9rem;
+  padding: .7rem .85rem .7rem 1rem;
+  border: 1px solid rgba(0, 207, 244, .58);
+  border-radius: var(--radius-round, 999px);
+  color: var(--solima-navy-950, #041e3c);
+  background: var(--solima-aqua-500, #00cff4);
+  box-shadow: 0 16px 38px rgba(2, 12, 28, .28);
+  font: 700 .86rem/1.3 var(--font-ui, var(--font-sans));
+  text-decoration: none;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sticky-v2-label {
+  min-width: 0;
+  text-wrap: balance;
+}
+
+.sticky-v2-arrow {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 2rem;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(4, 30, 60, .12);
+  font-size: 1rem;
+}
+
+.sticky-v2-cta:focus-visible {
+  outline: 3px solid #f7faff;
+  outline-offset: 3px;
+}
+
+/* The reserve prevents the fixed task CTA from becoming the final obstruction
+   above the browser safe area. It is intentionally stable on mobile so showing
+   and hiding contextual state does not make the document jump. */
+@media (max-width: 767px) {
+  html[data-sticky-v2-ready="true"] body {
+    padding-bottom: calc(5.2rem + var(--safe-bottom, 0px));
+  }
+
+  body.quote-v2-open .sticky-v2,
+  body.menu-open .sticky-v2 {
+    display: none !important;
+  }
+}
+
+@media (max-width: 359px) {
+  .sticky-v2-cta {
+    min-height: 52px;
+    padding-left: .85rem;
+    font-size: .8rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .sticky-v2 {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sticky-v2,
+  .sticky-v2 * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
