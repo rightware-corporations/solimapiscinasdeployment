@@ -204,6 +204,30 @@ Approved invariants:
 - SiteVisit belongs to Lead because it occurs before Project creation
 - a Lead may have multiple SiteVisits
 
+Approved QuoteVersion lifecycle:
+
+```text
+DRAFT -> ISSUED -> ACCEPTED
+                 |-> SUPERSEDED
+                 |-> DECLINED
+                 \-> EXPIRED
+
+DRAFT -> VOIDED
+```
+
+Transition rules:
+
+- DRAFT is editable and has not been formally issued
+- ISSUED is immutable commercial evidence
+- issuing a new version marks the previously issued current version SUPERSEDED in the same transaction
+- only ISSUED may transition to ACCEPTED, DECLINED or EXPIRED
+- only DRAFT may transition to VOIDED
+- ACCEPTED, SUPERSEDED, DECLINED, EXPIRED and VOIDED are terminal
+- at most one version per Quote may be current
+- at most one version per Quote may be ACCEPTED
+- acceptance records administrator, timestamp and evidence source
+- Quote overall status is derived from its current or accepted version instead of duplicated independently
+
 ### Project aggregate
 
 Project is operational work accepted by SOLIMA.
@@ -359,7 +383,6 @@ Proposed administrator command:
 - reopen eligibility and SLA clock-reset behavior
 - commercial transition permissions
 - project lifecycle
-- exact Quote and QuoteVersion state lifecycle
 - appointment ownership
 - customer-visible versus internal communication
 - retention and anonymization rules
