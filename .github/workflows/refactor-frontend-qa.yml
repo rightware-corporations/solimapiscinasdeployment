@@ -91,6 +91,9 @@ jobs:
       - name: Focused F13 Responsive Polish QA
         run: node scripts/responsive-f13-qa.mjs
 
+      - name: Focused F14 Accessibility QA
+        run: node scripts/accessibility-f14-qa.mjs
+
       - name: Visual QA — normal motion
         run: npm run qa:normal
 
