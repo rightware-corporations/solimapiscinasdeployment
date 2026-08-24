@@ -210,7 +210,9 @@ Approved category policy:
 - a category already in use can be deactivated but not deleted
 - initial categories: Maintenance, Warranty, Technical Issue, Complaint, Administrative Question and Other
 - priority is selected manually by the administrator
-- the approved priority scale has three levels; exact names remain pending
+- approved priorities: NORMAL, HIGH and URGENT
+- every priority has a formal SLA policy
+- SLA deadlines and breaches must be computed and auditable
 
 Invariant:
 
@@ -256,15 +258,18 @@ PENDING -> PROCESSING -> RETRY -> ACCEPTED -> SENT -> DELIVERED -> READ
 
 ### Support state
 
-Pending approval:
+Approved state set:
 
 ```text
 OPEN -> TRIAGED -> IN_PROGRESS -> WAITING_CUSTOMER
-     -> RESOLVED -> CLOSED
-
-Alternative:
-OPEN/IN_PROGRESS -> CANCELLED
+                      ^               |
+                      |_______________|
+IN_PROGRESS -> RESOLVED -> CLOSED
+RESOLVED/CLOSED -> REOPENED -> IN_PROGRESS
+OPEN/TRIAGED/IN_PROGRESS -> CANCELLED
 ```
+
+Exact reopen eligibility and SLA clock behavior remain to be approved. Every transition appends status history.
 
 These state machines must be approved before SQL enums or application transition guards are created.
 
@@ -317,9 +322,10 @@ Proposed administrator command:
 
 ## 10. Open conceptual decisions
 
-- exact three-level support-priority scale
-- support status lifecycle approval
-- SLA rules
+- support business calendar and timezone
+- formal response, mitigation and resolution targets
+- SLA pause behavior in WAITING_CUSTOMER
+- reopen eligibility and SLA clock-reset behavior
 - commercial transition permissions
 - project lifecycle
 - quote/version lifecycle
