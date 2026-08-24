@@ -328,3 +328,28 @@
     transform: none;
   }
 }
+
+
+/* Desktop cleanup: keep project navigation informative, never decorative. */
+@media (min-width: 1180px) {
+  [data-projects-v2] .projetos-rail,
+  [data-projects-v2] .projeto-ghost-num,
+  [data-projects-v2] .projeto-side,
+  [data-projects-v2] .projeto-next-teaser {
+    display: none !important;
+  }
+
+  [data-projects-v2] .projeto-meta-top {
+    align-items: center;
+  }
+
+  [data-projects-v2] .projeto-counter {
+    padding: .55rem .72rem;
+    border: 1px solid rgba(125, 211, 252, .28);
+    border-radius: 999px;
+    background: rgba(2, 12, 28, .54);
+    color: rgba(255, 255, 255, .78);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
