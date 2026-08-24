@@ -150,7 +150,7 @@ body.quote-v2-open {
   z-index: 4;
   display: inline-flex;
   min-width: var(--control-touch-min, 44px);
-  min-height: var(--control-touch-min, 44px);
+  min-height: 46px;
   align-items: center;
   justify-content: center;
   gap: .45rem;
