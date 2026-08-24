@@ -30,6 +30,7 @@
 }
 
 .proof-v2-inner {
+  box-sizing: border-box;
   width: min(100%, var(--layout-content-wide, 1560px));
   margin-inline: auto;
   padding-inline: var(--gutter);
