@@ -46,6 +46,18 @@ Every public Lead submission must include between one and five work-location pho
 - all existing media signature, size, pixel, decode, re-encode, metadata-removal and cleanup controls remain mandatory
 - rollout is a versioned public-contract change and requires frontend/API compatibility testing
 
+### Record deletion and anonymization
+
+Commercial and operational evidence is preserved instead of being hard-deleted.
+
+- Leads, issued QuoteVersions, Customers linked to business history, Projects, SupportCases, status histories and AuditEvents cannot be hard-deleted
+- mistakes use approved terminal states and append audit evidence
+- editable children of an unissued draft may be removed inside an authorized draft-edit operation
+- categories and reasons already in use are deactivated, never deleted
+- personal data may later be anonymized through a controlled and audited retention operation
+- anonymization preserves public identifiers, financial snapshots, histories and referential integrity
+- exact retention periods and anonymized fields remain to be approved separately
+
 ### Commercial approval prerequisite
 
 A Lead can transition to `APPROVED` only when it has an accepted QuoteVersion.
@@ -596,5 +608,5 @@ Proposed administrator command:
 - project lifecycle
 - appointment ownership
 - customer-visible versus internal communication
-- retention and anonymization rules
+- exact retention periods, anonymized fields and media-removal windows
 - notification recipients and escalation
