@@ -321,7 +321,28 @@ Approved SiteVisit requirement:
 - a waiver is not available for NEW_CONSTRUCTION or MODERNIZATION in the initial system
 - the QuoteVersion snapshots the completed SiteVisit or remote-assessment basis used for issue
 
-Exact SiteVisit lifecycle remains pending explicit approval.
+Approved SiteVisit lifecycle:
+
+```text
+SCHEDULED -> COMPLETED
+          |-> CANCELLED
+          |-> NO_SHOW
+          \-> RESCHEDULED -> new SCHEDULED SiteVisit
+```
+
+Transition rules:
+
+- a SCHEDULED visit has a bounded time interval, address snapshot and responsible administrator or staff member
+- COMPLETED requires completion time, technical report and recorded outcome
+- CANCELLED requires actor, reason and cancellation time
+- NO_SHOW records whether the customer was absent or site access was unavailable
+- RESCHEDULED is terminal and atomically creates a new SCHEDULED visit linked through `rescheduledFromId`
+- terminal visits are never reopened or silently edited
+- a Lead may own multiple visits
+- scheduling changes append history and preserve prior intervals
+- future staff scheduling must prevent conflicting assignments through transactional overlap checks
+
+Exact SiteVisit report structure remains pending explicit approval.
 
 ### Project aggregate
 
