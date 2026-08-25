@@ -513,7 +513,32 @@ Exact reopen eligibility and SLA clock behavior remain to be approved. Every tra
 
 These state machines must be approved before SQL enums or application transition guards are created.
 
-## 7. Customer resolution flow
+## 7. Human-readable numbering
+
+Approved annual public numbering:
+
+```text
+Lead:       SOL-L-YYYY-NNNNNN
+Quote:      SOL-Q-YYYY-NNNNNN
+QuoteVersion: SOL-Q-YYYY-NNNNNN-VN
+Project:    SOL-P-YYYY-NNNNNN
+SupportCase: SOL-S-YYYY-NNNNNN
+```
+
+Rules:
+
+- UUID remains the internal primary identifier
+- public numbers are human-facing immutable identifiers
+- each document family owns an independent annual sequence
+- sequences restart per calendar year in Africa/Maputo
+- allocation is atomic and concurrency-safe in PostgreSQL
+- allocated numbers are never reused after cancellation, rollback-visible issuance or voiding
+- gaps are acceptable and must not be treated as corruption
+- QuoteVersion number is unique within Quote and increases monotonically from V1
+- public number generation is centralized behind a domain service and protected by database constraints
+- external APIs do not infer access authorization from knowledge of a public number
+
+## 8. Customer resolution flow
 
 Proposed submission transaction:
 
@@ -526,7 +551,7 @@ Proposed submission transaction:
 
 Idempotency is still evaluated before creating duplicate business records.
 
-## 8. Approval conversion flow
+## 9. Approval conversion flow
 
 Proposed administrator command:
 
@@ -546,7 +571,7 @@ Proposed administrator command:
 14. Write AuditEvent.
 15. Commit one transaction.
 
-## 9. Support registration flow
+## 10. Support registration flow
 
 Proposed administrator command:
 
@@ -561,7 +586,7 @@ Proposed administrator command:
 9. Commit.
 10. Notify according to approved operational policy.
 
-## 10. Open conceptual decisions
+## 11. Open conceptual decisions
 
 - support business calendar and timezone
 - formal response, mitigation and resolution targets
