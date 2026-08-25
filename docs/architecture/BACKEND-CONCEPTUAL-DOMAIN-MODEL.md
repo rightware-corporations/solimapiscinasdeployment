@@ -310,7 +310,18 @@ Approved QuoteVersion acceptance evidence policy:
 - without valid evidence the version cannot transition to ACCEPTED
 - acceptance does not itself create Customer or Project; the separate Lead approval command remains required
 
-SiteVisit requirement and lifecycle remain pending explicit approval.
+Approved SiteVisit requirement:
+
+- `NEW_CONSTRUCTION` requires at least one completed SiteVisit before the first QuoteVersion can be ISSUED
+- `MODERNIZATION` requires at least one completed SiteVisit before the first QuoteVersion can be ISSUED
+- `MAINTENANCE` may be quoted without a SiteVisit after the administrator records a remote-assessment decision based on the mandatory location photographs and available diagnostic information
+- a SiteVisit is never inferred from photographs; it is a separate scheduled and completed business record
+- issuing a version validates the service-specific prerequisite transactionally
+- changing the selected primary service re-evaluates the prerequisite
+- a waiver is not available for NEW_CONSTRUCTION or MODERNIZATION in the initial system
+- the QuoteVersion snapshots the completed SiteVisit or remote-assessment basis used for issue
+
+Exact SiteVisit lifecycle remains pending explicit approval.
 
 ### Project aggregate
 
