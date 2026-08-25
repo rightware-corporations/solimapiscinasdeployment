@@ -251,7 +251,16 @@ Approved financial structure:
 - changing scope, price, discount or tax after issue requires a new QuoteVersion
 - a free-text-only total is not an acceptable canonical commercial record
 
-Exact currency, tax and discount policies remain pending explicit approval.
+Approved currency policy:
+
+- customer-facing quotes use only Mozambican metical
+- every QuoteVersion persists the ISO 4217 code `MZN` explicitly
+- monetary values use two decimal places and deterministic rounding
+- database and application calculations use exact decimal types, never `float` or binary floating point
+- all QuoteLineItems in one QuoteVersion share the version currency
+- multi-currency quoting is not enabled in the initial system
+
+Tax and discount policies remain pending explicit approval.
 
 ### Project aggregate
 
