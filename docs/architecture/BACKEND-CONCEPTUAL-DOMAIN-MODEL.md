@@ -608,5 +608,6 @@ Proposed administrator command:
 - project lifecycle
 - appointment ownership
 - customer-visible versus internal communication
-- exact retention periods, anonymized fields and media-removal windows
+- exact externally validated durations for each approved retention class
+- retention eligibility persistence strategy (central subject model versus aggregate-derived)
 - notification recipients and escalation
