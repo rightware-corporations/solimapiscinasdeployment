@@ -12,7 +12,7 @@ This document translates the approved conceptual model into a relational Postgre
 
 The following are intentionally still proposals until explicitly approved:
 
-- deletion, retention and anonymization policy
+- exact retention periods and anonymization triggers
 - exact column lengths and attachment retention
 - staff permissions beyond the initial administrator
 - final tax default validated by accounting
@@ -107,7 +107,7 @@ ON customer (phone_e164)
 WHERE status = 'ACTIVE';
 ```
 
-The exact inactive/anonymized states depend on the retention decision.
+Inactive and anonymized lifecycle states will preserve the row and its business relationships. The exact retention period and anonymization trigger remain to be approved.
 
 ### `lead`
 
@@ -386,16 +386,21 @@ Append-only:
 
 It protects public submission and sensitive administrator commands from accidental duplication.
 
-## 13. Referential actions
+## 13. Approved deletion and referential policy
 
-Initial safe proposal:
+Official policy:
 
-- commercial, project, support, status-history and audit foreign keys: `ON DELETE RESTRICT`
-- true owned drafts such as unsent line items: deletion only through an authorized draft-edit transaction
-- media assets: deletion only after no retained attachment references them
-- no cascading deletion across Lead, Quote, Project or Support aggregates
+- no hard deletion of Leads, issued QuoteVersions, Customers linked to business history, Projects, SupportCases, status histories or audit events
+- errors use approved terminal states and append audit evidence
+- personal data is anonymized only through an authorized, audited retention operation that preserves financial and operational referential integrity
+- commercial, project, support, status-history and audit foreign keys use `ON DELETE RESTRICT`
+- cascading deletion across Lead, Quote, Project or Support aggregates is forbidden
+- true owned children of an unissued DRAFT, such as draft line items, may be removed only inside an authorized draft-edit transaction
+- administrator-managed categories and reasons already in use are deactivated, never deleted
+- media objects may be physically removed only when no retained attachment references them and the retention policy permits removal
+- anonymization must not change public numbers, financial snapshots, status history or aggregate identity
 
-This proposal depends on approval of the deletion and retention policy.
+Exact retention periods, legal/accounting preservation windows and the fields to anonymize remain a separate policy decision.
 
 ## 14. Transaction boundaries
 
@@ -412,13 +417,6 @@ The following commands must use database transactions and concurrency guards:
 9. reopen Support within the approved window
 10. update SLA clock segments
 
-## 15. Next approval gate — deletion policy
+## 15. Next approval gate — retention duration
 
-Recommended rule:
-
-- no hard deletion for Leads, issued QuoteVersions, Customers linked to business history, Projects, SupportCases, histories or audit events
-- mistakes are represented by approved terminal states and audit records
-- editable, unissued draft children may be removed inside their aggregate
-- personal data is later anonymized through a controlled retention policy without destroying financial or operational referential integrity
-
-This must be approved before exact foreign-key actions, archive states and retention jobs are finalized.
+The deletion model is approved. The next decision must define how long personal data and uploaded media remain identifiable before controlled anonymization or eligible physical removal. Financial, contractual, project, support and audit evidence may require different retention classes; one blanket duration is not recommended.
