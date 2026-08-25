@@ -260,7 +260,19 @@ Approved currency policy:
 - all QuoteLineItems in one QuoteVersion share the version currency
 - multi-currency quoting is not enabled in the initial system
 
-Tax and discount policies remain pending explicit approval.
+Approved tax policy:
+
+- tax configuration is versioned and centrally managed
+- each QuoteVersion snapshots the tax label, rate, mode and calculated amount used at issue time
+- changing the active tax configuration never recalculates issued historical versions
+- the quote document states explicitly whether displayed prices exclude or include tax
+- zero-rated, exempt or non-applicable treatment requires an explicit reason
+- the production default rate remains disabled or unconfirmed until SOLIMA accounting validates its fiscal treatment
+- tax is calculated using exact decimals and the approved deterministic rounding rule
+- canonical calculation order is: line subtotal, approved discount, taxable base, tax amount, final total
+- all calculated components are persisted on an issued QuoteVersion for audit and independently recomputed during validation
+
+Discount policy remains pending explicit approval.
 
 ### Project aggregate
 
