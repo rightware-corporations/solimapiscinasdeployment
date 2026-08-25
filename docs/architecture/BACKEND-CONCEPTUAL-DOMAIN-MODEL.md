@@ -285,7 +285,19 @@ Approved discount policy:
 - line-level discounts are not enabled in the initial system
 - future staff roles may introduce approval thresholds without changing the commercial model
 
-Quote validity policy remains pending explicit approval.
+Approved QuoteVersion validity policy:
+
+- the configurable default validity period is thirty calendar days
+- every issued version snapshots `issuedAt` and `validUntil`
+- an authorized administrator may choose another permitted period before issue
+- changing the system default never alters issued versions
+- an ISSUED version becomes EXPIRED after `validUntil` when it has not reached another terminal state
+- an expired version cannot be accepted, edited or reactivated
+- continuing negotiation after expiry requires a new QuoteVersion
+- acceptance and expiry use one atomic conditional transition so only one can win under concurrency
+- expiry processing is idempotent and does not depend exclusively on an in-memory timer
+
+Quote acceptance evidence policy remains pending explicit approval.
 
 ### Project aggregate
 
