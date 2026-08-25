@@ -342,7 +342,35 @@ Transition rules:
 - scheduling changes append history and preserve prior intervals
 - future staff scheduling must prevent conflicting assignments through transactional overlap checks
 
-Exact SiteVisit report structure remains pending explicit approval.
+Approved SiteVisit technical report:
+
+A SiteVisit may transition to COMPLETED only when its report records:
+
+- actual arrival and departure timestamps
+- participants
+- relevant measurements and dimensions
+- terrain conditions or existing-structure condition
+- site access constraints
+- water, electricity and drainage availability
+- existing equipment when applicable
+- technical and safety risks
+- identified needs
+- recommendations
+- at least one authorized private technical photograph
+- optional bounded additional observations
+- exactly one conclusion: `FEASIBLE`, `FEASIBLE_WITH_CONDITIONS`, `NEEDS_FURTHER_ASSESSMENT` or `NOT_FEASIBLE`
+
+Report rules:
+
+- structured fields are canonical; narrative notes supplement them
+- private photographs use authenticated attachment storage and audited access
+- COMPLETED records the author and completion timestamp
+- material correction creates a versioned amendment and audit event
+- `NEEDS_FURTHER_ASSESSMENT` does not satisfy the visit prerequisite for issuing a QuoteVersion
+- `NOT_FEASIBLE` blocks quote issue unless a later completed visit reaches an eligible conclusion
+- exact eligible conclusions for quote issue are `FEASIBLE` and `FEASIBLE_WITH_CONDITIONS`
+
+Lead commercial lifecycle remains pending final approval.
 
 ### Project aggregate
 
