@@ -370,7 +370,7 @@ Report rules:
 - `NOT_FEASIBLE` blocks quote issue unless a later completed visit reaches an eligible conclusion
 - exact eligible conclusions for quote issue are `FEASIBLE` and `FEASIBLE_WITH_CONDITIONS`
 
-Lead commercial lifecycle remains pending final approval.
+Lead commercial lifecycle is approved in the state-separation section below.
 
 ### Project aggregate
 
@@ -435,17 +435,30 @@ MessageDelivery is a provider-agnostic outbox record. WhatsApp-specific identifi
 
 ### Lead commercial state
 
-Proposed conceptual lifecycle:
+Approved compact lifecycle:
 
 ```text
-NEW -> CONTACTED -> SITE_VISIT_SCHEDULED -> QUOTE_PREPARING
-    -> QUOTE_SENT -> NEGOTIATION -> QUOTE_ACCEPTED -> APPROVED -> PROJECT_CREATED
-
-Terminal alternatives:
-LOST
-DUPLICATE
-CANCELLED
+NEW -> CONTACTED -> QUALIFIED -> APPROVED
+  |       |            |------> LOST
+  |       |            |------> CANCELLED
+  |       |            \------> DUPLICATE
+  |       |-------------------> LOST/CANCELLED/DUPLICATE
+  \---------------------------> LOST/CANCELLED/DUPLICATE
 ```
+
+Rules:
+
+- NEW means a durable public or authorized internal request was received
+- CONTACTED requires a recorded real commercial contact
+- QUALIFIED means SOLIMA confirmed that the need can proceed through its commercial process
+- APPROVED requires an accepted QuoteVersion and atomically resolves Customer and creates Project
+- LOST requires a structured active closure reason and bounded note
+- CANCELLED requires actor, structured reason and bounded note
+- DUPLICATE requires a canonical Lead reference and cannot point to itself
+- terminal Leads are never silently reopened; a genuinely renewed opportunity creates a new Lead linked to the prior one
+- SiteVisit and QuoteVersion states produce a derived progress view and are not duplicated as Lead states
+- PROJECT_CREATED is not a Lead state; the unique Project relation is authoritative
+- every transition appends LeadStatusHistory and AuditEvent
 
 ### Message delivery state
 
