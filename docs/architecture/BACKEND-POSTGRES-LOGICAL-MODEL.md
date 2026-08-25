@@ -417,6 +417,17 @@ The following commands must use database transactions and concurrency guards:
 9. reopen Support within the approved window
 10. update SLA clock segments
 
-## 15. Next approval gate — retention duration
+## 15. Approved retention-class approach
 
-The deletion model is approved. The next decision must define how long personal data and uploaded media remain identifiable before controlled anonymization or eligible physical removal. Financial, contractual, project, support and audit evidence may require different retention classes; one blanket duration is not recommended.
+Retention is classified instead of using one blanket duration. The authoritative classification is in `docs/security/DATA-RETENTION-CLASSIFICATION.md`.
+
+Approved rules:
+
+- data is divided into security/session, unconverted Lead, Customer identity, commercial/financial, Project/service, audit, media and backup classes
+- a record inherits the longest currently applicable retention obligation
+- legal hold, dispute, warranty, investigation or active support obligations suspend disposal
+- exact durations require legal, fiscal, accounting, operational and security validation
+- destructive production automation remains disabled until an approved versioned duration matrix exists
+- implementation may proceed with classification, holds, dry-run reporting and idempotent anonymization boundaries
+
+The next database gate is whether retention eligibility should be represented by a central policy/subject model or derived independently inside each aggregate.
