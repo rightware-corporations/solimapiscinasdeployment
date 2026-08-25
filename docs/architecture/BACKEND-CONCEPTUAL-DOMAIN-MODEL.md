@@ -272,7 +272,20 @@ Approved tax policy:
 - canonical calculation order is: line subtotal, approved discount, taxable base, tax amount, final total
 - all calculated components are persisted on an issued QuoteVersion for audit and independently recomputed during validation
 
-Discount policy remains pending explicit approval.
+Approved discount policy:
+
+- a QuoteVersion may have at most one global discount
+- discount kind is either `PERCENTAGE` or `FIXED_MZN`, never both
+- a discount requires a bounded reason
+- percentage must be between zero and one hundred
+- fixed discount must be non-negative and cannot exceed the line subtotal
+- the calculated discount amount is persisted and independently recomputed during issue validation
+- the administrator and timestamp are audited
+- an issued discount is immutable; changing it requires a new QuoteVersion
+- line-level discounts are not enabled in the initial system
+- future staff roles may introduce approval thresholds without changing the commercial model
+
+Quote validity policy remains pending explicit approval.
 
 ### Project aggregate
 
