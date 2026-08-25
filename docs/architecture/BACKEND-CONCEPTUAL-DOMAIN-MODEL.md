@@ -460,6 +460,35 @@ Rules:
 - PROJECT_CREATED is not a Lead state; the unique Project relation is authoritative
 - every transition appends LeadStatusHistory and AuditEvent
 
+Approved terminal-reason policy:
+
+- closure reasons are database-managed records, not fixed PostgreSQL enums
+- reasons have stable code, display label, applicable terminal state, order and active flag
+- a reason already used may be deactivated but never deleted
+- LOST requires one active LOST reason
+- CANCELLED requires one active CANCELLED reason
+- OTHER requires a bounded explanation
+- DUPLICATE does not use a free-form reason and requires a canonical Lead reference
+- reporting groups terminal outcomes by stable reason code
+
+Initial LOST reasons:
+
+- `PRICE`
+- `NO_RESPONSE`
+- `COMPETITOR`
+- `OUT_OF_SCOPE`
+- `NOT_FEASIBLE`
+- `OUTSIDE_SERVICE_AREA`
+- `TIMING`
+- `OTHER`
+
+Initial CANCELLED reasons:
+
+- `CUSTOMER_REQUEST`
+- `SOLIMA_DECISION`
+- `CREATED_IN_ERROR`
+- `OTHER`
+
 ### Message delivery state
 
 ```text
