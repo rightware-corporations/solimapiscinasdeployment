@@ -297,7 +297,20 @@ Approved QuoteVersion validity policy:
 - acceptance and expiry use one atomic conditional transition so only one can win under concurrency
 - expiry processing is idempotent and does not depend exclusively on an in-memory timer
 
-Quote acceptance evidence policy remains pending explicit approval.
+Approved QuoteVersion acceptance evidence policy:
+
+- only an authenticated authorized administrator records acceptance initially
+- acceptance channel is required and one of `SIGNED_DOCUMENT`, `WHATSAPP`, `EMAIL`, `IN_PERSON` or `OTHER`
+- the accepted QuoteVersion, acceptance timestamp, confirming person's name and recording administrator are required
+- acceptance requires at least one verifiable evidence reference, bounded evidence note or authorized private attachment
+- `OTHER` requires an explicit bounded explanation
+- evidence attachments use the private authenticated attachment lifecycle, not public lead transport media
+- acceptance evidence is immutable; corrections append an audited event rather than rewriting history
+- accepting a version appends commercial history and audit records atomically
+- without valid evidence the version cannot transition to ACCEPTED
+- acceptance does not itself create Customer or Project; the separate Lead approval command remains required
+
+SiteVisit requirement and lifecycle remain pending explicit approval.
 
 ### Project aggregate
 
