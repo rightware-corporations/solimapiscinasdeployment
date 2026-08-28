@@ -97,6 +97,9 @@ jobs:
       - name: Focused F15 Performance QA
         run: node scripts/performance-f15-qa.mjs
 
+      - name: Final F16 Landing v2 Acceptance QA
+        run: node scripts/frontend-f16-final-qa.mjs
+
       - name: Visual QA — normal motion
         run: npm run qa:normal
 
