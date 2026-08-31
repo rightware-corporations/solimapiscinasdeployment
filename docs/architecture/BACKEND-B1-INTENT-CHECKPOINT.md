@@ -19,6 +19,7 @@ Date: 2026-08-31
 - Contact CTA registers Intent before redirecting.
 - Failed attribution requests do not silently redirect.
 - Separate rate limit for intent creation.
+- Backend foundation branch included in the existing regression/visual QA push gate.
 
 ## Preserved
 

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - refactor/v2-frontend-foundation
+      - refactor/v2-backend-foundation
   pull_request:
     branches:
       - integration/pre-production-hardened
