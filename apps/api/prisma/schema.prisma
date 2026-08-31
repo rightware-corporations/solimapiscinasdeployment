@@ -7,6 +7,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Intent {
+  id                 String    @id @default(uuid())
+  referenceCode      String    @unique
+  channel            String
+  sourceType         String
+  sourceRef          String?
+  sourceNameSnapshot String?
+  suggestedService   String?
+  ctaType            String
+  createdAt          DateTime  @default(now())
+  convertedAt        DateTime?
+
+  @@index([channel, createdAt])
+  @@index([sourceType, sourceRef])
+  @@index([convertedAt])
+}
+
 model LeadSubmission {
   id                   String                @id @default(uuid())
   idempotencyKey       String                @unique

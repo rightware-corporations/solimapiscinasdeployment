@@ -82,6 +82,7 @@ function createPhoneList() {
       whatsapp.rel = "noopener noreferrer";
       whatsapp.className = "contact-v2-whatsapp";
       whatsapp.dataset.contactChannel = "WHATSAPP";
+      whatsapp.dataset.intentSource = "CONTACT";
       whatsapp.setAttribute("aria-label", `Conversar pelo WhatsApp: ${phone.label}`);
       whatsapp.append(icon("message-circle"));
 

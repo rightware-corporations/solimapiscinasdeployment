@@ -6,6 +6,8 @@ import { createPrisma } from "./db/prisma.js";
 import { createLogger } from "./lib/logger.js";
 import { LeadRepository } from "./leads/repository.js";
 import { LeadService } from "./leads/service.js";
+import { IntentRepository } from "./intents/repository.js";
+import { IntentService } from "./intents/service.js";
 import { DeliveryRunner } from "./deliveries/runner.js";
 import { FakeWhatsAppAdapter, MetaWhatsAppAdapter } from "./whatsapp/adapter.js";
 import { createApp } from "./app.js";
@@ -29,7 +31,8 @@ export async function startServer({ environment, adapter } = {}) {
   const whatsappAdapter = adapter || (config.whatsapp.enabled ? new MetaWhatsAppAdapter({ config }) : new FakeWhatsAppAdapter());
   const runner = new DeliveryRunner({ repository, adapter: whatsappAdapter, config, logger });
   const leadService = new LeadService({ repository, config, deliveryRunner: runner, logger });
-  const app = createApp({ config, prisma, leadService, repository, logger });
+  const intentService = new IntentService({ repository: new IntentRepository(prisma), config, logger });
+  const app = createApp({ config, prisma, leadService, intentService, repository, logger });
   const server = app.listen(config.port, () => logger.info("app.started", { port: config.port }));
   runner.startRecovery();
 

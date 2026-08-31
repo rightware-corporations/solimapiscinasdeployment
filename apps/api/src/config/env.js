@@ -32,6 +32,7 @@ const schema = z.object({
   WHATSAPP_IMAGE_TEMPLATE_NAME: optional(z.string().min(1)),
   WHATSAPP_TEMPLATE_LANGUAGE: optional(z.string().min(2).max(20)),
   WHATSAPP_BUSINESS_ACCOUNT_ID: optional(),
+  PUBLIC_WHATSAPP_NUMBER: z.string().regex(/^\d{8,15}$/).default("258843892558"),
   TRUST_PROXY: boolean(false),
   DELIVERY_RECOVERY_INTERVAL_MS: integer(180_000, 30_000, 3_600_000),
   PROVIDER_TIMEOUT_MS: integer(10_000, 1_000, 60_000)
@@ -83,6 +84,7 @@ export function loadConfig(environment = process.env) {
       templateLanguage: value.WHATSAPP_TEMPLATE_LANGUAGE || "",
       businessAccountId: value.WHATSAPP_BUSINESS_ACCOUNT_ID || ""
     }),
+    publicWhatsappNumber: value.PUBLIC_WHATSAPP_NUMBER,
     trustProxy: value.TRUST_PROXY,
     deliveryRecoveryIntervalMs: value.DELIVERY_RECOVERY_INTERVAL_MS,
     providerTimeoutMs: value.PROVIDER_TIMEOUT_MS,
