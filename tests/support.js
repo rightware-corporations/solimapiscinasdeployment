@@ -9,6 +9,8 @@ import { LeadRepository } from "../apps/api/src/leads/repository.js";
 import { LeadService } from "../apps/api/src/leads/service.js";
 import { IntentRepository } from "../apps/api/src/intents/repository.js";
 import { IntentService } from "../apps/api/src/intents/service.js";
+import { CaseRepository } from "../apps/api/src/cases/repository.js";
+import { CaseService } from "../apps/api/src/cases/service.js";
 import { DeliveryRunner } from "../apps/api/src/deliveries/runner.js";
 import { FakeWhatsAppAdapter } from "../apps/api/src/whatsapp/adapter.js";
 import { createApp } from "../apps/api/src/app.js";
@@ -51,9 +53,10 @@ export async function createTestSystem({ adapter = new FakeWhatsAppAdapter() } =
   const runner = new DeliveryRunner({ repository, adapter, config, logger });
   const leadService = new LeadService({ repository, config, deliveryRunner: runner, logger });
   const intentService = new IntentService({ repository: new IntentRepository(prisma), config, logger });
+  const caseService = new CaseService({ repository: new CaseRepository(prisma) });
   const app = createApp({ config, prisma, leadService, intentService, repository, logger });
   return {
-    app, adapter, config, prisma, repository, runner,
+    app, adapter, caseService, config, prisma, repository, runner,
     async close() {
       await runner.stop();
       await prisma.$disconnect();

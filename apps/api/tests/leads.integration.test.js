@@ -25,6 +25,7 @@ test("accepts one durable lead and replays the same submission without a second 
     assert.equal(replay.status, 200);
     await system.runner.run();
     assert.equal(await system.prisma.leadSubmission.count(), 1);
+    assert.equal(await system.prisma.case.count(), 1);
     assert.equal(await system.prisma.whatsAppDelivery.count(), 1);
     assert.equal(system.adapter.calls.filter((call) => call.operation === "summary").length, 1);
   } finally { await system.close(); }
@@ -49,6 +50,7 @@ test("concurrent identical requests create one logical lead", async () => {
     const responses = await Promise.all([submit(system.app, key), submit(system.app, key)]);
     assert.deepEqual(responses.map((response) => response.status).sort(), [200, 201]);
     assert.equal(await system.prisma.leadSubmission.count(), 1);
+    assert.equal(await system.prisma.case.count(), 1);
   } finally { await system.close(); }
 });
 

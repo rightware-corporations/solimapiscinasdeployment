@@ -3,6 +3,7 @@ import { describeUploads } from "../media/validation.js";
 import { processImages } from "../media/service.js";
 import { removeStoredMedia } from "../media/local-storage.js";
 import { requestFingerprint } from "./fingerprint.js";
+import { createCaseReference } from "../cases/reference.js";
 
 export class IdempotencyConflictError extends Error {}
 export class DependencyUnavailableError extends Error {}
@@ -27,6 +28,13 @@ export class LeadService {
       staged = await processImages(describedUploads, this.config, this.logger);
       const leadId = crypto.randomUUID();
       const deliveries = this.createDeliveries(leadId, staged);
+      const caseRecord = {
+        id: crypto.randomUUID(), publicReference: createCaseReference(), type: "SALES", channel: "FORM",
+        customerNameSnapshot: lead.customerName, phoneE164: lead.phone, location: lead.location,
+        serviceType: lead.serviceType, title: `Pedido de orçamento — ${lead.customerName}`,
+        description: lead.notes || null, workflowState: "NEW", priority: "NORMAL",
+        sourceLeadSubmissionId: leadId
+      };
       const created = await this.repository.createGraph({
         lead: {
           id: leadId,
@@ -42,7 +50,8 @@ export class LeadService {
           extras: lead.extras
         },
         media: staged.map(({ id, ...media }) => ({ id, ...media })),
-        deliveries
+        deliveries,
+        caseRecord
       });
       this.logger.info("lead.created", { requestId, submissionId: created.id, mediaCount: staged.length });
       this.deliveryRunner.kick();
