@@ -5,8 +5,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import request from "supertest";
 import sharp from "sharp";
-import { ProviderError } from "../src/whatsapp/errors.js";
-import { FakeWhatsAppAdapter } from "../src/whatsapp/adapter.js";
+import { EmailProviderError } from "../src/email/errors.js";
+import { FakeEmailAdapter } from "../src/email/adapter.js";
 import { createTestSystem, validLead } from "../../../tests/support.js";
 
 const submit = (app, key, values = validLead()) => {
@@ -15,7 +15,7 @@ const submit = (app, key, values = validLead()) => {
   return result;
 };
 
-test("accepts one durable lead and replays the same submission without a second delivery", async () => {
+test("accepts one durable lead and replays the same submission without a second email notification", async () => {
   const system = await createTestSystem();
   try {
     const key = crypto.randomUUID();
@@ -26,8 +26,9 @@ test("accepts one durable lead and replays the same submission without a second 
     await system.runner.run();
     assert.equal(await system.prisma.leadSubmission.count(), 1);
     assert.equal(await system.prisma.case.count(), 1);
-    assert.equal(await system.prisma.whatsAppDelivery.count(), 1);
-    assert.equal(system.adapter.calls.filter((call) => call.operation === "summary").length, 1);
+    assert.equal(await system.prisma.whatsAppDelivery.count(), 0);
+    assert.equal(await system.prisma.notificationDelivery.count(), 1);
+    assert.equal(system.adapter.calls.length, 1);
   } finally { await system.close(); }
 });
 
@@ -54,7 +55,7 @@ test("concurrent identical requests create one logical lead", async () => {
   } finally { await system.close(); }
 });
 
-test("processes an image to JPEG and deletes it only after the fake provider accepts its message", async () => {
+test("processes images to JPEG and emails the same hardened files as attachments", async () => {
   const system = await createTestSystem();
   try {
     const image = await sharp({ create: { width: 40, height: 30, channels: 3, background: "#22c7e8" } }).png().toBuffer();
@@ -63,9 +64,11 @@ test("processes an image to JPEG and deletes it only after the fake provider acc
     await system.runner.run();
     const media = await system.prisma.leadMedia.findFirstOrThrow();
     assert.equal(media.mimeType, "image/jpeg");
-    assert.ok(media.localDeletedAt);
-    await assert.rejects(fs.access(path.join(system.config.storageRoot, media.storageKey)));
-    assert.equal(system.adapter.calls.filter((call) => call.operation === "image").length, 1);
+    assert.equal(media.localDeletedAt, null);
+    await fs.access(path.join(system.config.storageRoot, media.storageKey));
+    assert.equal(system.adapter.calls.length, 1);
+    assert.equal(system.adapter.calls[0].attachments.length, 1);
+    assert.equal(system.adapter.calls[0].attachments[0].path, path.join(system.config.storageRoot, media.storageKey));
   } finally { await system.close(); }
 });
 
@@ -81,15 +84,17 @@ test("a database failure after image processing removes staged media before retu
   } finally { await system.close(); }
 });
 
-test("a temporary provider failure remains durable and becomes retryable", async () => {
-  const adapter = new FakeWhatsAppAdapter();
-  adapter.queueFailure("summary", new ProviderError("Timeout", { code: "timeout", retryable: true }));
-  const system = await createTestSystem({ adapter });
+test("a temporary email failure remains durable and leaves Lead and Case intact", async () => {
+  const adapter = new FakeEmailAdapter();
+  adapter.queueFailure(new EmailProviderError("Timeout", { code: "timeout", retryable: true }));
+  const system = await createTestSystem({ emailAdapter: adapter });
   try {
     assert.equal((await submit(system.app, crypto.randomUUID())).status, 201);
     await system.runner.run();
-    const delivery = await system.prisma.whatsAppDelivery.findFirstOrThrow();
+    const delivery = await system.prisma.notificationDelivery.findFirstOrThrow();
     assert.equal(delivery.status, "RETRY");
     assert.equal(delivery.attempts, 1);
+    assert.equal(await system.prisma.leadSubmission.count(), 1);
+    assert.equal(await system.prisma.case.count(), 1);
   } finally { await system.close(); }
 });

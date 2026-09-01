@@ -42,6 +42,7 @@ model LeadSubmission {
   extras               LeadSubmissionExtra[]
   media                LeadMedia[]
   deliveries           WhatsAppDelivery[]
+  notificationDeliveries NotificationDelivery[]
   case                 Case?
 
   @@index([createdAt])
@@ -72,11 +73,41 @@ model Case {
   updatedAt              DateTime        @updatedAt
   closedAt               DateTime?
   archivedAt             DateTime?
+  notificationDeliveries NotificationDelivery[]
 
   @@index([type, workflowState, createdAt])
   @@index([channel, createdAt])
   @@index([sourceIntentId])
   @@index([phoneE164])
+}
+
+model NotificationDelivery {
+  id                   String         @id @default(uuid())
+  leadSubmissionId     String
+  leadSubmission       LeadSubmission @relation(fields: [leadSubmissionId], references: [id], onDelete: Restrict)
+  caseId               String
+  case                 Case           @relation(fields: [caseId], references: [id], onDelete: Restrict)
+  dedupeKey            String         @unique
+  kind                 String
+  channel              String
+  provider             String
+  destination          String
+  status               String         @default("PENDING")
+  attempts             Int            @default(0)
+  nextAttemptAt        DateTime       @default(now())
+  processingStartedAt  DateTime?
+  providerMessageId    String?
+  lastErrorCode        String?
+  lastErrorMessage     String?
+  sentAt               DateTime?
+  failedAt             DateTime?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  @@index([status, nextAttemptAt])
+  @@index([leadSubmissionId])
+  @@index([caseId])
+  @@index([providerMessageId])
 }
 
 model LeadSubmissionExtra {

@@ -9,16 +9,20 @@ const productionEnvironment = () => ({
   STORAGE_ROOT: "/app/data/pending-media",
   MEDIA_RETENTION_HOURS: "72",
   PRIVACY_POLICY_VERSION: "2026-08",
-  WHATSAPP_ENABLED: "true",
-  WHATSAPP_ACCESS_TOKEN: "test-access-token",
-  WHATSAPP_PHONE_NUMBER_ID: "123456789",
-  WHATSAPP_DESTINATION_NUMBER: "258000000000",
-  WHATSAPP_API_VERSION: "v22.0",
-  WHATSAPP_WEBHOOK_VERIFY_TOKEN: "test-webhook-token-1234",
-  META_APP_SECRET: "test-meta-app-secret-1234",
-  WHATSAPP_SUMMARY_TEMPLATE_NAME: "summary_template",
-  WHATSAPP_IMAGE_TEMPLATE_NAME: "image_template",
-  WHATSAPP_TEMPLATE_LANGUAGE: "pt_PT"
+  EMAIL_ENABLED: "true",
+  EMAIL_PROVIDER: "smtp",
+  EMAIL_FROM: "notifications@solima.example",
+  EMAIL_TO: "office@solima.example",
+  SMTP_HOST: "smtp.solima.example",
+  SMTP_USER: "smtp-user",
+  SMTP_PASSWORD: "smtp-password"
+});
+
+test("production requires SMTP email but no longer requires Meta for new form delivery", () => {
+  assert.doesNotThrow(() => loadConfig(productionEnvironment()));
+  assert.throws(() => loadConfig({ ...productionEnvironment(), EMAIL_ENABLED: "false" }), /EMAIL_ENABLED=true/);
+  assert.throws(() => loadConfig({ ...productionEnvironment(), SMTP_PASSWORD: "" }), /SMTP_PASSWORD/);
+  assert.throws(() => loadConfig({ ...productionEnvironment(), EMAIL_SUBJECT_PREFIX: "SOLIMA\r\nBcc: attacker@example.test" }), /EMAIL_SUBJECT_PREFIX/);
 });
 
 test("production configuration fails closed unless SQLite and pending media use the mounted volume", () => {

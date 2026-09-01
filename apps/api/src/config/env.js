@@ -33,6 +33,17 @@ const schema = z.object({
   WHATSAPP_TEMPLATE_LANGUAGE: optional(z.string().min(2).max(20)),
   WHATSAPP_BUSINESS_ACCOUNT_ID: optional(),
   PUBLIC_WHATSAPP_NUMBER: z.string().regex(/^\d{8,15}$/).default("258843892558"),
+  EMAIL_ENABLED: boolean(false),
+  EMAIL_PROVIDER: z.enum(["smtp", "fake"]).default("fake"),
+  EMAIL_FROM: optional(z.string().email()),
+  EMAIL_TO: optional(z.string().email()),
+  EMAIL_SUBJECT_PREFIX: z.string().min(1).max(80).regex(/^[^\r\n]+$/).default("SOLIMA"),
+  EMAIL_MAX_ATTACHMENT_BYTES: integer(15 * 1024 * 1024, 1, 25 * 1024 * 1024),
+  SMTP_HOST: optional(z.string().min(1)),
+  SMTP_PORT: integer(587, 1, 65535),
+  SMTP_SECURE: boolean(false),
+  SMTP_USER: optional(z.string().min(1)),
+  SMTP_PASSWORD: optional(z.string().min(1)),
   TRUST_PROXY: boolean(false),
   DELIVERY_RECOVERY_INTERVAL_MS: integer(180_000, 30_000, 3_600_000),
   PROVIDER_TIMEOUT_MS: integer(10_000, 1_000, 60_000)
@@ -49,12 +60,18 @@ export function loadConfig(environment = process.env) {
     for (const key of ["APP_BASE_URL", "DATABASE_URL", "STORAGE_ROOT", "MEDIA_RETENTION_HOURS", "PRIVACY_POLICY_VERSION"]) {
       if (environment[key] === undefined || environment[key] === "") missing.push(key);
     }
-    if (!value.WHATSAPP_ENABLED) missing.push("WHATSAPP_ENABLED=true");
-    for (const key of [
-      "WHATSAPP_ACCESS_TOKEN", "WHATSAPP_PHONE_NUMBER_ID", "WHATSAPP_DESTINATION_NUMBER",
-      "WHATSAPP_API_VERSION", "WHATSAPP_WEBHOOK_VERIFY_TOKEN", "META_APP_SECRET",
-      "WHATSAPP_SUMMARY_TEMPLATE_NAME", "WHATSAPP_IMAGE_TEMPLATE_NAME", "WHATSAPP_TEMPLATE_LANGUAGE"
-    ]) if (!value[key]) missing.push(key);
+    if (!value.EMAIL_ENABLED) missing.push("EMAIL_ENABLED=true");
+    if (value.EMAIL_PROVIDER !== "smtp") missing.push("EMAIL_PROVIDER=smtp");
+    for (const key of ["EMAIL_FROM", "EMAIL_TO", "SMTP_HOST", "SMTP_USER", "SMTP_PASSWORD"]) {
+      if (!value[key]) missing.push(key);
+    }
+    if (value.WHATSAPP_ENABLED) {
+      for (const key of [
+        "WHATSAPP_ACCESS_TOKEN", "WHATSAPP_PHONE_NUMBER_ID", "WHATSAPP_DESTINATION_NUMBER",
+        "WHATSAPP_API_VERSION", "WHATSAPP_WEBHOOK_VERIFY_TOKEN", "META_APP_SECRET",
+        "WHATSAPP_SUMMARY_TEMPLATE_NAME", "WHATSAPP_IMAGE_TEMPLATE_NAME", "WHATSAPP_TEMPLATE_LANGUAGE"
+      ]) if (!value[key]) missing.push(key);
+    }
     if (value.DATABASE_URL !== "file:/app/data/solima.db") missing.push("DATABASE_URL=file:/app/data/solima.db");
     if (environment.STORAGE_ROOT !== "/app/data/pending-media") missing.push("STORAGE_ROOT=/app/data/pending-media");
   }
@@ -85,6 +102,21 @@ export function loadConfig(environment = process.env) {
       businessAccountId: value.WHATSAPP_BUSINESS_ACCOUNT_ID || ""
     }),
     publicWhatsappNumber: value.PUBLIC_WHATSAPP_NUMBER,
+    email: Object.freeze({
+      enabled: value.EMAIL_ENABLED,
+      provider: value.EMAIL_PROVIDER,
+      from: value.EMAIL_FROM || "",
+      to: value.EMAIL_TO || "",
+      subjectPrefix: value.EMAIL_SUBJECT_PREFIX,
+      maxAttachmentBytes: value.EMAIL_MAX_ATTACHMENT_BYTES,
+      smtp: Object.freeze({
+        host: value.SMTP_HOST || "",
+        port: value.SMTP_PORT,
+        secure: value.SMTP_SECURE,
+        user: value.SMTP_USER || "",
+        password: value.SMTP_PASSWORD || ""
+      })
+    }),
     trustProxy: value.TRUST_PROXY,
     deliveryRecoveryIntervalMs: value.DELIVERY_RECOVERY_INTERVAL_MS,
     providerTimeoutMs: value.PROVIDER_TIMEOUT_MS,

@@ -10,6 +10,9 @@ import { IntentRepository } from "./intents/repository.js";
 import { IntentService } from "./intents/service.js";
 import { DeliveryRunner } from "./deliveries/runner.js";
 import { FakeWhatsAppAdapter, MetaWhatsAppAdapter } from "./whatsapp/adapter.js";
+import { NotificationRepository } from "./notifications/repository.js";
+import { NotificationRunner } from "./notifications/runner.js";
+import { FakeEmailAdapter, SmtpEmailAdapter } from "./email/adapter.js";
 import { createApp } from "./app.js";
 
 async function ensureWritableStorage(config) {
@@ -20,7 +23,7 @@ async function ensureWritableStorage(config) {
   await fs.rm(probe, { force: true });
 }
 
-export async function startServer({ environment, adapter } = {}) {
+export async function startServer({ environment, adapter, emailAdapter } = {}) {
   const config = loadConfig(environment);
   const logger = createLogger({ level: config.logLevel });
   await ensureWritableStorage(config);
@@ -29,12 +32,15 @@ export async function startServer({ environment, adapter } = {}) {
   await prisma.$queryRaw`SELECT 1`;
   const repository = new LeadRepository(prisma);
   const whatsappAdapter = adapter || (config.whatsapp.enabled ? new MetaWhatsAppAdapter({ config }) : new FakeWhatsAppAdapter());
-  const runner = new DeliveryRunner({ repository, adapter: whatsappAdapter, config, logger });
-  const leadService = new LeadService({ repository, config, deliveryRunner: runner, logger });
+  const legacyRunner = new DeliveryRunner({ repository, adapter: whatsappAdapter, config, logger });
+  const resolvedEmailAdapter = emailAdapter || (config.email.provider === "smtp" ? new SmtpEmailAdapter({ config }) : new FakeEmailAdapter());
+  const notificationRunner = new NotificationRunner({ repository: new NotificationRepository(prisma), adapter: resolvedEmailAdapter, config, logger });
+  const leadService = new LeadService({ repository, config, deliveryRunner: notificationRunner, logger });
   const intentService = new IntentService({ repository: new IntentRepository(prisma), config, logger });
   const app = createApp({ config, prisma, leadService, intentService, repository, logger });
   const server = app.listen(config.port, () => logger.info("app.started", { port: config.port }));
-  runner.startRecovery();
+  legacyRunner.startRecovery();
+  notificationRunner.startRecovery();
 
   let shuttingDown = false;
   const shutdown = async () => {
@@ -43,13 +49,16 @@ export async function startServer({ environment, adapter } = {}) {
     logger.info("app.shutdown");
     const force = setTimeout(() => server.closeAllConnections?.(), 25_000);
     force.unref?.();
-    await Promise.all([runner.stop(), new Promise((resolve) => server.close(resolve))]);
+    await Promise.all([legacyRunner.stop(), notificationRunner.stop(), new Promise((resolve) => server.close(resolve))]);
     clearTimeout(force);
     await prisma.$disconnect();
   };
   process.once("SIGTERM", shutdown);
   process.once("SIGINT", shutdown);
-  return { app, server, prisma, runner, shutdown, adapter: whatsappAdapter };
+  return {
+    app, server, prisma, runner: notificationRunner, legacyRunner, shutdown,
+    adapter: whatsappAdapter, whatsappAdapter, emailAdapter: resolvedEmailAdapter
+  };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
