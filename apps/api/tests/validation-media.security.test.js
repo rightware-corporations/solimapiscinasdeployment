@@ -87,6 +87,26 @@ test("rejects disguised SVG, corrupt image data, excess files and oversized file
   } finally { await system.close(); }
 });
 
+test("enforces 3 location, 2 inspiration and 5 total image limits", async () => {
+  const system = await createTestSystem();
+  try {
+    system.runner.stopped = true;
+    const image = await sharp({ create: { width: 10, height: 10, channels: 3, background: "#fff" } }).jpeg().toBuffer();
+    let allowed = submit(system.app);
+    for (let index = 0; index < 3; index += 1) allowed = allowed.attach("locationPhotos", image, { filename: `location-${index}.jpg`, contentType: "image/jpeg" });
+    for (let index = 0; index < 2; index += 1) allowed = allowed.attach("inspirationPhotos", image, { filename: `inspiration-${index}.jpg`, contentType: "image/jpeg" });
+    assert.equal((await allowed).status, 201);
+
+    let excessLocation = submit(system.app);
+    for (let index = 0; index < 4; index += 1) excessLocation = excessLocation.attach("locationPhotos", image, { filename: `location-${index}.jpg`, contentType: "image/jpeg" });
+    assert.equal((await excessLocation).status, 400);
+
+    let excessInspiration = submit(system.app);
+    for (let index = 0; index < 3; index += 1) excessInspiration = excessInspiration.attach("inspirationPhotos", image, { filename: `inspiration-${index}.jpg`, contentType: "image/jpeg" });
+    assert.equal((await excessInspiration).status, 400);
+  } finally { await system.close(); }
+});
+
 test("static hosting keeps secrets, SQLite files and pending media private", async () => {
   const system = await createTestSystem();
   try {

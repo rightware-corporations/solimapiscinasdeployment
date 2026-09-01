@@ -6,11 +6,12 @@ import express from "express";
 import { createWebhookHandlers } from "./whatsapp/webhook.js";
 import { requestId } from "./middleware/request-id.js";
 import { securityMiddleware } from "./middleware/security.js";
-import { createLeadLimiter } from "./middleware/rate-limit.js";
+import { createIntentLimiter, createLeadLimiter } from "./middleware/rate-limit.js";
 import { createUpload } from "./middleware/multipart.js";
 import { notFound } from "./middleware/not-found.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { mountLeadRoutes } from "./leads/routes.js";
+import { mountIntentRoutes } from "./intents/routes.js";
 
 const webRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../web");
 const cacheableStaticExtensions = new Set([
@@ -37,7 +38,7 @@ function setStaticCacheHeaders(res, filePath) {
   res.setHeader("Cache-Control", "no-cache");
 }
 
-export function createApp({ config, prisma, leadService, repository, logger, storageFileSystem = fs }) {
+export function createApp({ config, prisma, leadService, intentService, repository, logger, storageFileSystem = fs }) {
   const app = express();
   app.set("trust proxy", config.trustProxy);
   app.disable("x-powered-by");
@@ -66,6 +67,7 @@ export function createApp({ config, prisma, leadService, repository, logger, sto
 
   app.use("/api", (_req, res, next) => { res.set("Cache-Control", "no-store"); next(); });
   app.use(express.json({ limit: "64kb" }));
+  mountIntentRoutes(app, { intentService, intentLimiter: createIntentLimiter() });
   mountLeadRoutes(app, { upload: createUpload(config), uploadLimiter: createLeadLimiter(), leadService });
   app.use(express.static(webRoot, {
     etag: true,

@@ -1,71 +1,79 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import crypto from "node:crypto";
-import fs from "node:fs/promises";
-import path from "node:path";
 import request from "supertest";
-import sharp from "sharp";
-import { FakeWhatsAppAdapter } from "../src/whatsapp/adapter.js";
-import { ProviderError } from "../src/whatsapp/errors.js";
-import { createTestSystem, validLead } from "../../../tests/support.js";
+import { FakeEmailAdapter } from "../src/email/adapter.js";
+import { EmailProviderError } from "../src/email/errors.js";
+import { createTestSystem, seedLegacyWhatsAppSummary, validLead } from "../../../tests/support.js";
 
-const postLead = (app, key = crypto.randomUUID()) => {
+const postLead = (app, key = crypto.randomUUID(), overrides = {}) => {
   let result = request(app).post("/api/leads").set("Idempotency-Key", key);
-  for (const [name, value] of Object.entries(validLead())) result = result.field(name, value);
+  for (const [name, value] of Object.entries({ ...validLead(), ...overrides })) result = result.field(name, value);
   return result;
 };
 
-test("a permanent provider error becomes terminal without an infinite retry", async () => {
-  const adapter = new FakeWhatsAppAdapter();
-  adapter.queueFailure("summary", new ProviderError("Invalid template", { code: "invalid_template", retryable: false }));
-  const system = await createTestSystem({ adapter });
+test("a permanent email provider error becomes terminal without an infinite retry", async () => {
+  const adapter = new FakeEmailAdapter({ failures: [new EmailProviderError("Rejected", { code: "smtp_550", retryable: false })] });
+  const system = await createTestSystem({ emailAdapter: adapter });
   try {
     assert.equal((await postLead(system.app)).status, 201);
     await system.runner.run();
-    const delivery = await system.prisma.whatsAppDelivery.findFirstOrThrow();
+    const delivery = await system.prisma.notificationDelivery.findFirstOrThrow();
     assert.equal(delivery.status, "FAILED");
     assert.equal(delivery.attempts, 1);
+    assert.equal(await system.prisma.leadSubmission.count(), 1);
+    assert.equal(await system.prisma.case.count(), 1);
   } finally { await system.close(); }
 });
 
-test("a failed image delivery retains local media for retry and preserves sequence", async () => {
-  const adapter = new FakeWhatsAppAdapter();
-  adapter.queueFailure("image", new ProviderError("429", { code: "meta_429", retryable: true }));
-  const system = await createTestSystem({ adapter });
-  try {
-    const image = await sharp({ create: { width: 30, height: 30, channels: 3, background: "#22c7e8" } }).jpeg().toBuffer();
-    const response = await postLead(system.app).attach("locationPhotos", image, { filename: "site.jpg", contentType: "image/jpeg" });
-    assert.equal(response.status, 201);
-    await system.runner.run();
-    const deliveries = await system.prisma.whatsAppDelivery.findMany({ orderBy: { sequence: "asc" } });
-    const media = await system.prisma.leadMedia.findFirstOrThrow();
-    assert.deepEqual(deliveries.map((delivery) => delivery.status), ["ACCEPTED", "RETRY"]);
-    await fs.access(path.join(system.config.storageRoot, media.storageKey));
-  } finally { await system.close(); }
-});
-
-test("stale PROCESSING work is returned to recovery instead of remaining stuck", async () => {
+test("stale email PROCESSING work is recovered instead of remaining stuck", async () => {
   const system = await createTestSystem();
   try {
     system.runner.stopped = true;
     assert.equal((await postLead(system.app)).status, 201);
-    const delivery = await system.prisma.whatsAppDelivery.findFirstOrThrow();
-    await system.prisma.whatsAppDelivery.update({ where: { id: delivery.id }, data: { status: "PROCESSING", processingStartedAt: new Date(Date.now() - 10 * 60_000) } });
-    assert.equal((await system.repository.recoverStaleProcessing(new Date(Date.now() - 5 * 60_000))).count, 1);
-    assert.equal((await system.prisma.whatsAppDelivery.findUniqueOrThrow({ where: { id: delivery.id } })).status, "RETRY");
+    const delivery = await system.prisma.notificationDelivery.findFirstOrThrow();
+    await system.prisma.notificationDelivery.update({ where: { id: delivery.id }, data: { status: "PROCESSING", processingStartedAt: new Date(Date.now() - 10 * 60_000) } });
+    assert.equal((await system.notificationRepository.recoverStaleProcessing(new Date(Date.now() - 5 * 60_000))).count, 1);
+    assert.equal((await system.prisma.notificationDelivery.findUniqueOrThrow({ where: { id: delivery.id } })).status, "RETRY");
   } finally { await system.close(); }
 });
 
-test("runner drains a ready durable backlog instead of waiting for the recovery interval", async () => {
+test("email runner drains a durable backlog without waiting for recovery interval", async () => {
   const system = await createTestSystem();
   try {
     system.runner.stopped = true;
-    for (let index = 0; index < 11; index += 1) {
-      assert.equal((await postLead(system.app)).status, 201);
-    }
+    for (let index = 0; index < 11; index += 1) assert.equal((await postLead(system.app)).status, 201);
     system.runner.stopped = false;
     await system.runner.run();
-    assert.equal(system.adapter.calls.filter((call) => call.operation === "summary").length, 11);
-    assert.equal(await system.prisma.whatsAppDelivery.count({ where: { status: "ACCEPTED" } }), 11);
+    assert.equal(system.adapter.calls.length, 11);
+    assert.equal(await system.prisma.notificationDelivery.count({ where: { status: "SENT" } }), 11);
+  } finally { await system.close(); }
+});
+
+test("email renders escaped HTML, plain text and server-owned headers", async () => {
+  const system = await createTestSystem();
+  try {
+    assert.equal((await postLead(system.app, crypto.randomUUID(), { notes: "Medida especial & urgente" })).status, 201);
+    await system.runner.run();
+    const message = system.adapter.calls[0];
+    assert.equal(message.to, "office@solima.test");
+    assert.equal(message.from, "notifications@solima.test");
+    assert.match(message.subject, /^SOLIMA — novo pedido SOL-C-/);
+    assert.match(message.text, /Medida especial & urgente/);
+    assert.match(message.html, /Medida especial &amp; urgente/);
+    assert.doesNotMatch(message.html, /Medida especial & urgente/);
+  } finally { await system.close(); }
+});
+
+test("legacy WhatsApp outbox and runner remain operational but receive no new form deliveries", async () => {
+  const system = await createTestSystem();
+  try {
+    await seedLegacyWhatsAppSummary(system);
+    await system.legacyRunner.run();
+    assert.equal(await system.prisma.whatsAppDelivery.count({ where: { status: "ACCEPTED" } }), 1);
+    assert.equal(system.whatsappAdapter.calls.filter((call) => call.operation === "summary").length, 1);
+    assert.equal((await postLead(system.app)).status, 201);
+    assert.equal(await system.prisma.whatsAppDelivery.count(), 1);
+    assert.equal(await system.prisma.notificationDelivery.count(), 1);
   } finally { await system.close(); }
 });

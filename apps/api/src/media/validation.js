@@ -14,7 +14,7 @@ export class MediaValidationError extends Error {
 export function validateFileCounts(files) {
   const location = files.locationPhotos || [];
   const inspiration = files.inspirationPhotos || [];
-  if (location.length > 5 || inspiration.length > 2 || location.length + inspiration.length > 7) {
+  if (location.length > 3 || inspiration.length > 2 || location.length + inspiration.length > 5) {
     throw new MediaValidationError("Demasiadas imagens.");
   }
 }

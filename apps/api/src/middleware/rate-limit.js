@@ -10,3 +10,11 @@ export function createLeadLimiter() {
     message: { success: false, error: "Demasiadas tentativas. Tente novamente mais tarde.", code: "rate_limited" }
   });
 }
+
+export function createIntentLimiter() {
+  return rateLimit({
+    windowMs: 15 * 60_000, limit: 30, standardHeaders: "draft-8", legacyHeaders: false,
+    keyGenerator: (req) => ipKeyGenerator(req.ip),
+    message: { success: false, error: "Demasiadas tentativas. Tente novamente mais tarde.", code: "rate_limited" }
+  });
+}

@@ -1,7 +1,9 @@
 const includeLeadGraph = {
   extras: true,
   media: { orderBy: [{ category: "asc" }, { position: "asc" }] },
-  deliveries: { orderBy: { sequence: "asc" } }
+  deliveries: { orderBy: { sequence: "asc" } },
+  notificationDeliveries: { orderBy: { createdAt: "asc" } },
+  case: true
 };
 
 const successfulStatuses = new Set(["ACCEPTED", "SENT", "DELIVERED", "READ"]);
@@ -15,7 +17,7 @@ export class LeadRepository {
     return this.prisma.leadSubmission.findUnique({ where: { idempotencyKey }, include: includeLeadGraph });
   }
 
-  async createGraph({ lead, media, deliveries }) {
+  async createGraph({ lead, media, deliveries = [], caseRecord, notificationDelivery }) {
     return this.prisma.$transaction(async (tx) => {
       await tx.leadSubmission.create({
         data: {
@@ -24,7 +26,9 @@ export class LeadRepository {
           media: { create: media }
         }
       });
-      await tx.whatsAppDelivery.createMany({ data: deliveries });
+      if (deliveries.length) await tx.whatsAppDelivery.createMany({ data: deliveries });
+      await tx.case.create({ data: caseRecord });
+      if (notificationDelivery) await tx.notificationDelivery.create({ data: notificationDelivery });
       return tx.leadSubmission.findUniqueOrThrow({ where: { id: lead.id }, include: includeLeadGraph });
     });
   }
