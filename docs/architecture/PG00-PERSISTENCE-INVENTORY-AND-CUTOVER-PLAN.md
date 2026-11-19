@@ -147,7 +147,21 @@ Do not replace UNKNOWN with a guessed 0.
 
 **PG00-G2 (execution):** remains BLOCKED pending G0/G1, staging migration, concurrent idempotency testing and explicit operator approval.
 
-## 8. Immediate engineering work in this chat
+## 8. P0 implementation checkpoint (staged, not deployed)
+
+The following **code changes** were made on the same Draft PR #5 after initial PG-00 evidence collection:
+
+- `apps/api/src/runtime/start-delivery-recovery.js` and `apps/api/src/server.js`: only start Meta/email recovery when the respective provider is enabled; fail closed for disabled providers.
+- `apps/api/src/leads/repository.js`: `canDeleteLegacyMedia(mediaId)` denies deleting a legacy JPEG whenever its LeadSubmission has any B3 NotificationDelivery.
+- `apps/api/src/deliveries/runner.js`: skip legacy post-acceptance JPEG deletion where a notification dependency exists.
+- `apps/api/src/maintenance/cleanup.js`: apply the same dependency check in accepted/failed-media cleanup; orphan cleanup still respects durable LeadMedia references.
+- `apps/api/tests/runtime.delivery-recovery.test.js`: three fail-closed tests for disabled and enabled runners.
+- `apps/api/tests/media.notification-retention.integration.test.js`: two integration tests for retained B3 shared media and old Meta-only deletion.
+- `scripts/pg00-sqlite-inventory.mjs` and `tests/pg00-sqlite-inventory.test.js`: offline read-only aggregate discovery; four local tests PASS.
+
+**Code snapshot:** `54f9fe9340d09326f86a89fb45e5ac5b6ed90186` (P0 changes plus tests). Full GitHub CI is still pending at document authoring time. These guards preserve B3 referenced media conservatively; a full authenticated private media lifecycle still belongs to B4. No existing missing media files are reconstructed by these patches.
+
+## 9. Immediate engineering work in this chat
 
 1. Ensure PG00 inventory tests pass on the reconciliation branch.
 2. Fix **P0-A legacy fake delivery** with a gated startup and regression tests.
