@@ -1,7 +1,7 @@
 # B0-R — SOLIMA reconciliation checkpoint
 
 Date: 2026-11-19
-Status: CODE CONSOLIDATED / CI VERIFICATION PENDING
+Status: CODE CONSOLIDATED / SOURCE CI PASS / DOMAIN ADR REVIEW PENDING
 Working branch: `reconcile/b0r-unified-baseline`
 Repository: `rightware-corporations/solimapiscinasdeployment`
 
@@ -55,9 +55,10 @@ This is a **content integration**, not a conventional Git merge. Commit history 
 - [x] B1–B3 implementation and tests copied without deleting hardened legacy logic
 - [x] Seven architecture/security docs incorporated with design-only status
 - [x] QA workflow configured to exercise this branch on push
-- [ ] GitHub Actions full regression and visual QA PASS on reconciliation HEAD
+- [x] GitHub Actions full regression and visual QA PASS on source reconciliation HEAD `7c5198149e509cd2bcc837fbc0b51a3a361871e6` (push run `44492902998`, PR run `44493052660`, both 29-step jobs SUCCESS)
 - [ ] Re-check API/form expectations with integration screenshots
-- [ ] Domain model decision recorded before PostgreSQL migrations
+- [x] Domain model options and proposed ownership recorded in `ADR-001-CANONICAL-CASE-COMMERCIAL-SUPPORT.md` (PROPOSED; not approved)
+- [ ] Domain ADR-001 explicitly accepted or amended before PostgreSQL migrations
 - [ ] Delivery configuration and staging data migration plan approved
 
-**Gate status: REVIEW REQUIRED** until the new combined branch CI and domain decisions are validated. No deployment or migration authorized.
+**Gate status: CI PASS / DOMAIN REVIEW REQUIRED**. Tests passed on the code-reconciliation commit. ADR-001 remains a proposal, and further documentation commits require their own CI result. No deployment or migration authorized.
