@@ -1,7 +1,7 @@
 # SOLIMA — active engineering handoff
 
 Updated: 2026-11-19
-Status: B0-R reconciliation (CI pending; no production release)
+Status: B0-R source reconciliation CI PASS; ADR-001 PROPOSED; no production release
 Repository: `rightware-corporations/solimapiscinasdeployment`
 Active branch: `reconcile/b0r-unified-baseline`
 
@@ -19,7 +19,7 @@ Active branch: `reconcile/b0r-unified-baseline`
 - PostgreSQL schema migration/cutover (Prisma provider still sqlite)
 - Authenticated Admin / SOLIMA Office, private media access, commercial Quote/Sale/Project system and Support UI
 - End-to-end staging/production operation, current data backup/restore or final release gates
-- Combined branch CI status until a new workflow run completes
+- Current documentation-only commits have not been proven by a new CI result; code snapshot `7c5198149e509cd2bcc837fbc0b51a3a361871e6` passed push and PR full QA (runs `44492902998` and `44493052660`, both successful)
 
 ## Immutable inputs / references
 
@@ -28,10 +28,14 @@ Active branch: `reconcile/b0r-unified-baseline`
 - PostgreSQL design source: `e2cc241b80d21084f35aa35fbe694e8e8c38893f`
 - See `docs/architecture/B0R-RECONCILIATION-2026-11-19.md` for byte-level merge policy, risks and verification checklist.
 
+## ADR-001 proposal (not approved)
+
+The proposed canonical model is in `docs/architecture/ADR-001-CANONICAL-CASE-COMMERCIAL-SUPPORT.md`: Case owns operational and commercial workflow state; LeadSubmission remains immutable intake; Quote/QuoteVersion, Sale and Project are distinct; SupportCase is a project-bound specialty linked to a Case, with no parallel workflow status. Conflicts and open approvals are documented in ADR-001. No new migrations are authorized by this proposal.
+
 ## Mandatory next steps
 
-1. Inspect GitHub Actions on the current HEAD and fix only demonstrated integration regressions.
-2. Finalize `Case` versus `Lead`/commercial ownership and media minimum compatibility; record an explicit ADR.
+1. Verify documentation-only commit CI; the prior code reconciliation has full green regression and visual evidence.
+2. Review ADR-001 and finalize `Case` versus `Lead`/commercial ownership and media minimum compatibility; record an explicit ADR.
 3. Perform database inventory + PostgreSQL schema/cutover design, including existing data/notification outbox continuity.
 4. Implement private durable media and admin security without public exposure.
 5. Implement SOLIMA Office workflows with Quote, Sale, Customer, Project, Support, authorization and audit.
