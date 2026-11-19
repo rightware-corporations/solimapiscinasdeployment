@@ -14,6 +14,7 @@ import { NotificationRepository } from "./notifications/repository.js";
 import { NotificationRunner } from "./notifications/runner.js";
 import { FakeEmailAdapter, SmtpEmailAdapter } from "./email/adapter.js";
 import { createApp } from "./app.js";
+import { startDeliveryRecovery } from "./runtime/start-delivery-recovery.js";
 
 async function ensureWritableStorage(config) {
   await fs.mkdir(config.storageRoot, { recursive: true });
@@ -39,8 +40,7 @@ export async function startServer({ environment, adapter, emailAdapter } = {}) {
   const intentService = new IntentService({ repository: new IntentRepository(prisma), config, logger });
   const app = createApp({ config, prisma, leadService, intentService, repository, logger });
   const server = app.listen(config.port, () => logger.info("app.started", { port: config.port }));
-  legacyRunner.startRecovery();
-  notificationRunner.startRecovery();
+  startDeliveryRecovery({ config, legacyRunner, notificationRunner, logger });
 
   let shuttingDown = false;
   const shutdown = async () => {
