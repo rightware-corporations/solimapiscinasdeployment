@@ -3,6 +3,7 @@ import { describeUploads } from "../media/validation.js";
 import { processImages } from "../media/service.js";
 import { removeStoredMedia } from "../media/local-storage.js";
 import { requestFingerprint } from "./fingerprint.js";
+import { createCaseReference } from "../cases/reference.js";
 
 export class IdempotencyConflictError extends Error {}
 export class DependencyUnavailableError extends Error {}
@@ -16,7 +17,9 @@ export class LeadService {
   }
 
   async submit({ idempotencyKey, lead, files, requestId }) {
-    if (!this.config.whatsapp.destinationNumber) throw new DependencyUnavailableError("A submissão está temporariamente indisponível.");
+    if (!this.config.email.enabled || !this.config.email.to || !this.config.email.from) {
+      throw new DependencyUnavailableError("A submissão está temporariamente indisponível.");
+    }
     const describedUploads = await describeUploads(files, this.config);
     const fingerprint = requestFingerprint(lead, describedUploads);
     const existing = await this.repository.findByIdempotencyKey(idempotencyKey);
@@ -26,7 +29,14 @@ export class LeadService {
     try {
       staged = await processImages(describedUploads, this.config, this.logger);
       const leadId = crypto.randomUUID();
-      const deliveries = this.createDeliveries(leadId, staged);
+      const caseId = crypto.randomUUID();
+      const caseRecord = {
+        id: caseId, publicReference: createCaseReference(), type: "SALES", channel: "FORM",
+        customerNameSnapshot: lead.customerName, phoneE164: lead.phone, location: lead.location,
+        serviceType: lead.serviceType, title: `Pedido de orçamento — ${lead.customerName}`,
+        description: lead.notes || null, workflowState: "NEW", priority: "NORMAL",
+        sourceLeadSubmissionId: leadId
+      };
       const created = await this.repository.createGraph({
         lead: {
           id: leadId,
@@ -42,7 +52,13 @@ export class LeadService {
           extras: lead.extras
         },
         media: staged.map(({ id, ...media }) => ({ id, ...media })),
-        deliveries
+        deliveries: [],
+        caseRecord,
+        notificationDelivery: {
+          id: crypto.randomUUID(), leadSubmissionId: leadId, caseId,
+          dedupeKey: `${leadId}:lead-internal-email:v1`, kind: "LEAD_INTERNAL", channel: "EMAIL",
+          provider: this.config.email.provider.toUpperCase(), destination: this.config.email.to
+        }
       });
       this.logger.info("lead.created", { requestId, submissionId: created.id, mediaCount: staged.length });
       this.deliveryRunner.kick();
@@ -67,19 +83,4 @@ export class LeadService {
     return { submission: existing, replayed: true };
   }
 
-  createDeliveries(leadId, media) {
-    const destinationPhoneE164 = this.config.whatsapp.destinationNumber;
-    return [
-      { id: crypto.randomUUID(), leadSubmissionId: leadId, dedupeKey: `${leadId}:summary`, sequence: 0, kind: "SUMMARY", destinationPhoneE164 },
-      ...media.map((item, index) => ({
-        id: crypto.randomUUID(),
-        leadSubmissionId: leadId,
-        leadMediaId: item.id,
-        dedupeKey: `${leadId}:image:${item.id}`,
-        sequence: index + 1,
-        kind: "IMAGE",
-        destinationPhoneE164
-      }))
-    ];
-  }
 }

@@ -28,7 +28,7 @@
       </section>
       <section class="form-step" data-step="3" hidden><div class="form-step-eyebrow">Passo 03 · Fotografias & contexto</div><h3 class="form-step-title" tabindex="-1">Mostre-nos o local</h3>
         <div class="upload-grid">
-          ${upload("locationPhotos","Fotos do local","Recomendado · até 5 imagens · 5 MB cada",5)}
+          ${upload("locationPhotos","Fotos do local","Recomendado · até 3 imagens · 5 MB cada",3)}
           ${upload("inspirationPhotos","Fotos de inspiração","Opcional · até 2 referências · 5 MB cada",2)}
         </div>
         <p class="form-note">JPG, PNG ou WebP. As imagens são processadas para a equipa SOLIMA analisar o seu pedido.</p>

@@ -85,6 +85,10 @@ export class DeliveryRunner {
 
   async deleteAcceptedLocalMedia(media) {
     try {
+      if (!media || !(await this.repository.canDeleteLegacyMedia(media.id))) {
+        this.logger.info("media.deletion_deferred_for_notification", { mediaId: media?.id || null });
+        return;
+      }
       await fs.rm(storagePath(this.config, media.storageKey), { force: true });
       await this.repository.markLocalDeleted(media.id);
     } catch (error) {

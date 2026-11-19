@@ -4,6 +4,7 @@ import { loadConfig } from "../config/env.js";
 import { createPrisma } from "../db/prisma.js";
 import { createLogger } from "../lib/logger.js";
 import { storagePath } from "../media/local-storage.js";
+import { LeadRepository } from "../leads/repository.js";
 
 export async function runCleanup({ prisma, config, logger }) {
   const now = Date.now();
@@ -13,7 +14,13 @@ export async function runCleanup({ prisma, config, logger }) {
   const failed = await prisma.leadMedia.findMany({
     where: { localDeletedAt: null, delivery: { is: { status: "FAILED", failedAt: { lt: new Date(now - config.mediaRetentionHours * 3_600_000) } } } }
   });
+  const leadRepository = new LeadRepository(prisma);
+  let protectedMedia = 0;
   for (const media of [...accepted, ...failed]) {
+    if (!(await leadRepository.canDeleteLegacyMedia(media.id))) {
+      protectedMedia += 1;
+      continue;
+    }
     await fs.rm(storagePath(config, media.storageKey), { force: true });
     await prisma.leadMedia.update({ where: { id: media.id }, data: { localDeletedAt: new Date(), status: "DELETED" } });
   }
@@ -37,7 +44,7 @@ export async function runCleanup({ prisma, config, logger }) {
     const stat = await fs.stat(filePath).catch(() => null);
     if (stat && stat.mtimeMs < now - 3_600_000) await fs.rm(filePath, { force: true });
   }
-  logger.info("cleanup.completed", { acceptedMedia: accepted.length, failedMedia: failed.length, orphanedMedia });
+  logger.info("cleanup.completed", { acceptedMedia: accepted.length, failedMedia: failed.length, protectedMedia, orphanedMedia });
 }
 
 if (import.meta.url === `file:///${process.argv[1]?.replaceAll("\\", "/")}`) {

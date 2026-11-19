@@ -7,6 +7,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Intent {
+  id                 String    @id @default(uuid())
+  referenceCode      String    @unique
+  channel            String
+  sourceType         String
+  sourceRef          String?
+  sourceNameSnapshot String?
+  suggestedService   String?
+  ctaType            String
+  createdAt          DateTime  @default(now())
+  convertedAt        DateTime?
+  case               Case?
+
+  @@index([channel, createdAt])
+  @@index([sourceType, sourceRef])
+  @@index([convertedAt])
+}
+
 model LeadSubmission {
   id                   String                @id @default(uuid())
   idempotencyKey       String                @unique
@@ -24,9 +42,72 @@ model LeadSubmission {
   extras               LeadSubmissionExtra[]
   media                LeadMedia[]
   deliveries           WhatsAppDelivery[]
+  notificationDeliveries NotificationDelivery[]
+  case                 Case?
 
   @@index([createdAt])
   @@index([deliveryStatus, createdAt])
+}
+
+model Case {
+  id                     String          @id @default(uuid())
+  publicReference        String          @unique
+  type                   String
+  channel                String
+  customerId             String?
+  customerNameSnapshot   String
+  phoneE164              String
+  location               String?
+  serviceType            String?
+  title                  String
+  description            String?
+  workflowState          String          @default("NEW")
+  priority               String          @default("NORMAL")
+  assignedUserId         String?
+  createdByUserId        String?
+  sourceIntentId         String?         @unique
+  sourceIntent           Intent?         @relation(fields: [sourceIntentId], references: [id], onDelete: Restrict)
+  sourceLeadSubmissionId String?          @unique
+  sourceLeadSubmission   LeadSubmission? @relation(fields: [sourceLeadSubmissionId], references: [id], onDelete: Restrict)
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+  closedAt               DateTime?
+  archivedAt             DateTime?
+  notificationDeliveries NotificationDelivery[]
+
+  @@index([type, workflowState, createdAt])
+  @@index([channel, createdAt])
+  @@index([sourceIntentId])
+  @@index([phoneE164])
+}
+
+model NotificationDelivery {
+  id                   String         @id @default(uuid())
+  leadSubmissionId     String
+  leadSubmission       LeadSubmission @relation(fields: [leadSubmissionId], references: [id], onDelete: Restrict)
+  caseId               String
+  case                 Case           @relation(fields: [caseId], references: [id], onDelete: Restrict)
+  dedupeKey            String         @unique
+  kind                 String
+  channel              String
+  provider             String
+  destination          String
+  status               String         @default("PENDING")
+  attempts             Int            @default(0)
+  nextAttemptAt        DateTime       @default(now())
+  processingStartedAt  DateTime?
+  providerMessageId    String?
+  lastErrorCode        String?
+  lastErrorMessage     String?
+  sentAt               DateTime?
+  failedAt             DateTime?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  @@index([status, nextAttemptAt])
+  @@index([leadSubmissionId])
+  @@index([caseId])
+  @@index([providerMessageId])
 }
 
 model LeadSubmissionExtra {

@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import crypto from "node:crypto";
 import request from "supertest";
-import { createTestSystem, validLead } from "../../../tests/support.js";
+import { createTestSystem, seedLegacyWhatsAppSummary } from "../../../tests/support.js";
 
 const signedPayload = (secret, payload) => {
   const body = JSON.stringify(payload);
@@ -12,11 +12,8 @@ const signedPayload = (secret, payload) => {
 test("WhatsApp webhook verification and HMAC signature are enforced and statuses never regress", async () => {
   const system = await createTestSystem();
   try {
-    const key = crypto.randomUUID();
-    let submission = request(system.app).post("/api/leads").set("Idempotency-Key", key);
-    for (const [name, value] of Object.entries(validLead())) submission = submission.field(name, value);
-    assert.equal((await submission).status, 201);
-    await system.runner.run();
+    await seedLegacyWhatsAppSummary(system);
+    await system.legacyRunner.run();
     const delivery = await system.prisma.whatsAppDelivery.findFirstOrThrow();
     assert.ok(delivery.metaMessageId);
     assert.equal((await request(system.app).get("/webhooks/whatsapp").query({ "hub.mode": "subscribe", "hub.verify_token": "wrong", "hub.challenge": "x" })).status, 403);
