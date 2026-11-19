@@ -9,6 +9,7 @@ import { initClientsV2 } from "./clients-v2.js";
 import { initQuoteV2 } from "./quote-v2.js";
 import { initContactV2 } from "./contact-v2.js";
 import { initStickyV2 } from "./sticky-v2.js";
+import { initWhatsappIntent } from "./whatsapp-intent.js";
 import { initLoader, initMotion, initSmoothScroll } from "./motion.js";
 import "./quote-form.js";
 
@@ -55,6 +56,7 @@ initQuoteV2();
 // Phase F11: replace the legacy contact/footer runtime with factual contact
 // channels, no assumed public WhatsApp, no experience-age claims and no Admin link.
 initContactV2();
+initWhatsappIntent();
 
 // Phase F12: one mobile-only contextual conversion affordance. It reuses the
 // existing project/service intent attributes and disappears for quote/contact.

@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - refactor/v2-frontend-foundation
+      - refactor/v2-backend-foundation
+      - reconcile/b0r-unified-baseline
   pull_request:
     branches:
       - integration/pre-production-hardened
@@ -96,6 +98,9 @@ jobs:
 
       - name: Focused F15 Performance QA
         run: node scripts/performance-f15-qa.mjs
+
+      - name: Final F16 Landing v2 Acceptance QA
+        run: node scripts/frontend-f16-final-qa.mjs
 
       - name: Visual QA — normal motion
         run: npm run qa:normal
