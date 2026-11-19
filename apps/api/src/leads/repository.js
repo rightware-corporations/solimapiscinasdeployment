@@ -110,6 +110,20 @@ export class LeadRepository {
     });
   }
 
+  // A processed JPEG may also back a durable B3 email or future Office evidence.
+  // Fail closed: if ownership cannot be verified, never allow legacy deletion.
+  async canDeleteLegacyMedia(mediaId) {
+    const media = await this.prisma.leadMedia.findUnique({
+      where: { id: mediaId },
+      select: { leadSubmissionId: true }
+    });
+    if (!media) return false;
+    const notificationCount = await this.prisma.notificationDelivery.count({
+      where: { leadSubmissionId: media.leadSubmissionId }
+    });
+    return notificationCount === 0;
+  }
+
   async markLocalDeleted(mediaId) {
     await this.prisma.leadMedia.update({ where: { id: mediaId }, data: { localDeletedAt: new Date(), status: "DELETED" } });
   }
